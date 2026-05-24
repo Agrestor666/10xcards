@@ -1,15 +1,10 @@
 openssl_conf = openssl_init
 
 [openssl_init]
-providers = provider_sect
+ssl_conf = ssl_sect
 
-[provider_sect]
-default = default_sect
+[ssl_sect]
+system_default = system_default_sect
 
-[default_sect]
-activate = 1
-[ssl_module]
-system_default = crypto_policy
-
-[crypto_policy]
+[system_default_sect]
 Options = UnsafeLegacyRenegotiation
