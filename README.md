@@ -72,7 +72,7 @@ npm run dev
 
 ## Supabase Configuration
 
-This project uses [Supabase](https://supabase.com/) for authentication. Environment variables are declared via Astro's `astro:env` schema and are treated as **server-only secrets** — they are never exposed to the client.
+This project uses [Supabase](https://supabase.com/) for authentication and application data. Environment variables are declared via Astro's `astro:env` schema and are treated as **server-only secrets** — they are never exposed to the client.
 
 ### First-time setup (local, no cloud project needed)
 
@@ -111,7 +111,35 @@ npx supabase stop
 
 The local Studio UI is available at `http://localhost:54323`.
 
-No database tables or migrations are required — this project uses Supabase Auth's built-in `auth.users` table only.
+### Database schema and migrations
+
+SQL migrations live in `supabase/migrations/`. After cloning or pulling new migrations, apply them to your local stack:
+
+```bash
+npx supabase db reset
+```
+
+`db reset` replays all migrations from scratch (destructive to local data). To inspect applied migrations:
+
+```bash
+npx supabase migration list
+```
+
+**Application tables** (see `src/types.ts` for TypeScript shapes):
+
+| Table            | Purpose                                      |
+| ---------------- | -------------------------------------------- |
+| `flashcard_sets` | Named sets owned by `auth.users`             |
+| `flashcards`     | Q/A cards in a set; SRS fields `srs_state`, `due_at` |
+
+Row-level security restricts both tables to the authenticated owner (`flashcard_sets.user_id = auth.uid()`; cards via owned set).
+
+**Hosted project:** link and push migrations manually after merge (not automated in CI for F-01):
+
+```bash
+npx supabase link --project-ref <your-project-ref>
+npx supabase db push
+```
 
 ### Using a cloud Supabase project instead
 

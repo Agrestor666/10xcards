@@ -252,23 +252,23 @@ Expose schema-shaped TypeScript types for downstream slices and update project d
 
 #### Automated
 
-- [ ] 2.1 Migration applies cleanly after RLS additions: `npx supabase db reset` exits 0
-- [ ] 2.2 Optional: `npx supabase db lint` reports no critical RLS issues on new tables
+- [x] 2.1 Migration applies cleanly after RLS additions: `npx supabase db reset` exits 0
+- [x] 2.2 Optional: `npx supabase db lint` reports no critical RLS issues on new tables
 
 #### Manual
 
-- [ ] 2.3 User A can CRUD own sets and cards; cannot access user B's rows
-- [ ] 2.4 Unauthenticated role cannot read flashcard tables
+- [x] 2.3 User A can CRUD own sets and cards; cannot access user B's rows
+- [x] 2.4 Unauthenticated role cannot read flashcard tables
 
 ### Phase 3: Types, docs & verification
 
 #### Automated
 
-- [ ] 3.1 `npm run lint` passes
-- [ ] 3.2 `npm run build` passes
-- [ ] 3.3 `src/types.ts` exports `FlashcardSet` and `Flashcard`
+- [x] 3.1 `npm run lint` passes
+- [x] 3.2 `npm run build` passes
+- [x] 3.3 `src/types.ts` exports `FlashcardSet` and `Flashcard`
 
 #### Manual
 
-- [ ] 3.4 README documents local migration and remote push workflow
+- [x] 3.4 README documents local migration and remote push workflow
 - [ ] 3.5 Human sign-off: F-01 ready for `/10x-implement flashcard-sets-ui` (S-01)

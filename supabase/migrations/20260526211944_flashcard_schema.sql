@@ -1,4 +1,4 @@
--- F-01 Phase 1: flashcard_sets and flashcards schema (RLS in Phase 2)
+-- F-01: flashcard_sets and flashcards schema + RLS
 
 create table public.flashcard_sets (
   id uuid primary key default gen_random_uuid(),
@@ -30,3 +30,86 @@ comment on column public.flashcards.due_at is
 create index flashcards_set_id_idx on public.flashcards (set_id);
 
 create index flashcards_set_id_due_at_idx on public.flashcards (set_id, due_at);
+
+-- Phase 2: row-level security (authenticated only; no anon policies)
+
+alter table public.flashcard_sets enable row level security;
+
+create policy flashcard_sets_select_own on public.flashcard_sets
+  for select
+  to authenticated
+  using (user_id = auth.uid());
+
+create policy flashcard_sets_insert_own on public.flashcard_sets
+  for insert
+  to authenticated
+  with check (user_id = auth.uid());
+
+create policy flashcard_sets_update_own on public.flashcard_sets
+  for update
+  to authenticated
+  using (user_id = auth.uid())
+  with check (user_id = auth.uid());
+
+create policy flashcard_sets_delete_own on public.flashcard_sets
+  for delete
+  to authenticated
+  using (user_id = auth.uid());
+
+alter table public.flashcards enable row level security;
+
+create policy flashcards_select_own_set on public.flashcards
+  for select
+  to authenticated
+  using (
+    exists (
+      select 1
+      from public.flashcard_sets s
+      where s.id = flashcards.set_id
+        and s.user_id = auth.uid()
+    )
+  );
+
+create policy flashcards_insert_own_set on public.flashcards
+  for insert
+  to authenticated
+  with check (
+    exists (
+      select 1
+      from public.flashcard_sets s
+      where s.id = flashcards.set_id
+        and s.user_id = auth.uid()
+    )
+  );
+
+create policy flashcards_update_own_set on public.flashcards
+  for update
+  to authenticated
+  using (
+    exists (
+      select 1
+      from public.flashcard_sets s
+      where s.id = flashcards.set_id
+        and s.user_id = auth.uid()
+    )
+  )
+  with check (
+    exists (
+      select 1
+      from public.flashcard_sets s
+      where s.id = flashcards.set_id
+        and s.user_id = auth.uid()
+    )
+  );
+
+create policy flashcards_delete_own_set on public.flashcards
+  for delete
+  to authenticated
+  using (
+    exists (
+      select 1
+      from public.flashcard_sets s
+      where s.id = flashcards.set_id
+        and s.user_id = auth.uid()
+    )
+  );
