@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { CircleAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -10,13 +10,18 @@ interface FormFieldProps {
   name?: string;
   label: string;
   type?: string;
-  value: string;
-  onChange: (value: string) => void;
   placeholder?: string;
   error?: string;
   hint?: ReactNode;
   icon: ReactNode;
   endContent?: ReactNode;
+  /** Use native form values (works with browser autofill + POST). */
+  uncontrolled?: boolean;
+  /** Toggles password visibility via ref (avoids remounting the input). */
+  passwordVisible?: boolean;
+  value?: string;
+  onChange?: (value: string) => void;
+  onInput?: (event: React.InputEvent<HTMLInputElement>) => void;
 }
 
 export function FormField({
@@ -24,14 +29,28 @@ export function FormField({
   name,
   label,
   type = "text",
-  value,
-  onChange,
   placeholder,
   error,
   hint,
   icon,
   endContent,
+  uncontrolled = false,
+  passwordVisible,
+  value,
+  onChange,
+  onInput,
 }: FormFieldProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (passwordVisible === undefined || !inputRef.current) {
+      return;
+    }
+    inputRef.current.type = passwordVisible ? "text" : "password";
+  }, [passwordVisible]);
+
+  const inputType = passwordVisible !== undefined ? (passwordVisible ? "text" : "password") : type;
+
   return (
     <div>
       <label htmlFor={id} className="mb-1 block text-sm text-blue-100/80">
@@ -40,16 +59,23 @@ export function FormField({
       <div className="relative">
         <span className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-white/40">{icon}</span>
         <input
+          ref={inputRef}
           id={id}
           name={name ?? id}
-          type={type}
-          value={value}
-          onChange={(e) => {
-            onChange(e.target.value);
-          }}
+          type={inputType}
+          {...(uncontrolled
+            ? { defaultValue: "" }
+            : {
+                value: value ?? "",
+                onChange: (e) => {
+                  onChange?.(e.target.value);
+                },
+              })}
+          onInput={onInput}
           placeholder={placeholder}
           className={cn(
             inputBase,
+            endContent && "pr-10",
             error ? "border-red-400/60 focus:ring-red-400" : "border-white/20 focus:ring-purple-400",
           )}
         />

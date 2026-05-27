@@ -27,25 +27,25 @@ Ręczne tworzenie fiszek edukacyjnych jest skrajnie czasochłonne — ta bariera
 
 ## At a glance
 
-| ID | Change ID | Outcome (user can …) | Prerequisites | PRD refs | Status |
-|---|---|---|---|---|---|
-| F-01 | data-schema-rls | (foundation) tabele aplikacji i polityki RLS lądują w Supabase; każda warstwa odczytu i zapisu ma bezpieczną bazę | — | NFR trwałość, NFR prywatność, Access Control | ready |
-| F-02 | deploy-pipeline | (foundation) pipeline CI/CD do Cloudflare Workers; merge do master = automatyczny release | — | — | ready |
-| S-01 | flashcard-sets-ui | tworzyć i przeglądać własne zestawy fiszek po zalogowaniu | F-01 | FR-001, FR-002, FR-003, FR-007 | proposed |
-| S-02 | ai-generation-save | wkleić tekst, zobaczyć fiszki AI, zaakceptować / edytować / usunąć i zapisać do zestawu | F-01, S-01 | FR-004, FR-005, US-01 | proposed |
-| S-03 | manual-flashcard-crud | ręcznie dodać, edytować i usunąć fiszkę w zestawie | F-01, S-01 | FR-006, FR-008, FR-009, US-02 | proposed |
-| S-04 | srs-review-session | rozpocząć sesję powtórkową SRS i zobaczyć, że system automatycznie planuje kolejną datę przeglądu po każdej odpowiedzi | F-01, S-01 | FR-010, FR-011, US-01 | proposed |
+| ID   | Change ID             | Outcome (user can …)                                                                                                   | Prerequisites | PRD refs                                     | Status   |
+| ---- | --------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------- | -------------------------------------------- | -------- |
+| F-01 | data-schema-rls       | (foundation) tabele aplikacji i polityki RLS lądują w Supabase; każda warstwa odczytu i zapisu ma bezpieczną bazę      | —             | NFR trwałość, NFR prywatność, Access Control | ready    |
+| F-02 | deploy-pipeline       | (foundation) pipeline CI/CD do Cloudflare Workers; merge do master = automatyczny release                              | —             | —                                            | ready    |
+| S-01 | flashcard-sets-ui     | tworzyć i przeglądać własne zestawy fiszek po zalogowaniu                                                              | F-01          | FR-001, FR-002, FR-003, FR-007               | proposed |
+| S-02 | ai-generation-save    | wkleić tekst, zobaczyć fiszki AI, zaakceptować / edytować / usunąć i zapisać do zestawu                                | F-01, S-01    | FR-004, FR-005, US-01                        | proposed |
+| S-03 | manual-flashcard-crud | ręcznie dodać, edytować i usunąć fiszkę w zestawie                                                                     | F-01, S-01    | FR-006, FR-008, FR-009, US-02                | proposed |
+| S-04 | srs-review-session    | rozpocząć sesję powtórkową SRS i zobaczyć, że system automatycznie planuje kolejną datę przeglądu po każdej odpowiedzi | F-01, S-01    | FR-010, FR-011, US-01                        | proposed |
 
 ## Streams
 
 Navigation aid — groups items that share a Prerequisites chain. Canonical ordering still lives in the dependency graph below; this table is the proposed reading order across parallel tracks.
 
-| Stream | Theme | Chain | Note |
-|---|---|---|---|
-| A | Krytyczna ścieżka AI | `F-01` → `S-01` → `S-02` | Gwiazda przewodnia; cel `speed` każe dotrzeć tu jak najszybciej. |
-| B | Ręczne CRUD fiszek | `S-03` | Dołącza do Streamu A przy `S-01`; równoległy z S-02 i S-04. |
-| C | Sesja SRS | `S-04` | Dołącza do Streamu A przy `S-01`; równoległy z S-02 i S-03. |
-| D | Pipeline deploymentu | `F-02` | Niezależna; nie blokuje żadnego slice'a, ale umożliwia release każdego z nich. |
+| Stream | Theme                | Chain                    | Note                                                                           |
+| ------ | -------------------- | ------------------------ | ------------------------------------------------------------------------------ |
+| A      | Krytyczna ścieżka AI | `F-01` → `S-01` → `S-02` | Gwiazda przewodnia; cel `speed` każe dotrzeć tu jak najszybciej.               |
+| B      | Ręczne CRUD fiszek   | `S-03`                   | Dołącza do Streamu A przy `S-01`; równoległy z S-02 i S-04.                    |
+| C      | Sesja SRS            | `S-04`                   | Dołącza do Streamu A przy `S-01`; równoległy z S-02 i S-03.                    |
+| D      | Pipeline deploymentu | `F-02`                   | Niezależna; nie blokuje żadnego slice'a, ale umożliwia release każdego z nich. |
 
 ## Baseline
 
@@ -141,14 +141,14 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Backlog Handoff
 
-| Roadmap ID | Change ID | Suggested issue title | Ready for `/10x-plan` | Notes |
-|---|---|---|---|---|
-| F-01 | data-schema-rls | Design and apply Supabase schema + RLS for flashcard_sets and flashcards | yes | Run `/10x-plan data-schema-rls` |
-| F-02 | deploy-pipeline | Wire GitHub Actions deploy job for Cloudflare Workers | yes | Run `/10x-plan deploy-pipeline`; parallel with F-01 |
-| S-01 | flashcard-sets-ui | Flashcard set management: create and browse sets | no | Requires F-01 done first |
-| S-02 | ai-generation-save | AI generation: paste text → preview cards → save to set | no | Requires F-01 + S-01 done; north star slice |
-| S-03 | manual-flashcard-crud | Manual flashcard CRUD: add, edit, delete cards in a set | no | Requires F-01 + S-01 done; parallel with S-02 |
-| S-04 | srs-review-session | SRS review session: start session + auto-schedule next review | no | Requires F-01 + S-01 done; decide SRS library before planning |
+| Roadmap ID | Change ID             | Suggested issue title                                                    | Ready for `/10x-plan` | Notes                                                         |
+| ---------- | --------------------- | ------------------------------------------------------------------------ | --------------------- | ------------------------------------------------------------- |
+| F-01       | data-schema-rls       | Design and apply Supabase schema + RLS for flashcard_sets and flashcards | yes                   | Run `/10x-plan data-schema-rls`                               |
+| F-02       | deploy-pipeline       | Wire GitHub Actions deploy job for Cloudflare Workers                    | yes                   | Run `/10x-plan deploy-pipeline`; parallel with F-01           |
+| S-01       | flashcard-sets-ui     | Flashcard set management: create and browse sets                         | no                    | Requires F-01 done first                                      |
+| S-02       |    | AI generation: paste text → preview cards → save to set    ai-generation-save               | no                    | Requires F-01 + S-01 done; north star slice                   |
+| S-03       | manual-flashcard-crud | Manual flashcard CRUD: add, edit, delete cards in a set                  | no                    | Requires F-01 + S-01 done; parallel with S-02                 |
+| S-04       | srs-review-session    | SRS review session: start session + auto-schedule next review            | no                    | Requires F-01 + S-01 done; decide SRS library before planning |
 
 ## Open Roadmap Questions
 

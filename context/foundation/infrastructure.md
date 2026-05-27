@@ -21,14 +21,14 @@ This repository already pins **`astro` ^6.3**, **`@astrojs/cloudflare` ^13.5**, 
 
 Scores use **Pass** / **Partial** / **Fail** per criterion in `.cursor/skills/10x-infra-research/references/agent-friendly-criteria.md`. Weights reflected: **neutral** cost vs DX; **no** prior vendor tie-breaker; **single region** (slight de-emphasis on “edge” as deciding factor alone); **external** data tier (no bonus for bundled DB).
 
-| Platform | CLI-first | Managed/serverless | Agent-readable docs | Stable deploy API | MCP / integration | Total (Pass=2, Partial=1) |
-|----------|-----------|---------------------|---------------------|-------------------|-------------------|----------------------------|
-| **Cloudflare Workers + Pages** | Pass | Pass | Pass | Pass | Pass | **10** |
-| **Netlify** | Pass | Pass | Pass | Pass | Pass | **10** |
-| **Vercel** | Pass | Pass | Pass | Pass | Partial | **9** |
-| **Fly.io** | Pass | Pass | Pass | Pass | Partial | **9** |
-| **Railway** | Pass | Pass | Pass | Pass | Partial | **9** |
-| **Render** | Partial | Pass | Pass | Pass | Partial | **8** |
+| Platform                       | CLI-first | Managed/serverless | Agent-readable docs | Stable deploy API | MCP / integration | Total (Pass=2, Partial=1) |
+| ------------------------------ | --------- | ------------------ | ------------------- | ----------------- | ----------------- | ------------------------- |
+| **Cloudflare Workers + Pages** | Pass      | Pass               | Pass                | Pass              | Pass              | **10**                    |
+| **Netlify**                    | Pass      | Pass               | Pass                | Pass              | Pass              | **10**                    |
+| **Vercel**                     | Pass      | Pass               | Pass                | Pass              | Partial           | **9**                     |
+| **Fly.io**                     | Pass      | Pass               | Pass                | Pass              | Partial           | **9**                     |
+| **Railway**                    | Pass      | Pass               | Pass                | Pass              | Partial           | **9**                     |
+| **Render**                     | Partial   | Pass               | Pass                | Pass              | Partial           | **8**                     |
 
 **Notes per platform:**
 
@@ -86,13 +86,13 @@ The team stayed on Cloudflare because the starter fit Day 1. Flashcard generatio
 
 ## Risk Register
 
-| Risk | Source | Likelihood | Impact | Mitigation |
-|------|--------|------------|--------|-------------|
-| CPU/time limits break generation or SSR under load | Devil's advocate | M | H | Profile hottest routes on target plan; shorten work in-request; stream; upgrade Workers plan early if needed |
-| Edge-incompatible npm package breaks build | Devil's advocate | M | H | Pin dependencies; CI `npm run build` gate; lint for Node-only APIs; test `astro build` locally |
-| Invoice line items from Worker product subsets (e.g. Dynamic Workers) mis-scoped | Unknown unknowns | L | M | Read current pricing docs at deploy date; tag routes/bindings that opt into previews |
-| OpenRouter timeouts or truncation vs PRD latency | Devil's advocate | M | H | Explicit fetch timeout + user-visible errors; chunked/streaming UX; circuit-break for provider faults |
-| Multi-vendor outage confusion (CF vs Supabase vs OpenRouter) | Devil's advocate | M | M | Synthetic checks per dependency; status page bookmarks; isolate logs per vendor |
+| Risk                                                                             | Source           | Likelihood | Impact | Mitigation                                                                                                   |
+| -------------------------------------------------------------------------------- | ---------------- | ---------- | ------ | ------------------------------------------------------------------------------------------------------------ |
+| CPU/time limits break generation or SSR under load                               | Devil's advocate | M          | H      | Profile hottest routes on target plan; shorten work in-request; stream; upgrade Workers plan early if needed |
+| Edge-incompatible npm package breaks build                                       | Devil's advocate | M          | H      | Pin dependencies; CI `npm run build` gate; lint for Node-only APIs; test `astro build` locally               |
+| Invoice line items from Worker product subsets (e.g. Dynamic Workers) mis-scoped | Unknown unknowns | L          | M      | Read current pricing docs at deploy date; tag routes/bindings that opt into previews                         |
+| OpenRouter timeouts or truncation vs PRD latency                                 | Devil's advocate | M          | H      | Explicit fetch timeout + user-visible errors; chunked/streaming UX; circuit-break for provider faults        |
+| Multi-vendor outage confusion (CF vs Supabase vs OpenRouter)                     | Devil's advocate | M          | M      | Synthetic checks per dependency; status page bookmarks; isolate logs per vendor                              |
 
 ## Getting Started
 

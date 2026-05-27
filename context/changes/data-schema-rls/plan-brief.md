@@ -17,16 +17,16 @@ Auth-only Supabase integration exists (SSR cookie client, middleware `getUser()`
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-| -------- | ------ | ------------------ | ------ |
-| SRS storage | JSONB `srs_state` + `due_at` | Library-agnostic until S-04; `due_at` supports session queries | Plan |
-| Set delete | CASCADE to cards | Matches user expectation; no orphan rows | Plan |
-| F-01 scope | Migration + RLS + `src/types.ts` only | Clean foundation per roadmap; no API/UI | Plan |
-| Set fields | `name` only | Satisfies FR-003/007 without extra columns | Plan |
-| Ownership RLS | `user_id` on sets; cards via set join | Single ownership source; no denormalized `user_id` on cards | Plan |
-| New card defaults | `due_at = now()`, `srs_state = '{}'` | Cards reviewable immediately (US-02) | Plan |
-| Card text | TEXT NOT NULL | PRD requires non-empty Q+A; no arbitrary cap | Plan |
-| Deploy migration | Local reset + documented remote push | CI has no DB secrets; operator pushes to cloud | Plan |
+| Decision          | Choice                                | Why (1 sentence)                                               | Source |
+| ----------------- | ------------------------------------- | -------------------------------------------------------------- | ------ |
+| SRS storage       | JSONB `srs_state` + `due_at`          | Library-agnostic until S-04; `due_at` supports session queries | Plan   |
+| Set delete        | CASCADE to cards                      | Matches user expectation; no orphan rows                       | Plan   |
+| F-01 scope        | Migration + RLS + `src/types.ts` only | Clean foundation per roadmap; no API/UI                        | Plan   |
+| Set fields        | `name` only                           | Satisfies FR-003/007 without extra columns                     | Plan   |
+| Ownership RLS     | `user_id` on sets; cards via set join | Single ownership source; no denormalized `user_id` on cards    | Plan   |
+| New card defaults | `due_at = now()`, `srs_state = '{}'`  | Cards reviewable immediately (US-02)                           | Plan   |
+| Card text         | TEXT NOT NULL                         | PRD requires non-empty Q+A; no arbitrary cap                   | Plan   |
+| Deploy migration  | Local reset + documented remote push  | CI has no DB secrets; operator pushes to cloud                 | Plan   |
 
 ## Scope
 
@@ -57,11 +57,11 @@ Server continues using anon key + user session; Postgres RLS is the enforcement 
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| ----- | ---------------- | -------- |
-| 1. Schema migration | Tables, FKs, indexes, defaults | Wrong column set forces follow-up migration |
-| 2. RLS policies | Owner-only CRUD for authenticated | Policy bug leaks or blocks legitimate access |
-| 3. Types, docs & verification | `src/types.ts`, README, lint/build | Docs drift if push steps omitted on cloud |
+| Phase                         | What it delivers                   | Key risk                                     |
+| ----------------------------- | ---------------------------------- | -------------------------------------------- |
+| 1. Schema migration           | Tables, FKs, indexes, defaults     | Wrong column set forces follow-up migration  |
+| 2. RLS policies               | Owner-only CRUD for authenticated  | Policy bug leaks or blocks legitimate access |
+| 3. Types, docs & verification | `src/types.ts`, README, lint/build | Docs drift if push steps omitted on cloud    |
 
 **Prerequisites:** Docker for local Supabase; `.env` / `.dev.vars` with Supabase URL + anon key for app (unchanged).
 

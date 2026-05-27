@@ -127,9 +127,9 @@ npx supabase migration list
 
 **Application tables** (see `src/types.ts` for TypeScript shapes):
 
-| Table            | Purpose                                      |
-| ---------------- | -------------------------------------------- |
-| `flashcard_sets` | Named sets owned by `auth.users`             |
+| Table            | Purpose                                              |
+| ---------------- | ---------------------------------------------------- |
+| `flashcard_sets` | Named sets owned by `auth.users`                     |
 | `flashcards`     | Q/A cards in a set; SRS fields `srs_state`, `due_at` |
 
 Row-level security restricts both tables to the authenticated owner (`flashcard_sets.user_id = auth.uid()`; cards via owned set).

@@ -9,15 +9,22 @@ interface Props {
   serverError?: string | null;
 }
 
+function formValue(formData: FormData, key: string): string {
+  const value = formData.get(key);
+  return typeof value === "string" ? value : "";
+}
+
 export default function SignInForm({ serverError }: Props) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
-  function validate() {
+  function validate(form: HTMLFormElement) {
+    const fd = new FormData(form);
+    const email = formValue(fd, "email").trim();
+    const password = formValue(fd, "password");
+
     const next: typeof errors = {};
-    if (!email.trim()) {
+    if (!email) {
       next.email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       next.email = "Enter a valid email address";
@@ -25,8 +32,7 @@ export default function SignInForm({ serverError }: Props) {
     if (!password) {
       next.password = "Password is required";
     }
-    setErrors(next);
-    return Object.keys(next).length === 0;
+    return next;
   }
 
   function clearError(field: keyof typeof errors) {
@@ -34,7 +40,9 @@ export default function SignInForm({ serverError }: Props) {
   }
 
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
-    if (!validate()) {
+    const next = validate(e.currentTarget);
+    setErrors(next);
+    if (Object.keys(next).length > 0) {
       e.preventDefault();
     }
   }
@@ -45,9 +53,8 @@ export default function SignInForm({ serverError }: Props) {
         id="email"
         type="email"
         label="Email"
-        value={email}
-        onChange={(v) => {
-          setEmail(v);
+        uncontrolled
+        onInput={() => {
           clearError("email");
         }}
         placeholder="you@example.com"
@@ -58,10 +65,9 @@ export default function SignInForm({ serverError }: Props) {
       <FormField
         id="password"
         label="Password"
-        type={showPassword ? "text" : "password"}
-        value={password}
-        onChange={(v) => {
-          setPassword(v);
+        uncontrolled
+        passwordVisible={showPassword}
+        onInput={() => {
           clearError("password");
         }}
         placeholder="Your password"
@@ -71,7 +77,7 @@ export default function SignInForm({ serverError }: Props) {
           <PasswordToggle
             visible={showPassword}
             onToggle={() => {
-              setShowPassword(!showPassword);
+              setShowPassword((prev) => !prev);
             }}
           />
         }

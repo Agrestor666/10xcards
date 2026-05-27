@@ -58,13 +58,16 @@ Rejestracja i logowanie przez email + hasło. Model płaski — każdy zarejestr
 ## Success Criteria
 
 ### Primary
+
 - ≥75% fiszek wygenerowanych automatycznie przez AI jest akceptowanych przez użytkownika bez poprawek lub z minimalną edycją — dowód na jakość generowania.
 
 ### Secondary
+
 - ≥75% wszystkich fiszek w systemie powstaje przy użyciu modułu AI (dowód, że użytkownicy wolą automatyzację od ręcznego wpisywania).
 - ≥30% zarejestrowanych użytkowników wraca w ciągu pierwszych 14 dni, aby przejść sesję powtórkową (walidacja przydatności silnika SRS).
 
 ### Guardrails
+
 - Tekst wklejony przez użytkownika nie jest przechowywany w żadnym dostępnym storage po zakończeniu żądania AI.
 - Zestawy fiszek użytkownika nie mogą ulec utracie w wyniku błędu systemu.
 - Generowanie fiszek przez AI musi zakończyć się w < 10 sekund dla typowego tekstu (≤ ~1500 słów), tak by oczekiwanie nie przerywało przepływu nauki.
@@ -97,6 +100,7 @@ The application extracts key knowledge from raw text and produces structured que
 - **Then** they see a list of AI-generated Q+A pairs, can accept / edit / delete individual cards, save the accepted cards to their set, and start a review session immediately
 
 #### Acceptance Criteria
+
 - AI generates at least one Q+A pair for any text of ≥ 100 words
 - Each generated card shows question and answer separately before saving
 - User can edit question or answer inline before saving
@@ -111,6 +115,7 @@ The application extracts key knowledge from raw text and produces structured que
 - **Then** the card is saved to the set and available in the next review session
 
 #### Acceptance Criteria
+
 - Form requires both question and answer fields (non-empty)
 - Card appears in the set list immediately after saving
 
@@ -156,6 +161,7 @@ The application extracts key knowledge from raw text and produces structured que
 - **No native mobile apps** — web-only in MVP; no App Store / Google Play releases. The web app is mobile-browser-responsive.
 
 ## Timeline acknowledgment
+
 Acknowledged on 2026-05-21: ~12-week MVP (3 months, mixed after-hours/day-job); user explicitly accepted the sustained-effort cost of a longer timeline.
 
 ## Open Questions

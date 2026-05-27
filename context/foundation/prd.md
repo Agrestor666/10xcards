@@ -34,13 +34,16 @@ Modele językowe obniżają koszt ekstrakcji wiedzy do zera — to, co zajmował
 ## Success Criteria
 
 ### Primary
+
 - ≥75% fiszek wygenerowanych automatycznie jest akceptowanych przez użytkownika bez poprawek lub z minimalną edycją — dowód na jakość generowania.
 
 ### Secondary
+
 - ≥75% wszystkich fiszek w systemie powstaje przy użyciu modułu generowania (dowód, że użytkownicy wolą automatyzację od ręcznego wpisywania).
 - ≥30% zarejestrowanych użytkowników wraca w ciągu pierwszych 14 dni, aby przejść sesję powtórkową (walidacja przydatności silnika SRS).
 
 ### Guardrails
+
 - Tekst wklejony przez użytkownika nie jest przechowywany w żadnym dostępnym storage po zakończeniu żądania generowania.
 - Zestawy fiszek użytkownika nie mogą ulec utracie w wyniku błędu systemu.
 - Generowanie fiszek musi zakończyć się w < 10 sekund dla typowego tekstu (≤ ~1500 słów), tak by oczekiwanie nie przerywało przepływu nauki.
@@ -54,6 +57,7 @@ Modele językowe obniżają koszt ekstrakcji wiedzy do zera — to, co zajmował
 - **Then** they see a list of generated Q+A pairs, can accept / edit / delete individual cards, save the accepted cards to their set, and start a review session immediately
 
 #### Acceptance Criteria
+
 - At least one Q+A pair is generated for any text of ≥ 100 words
 - Each generated card shows question and answer separately before saving
 - User can edit question or answer inline before saving
@@ -68,6 +72,7 @@ Modele językowe obniżają koszt ekstrakcji wiedzy do zera — to, co zajmował
 - **Then** the card is saved to the set and available in the next review session
 
 #### Acceptance Criteria
+
 - Form requires both question and answer fields (non-empty)
 - Card appears in the set list immediately after saving
 

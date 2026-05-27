@@ -11,18 +11,26 @@ interface Props {
   serverError?: string | null;
 }
 
+function formValue(formData: FormData, key: string): string {
+  const value = formData.get(key);
+  return typeof value === "string" ? value : "";
+}
+
 export default function SignUpForm({ serverError }: Props) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
+  const [passwordLengthHint, setPasswordLengthHint] = useState(0);
 
-  function validate() {
+  function validate(form: HTMLFormElement) {
+    const fd = new FormData(form);
+    const email = formValue(fd, "email").trim();
+    const password = formValue(fd, "password");
+    const confirmPassword = formValue(fd, "confirmPassword");
+
     const next: typeof errors = {};
 
-    if (!email.trim()) {
+    if (!email) {
       next.email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       next.email = "Enter a valid email address";
@@ -40,8 +48,7 @@ export default function SignUpForm({ serverError }: Props) {
       next.confirmPassword = "Passwords do not match";
     }
 
-    setErrors(next);
-    return Object.keys(next).length === 0;
+    return next;
   }
 
   function clearError(field: keyof typeof errors) {
@@ -49,16 +56,18 @@ export default function SignUpForm({ serverError }: Props) {
   }
 
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
-    if (!validate()) {
+    const next = validate(e.currentTarget);
+    setErrors(next);
+    if (Object.keys(next).length > 0) {
       e.preventDefault();
     }
   }
 
   const passwordHint =
-    !errors.password && password.length > 0 && password.length < MIN_PASSWORD_LENGTH ? (
+    !errors.password && passwordLengthHint > 0 && passwordLengthHint < MIN_PASSWORD_LENGTH ? (
       <p className="mt-1 text-xs text-blue-100/50">
-        {MIN_PASSWORD_LENGTH - password.length} more character
-        {MIN_PASSWORD_LENGTH - password.length !== 1 ? "s" : ""} needed
+        {MIN_PASSWORD_LENGTH - passwordLengthHint} more character
+        {MIN_PASSWORD_LENGTH - passwordLengthHint !== 1 ? "s" : ""} needed
       </p>
     ) : undefined;
 
@@ -68,9 +77,8 @@ export default function SignUpForm({ serverError }: Props) {
         id="email"
         type="email"
         label="Email"
-        value={email}
-        onChange={(v) => {
-          setEmail(v);
+        uncontrolled
+        onInput={() => {
           clearError("email");
         }}
         placeholder="you@example.com"
@@ -81,11 +89,11 @@ export default function SignUpForm({ serverError }: Props) {
       <FormField
         id="password"
         label="Password"
-        type={showPassword ? "text" : "password"}
-        value={password}
-        onChange={(v) => {
-          setPassword(v);
+        uncontrolled
+        passwordVisible={showPassword}
+        onInput={(e) => {
           clearError("password");
+          setPasswordLengthHint(e.currentTarget.value.length);
         }}
         placeholder="Min. 6 characters"
         error={errors.password}
@@ -95,7 +103,7 @@ export default function SignUpForm({ serverError }: Props) {
           <PasswordToggle
             visible={showPassword}
             onToggle={() => {
-              setShowPassword(!showPassword);
+              setShowPassword((prev) => !prev);
             }}
           />
         }
@@ -105,10 +113,9 @@ export default function SignUpForm({ serverError }: Props) {
         id="confirmPassword"
         name="confirmPassword"
         label="Confirm password"
-        type={showConfirmPassword ? "text" : "password"}
-        value={confirmPassword}
-        onChange={(v) => {
-          setConfirmPassword(v);
+        uncontrolled
+        passwordVisible={showConfirmPassword}
+        onInput={() => {
           clearError("confirmPassword");
         }}
         placeholder="Re-enter your password"
@@ -118,7 +125,7 @@ export default function SignUpForm({ serverError }: Props) {
           <PasswordToggle
             visible={showConfirmPassword}
             onToggle={() => {
-              setShowConfirmPassword(!showConfirmPassword);
+              setShowConfirmPassword((prev) => !prev);
             }}
           />
         }

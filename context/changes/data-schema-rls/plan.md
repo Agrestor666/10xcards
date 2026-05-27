@@ -271,4 +271,4 @@ Expose schema-shaped TypeScript types for downstream slices and update project d
 #### Manual
 
 - [x] 3.4 README documents local migration and remote push workflow
-- [ ] 3.5 Human sign-off: F-01 ready for `/10x-implement flashcard-sets-ui` (S-01)
+- [x] 3.5 Human sign-off: F-01 ready for `/10x-implement flashcard-sets-ui` (S-01)
