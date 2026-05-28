@@ -316,9 +316,9 @@ Load card counts server-side, mount the island on `/dashboard`, and verify prese
 
 #### Automated
 
-- [x] 3.1 Lint passes: `npm run lint`
-- [x] 3.2 Build passes: `npm run build`
+- [x] 3.1 Lint passes: `npm run lint` — c38224c
+- [x] 3.2 Build passes: `npm run build` — c38224c
 
 #### Manual
 
-- [x] 3.3 Dashboard E2E + deleted-set URL + preserved flows (create, cards, SRS, AI)
+- [x] 3.3 Dashboard E2E + deleted-set URL + preserved flows (create, cards, SRS, AI) — c38224c
