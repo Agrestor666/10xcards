@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { CircleAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -40,16 +40,15 @@ export function FormField({
   onChange,
   onInput,
 }: FormFieldProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (passwordVisible === undefined || !inputRef.current) {
-      return;
-    }
-    inputRef.current.type = passwordVisible ? "text" : "password";
-  }, [passwordVisible]);
-
   const inputType = passwordVisible !== undefined ? (passwordVisible ? "text" : "password") : type;
+  const autoComplete =
+    id === "email"
+      ? "email"
+      : id === "password"
+        ? "current-password"
+        : id === "confirmPassword"
+          ? "new-password"
+          : undefined;
 
   return (
     <div>
@@ -59,10 +58,10 @@ export function FormField({
       <div className="relative">
         <span className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-white/40">{icon}</span>
         <input
-          ref={inputRef}
           id={id}
           name={name ?? id}
           type={inputType}
+          autoComplete={autoComplete}
           {...(uncontrolled
             ? { defaultValue: "" }
             : {
@@ -75,11 +74,15 @@ export function FormField({
           placeholder={placeholder}
           className={cn(
             inputBase,
-            endContent && "pr-10",
+            endContent && "pr-11",
             error ? "border-red-400/60 focus:ring-red-400" : "border-white/20 focus:ring-purple-400",
           )}
         />
-        {endContent}
+        {endContent ? (
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-20 flex items-center pr-1">
+            <div className="pointer-events-auto">{endContent}</div>
+          </div>
+        ) : null}
       </div>
       {error ? (
         <p className="mt-1 flex items-center gap-1 text-xs text-red-300">
