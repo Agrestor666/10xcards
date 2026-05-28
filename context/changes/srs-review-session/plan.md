@@ -296,8 +296,8 @@ Note: This repo currently has no dedicated test runner scripts; for S-04 MVP the
 
 #### Manual
 
-- [x] 2.3 `GET /api/srs/due?setId=...` returns due/empty correctly
-- [x] 2.4 `POST /api/srs/grade` updates `due_at` + `srs_state` and advances session
+- [x] 2.3 `GET /api/srs/due?setId=...` returns due/empty correctly — 5ee27c5
+- [x] 2.4 `POST /api/srs/grade` updates `due_at` + `srs_state` and advances session — 5ee27c5
 
 ### Phase 3: Review session page + React island UI
 
