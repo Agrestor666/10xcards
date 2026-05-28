@@ -303,9 +303,9 @@ Note: This repo currently has no dedicated test runner scripts; for S-04 MVP the
 
 #### Automated
 
-- [x] 3.1 `npm run build` (type-check)
-- [x] 3.2 `npm run lint`
+- [x] 3.1 `npm run build` (type-check) — ad07644
+- [x] 3.2 `npm run lint` — ad07644
 
 #### Manual
 
-- [x] 3.3 Full session flow: show answer → rate → next card / empty state
+- [x] 3.3 Full session flow: show answer → rate → next card / empty state — ad07644

@@ -1,7 +1,7 @@
 ---
 change_id: srs-review-session
 title: SRS review session with auto-scheduled next review
-status: implementing
+status: implemented
 created: 2026-05-27
 updated: 2026-05-28
 archived_at: null
