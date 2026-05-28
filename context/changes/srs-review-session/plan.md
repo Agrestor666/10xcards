@@ -280,24 +280,24 @@ Note: This repo currently has no dedicated test runner scripts; for S-04 MVP the
 
 #### Automated
 
-- [x] 1.1 `npm run build` (type-check)
-- [x] 1.2 `npm run lint`
+- [x] 1.1 `npm run build` (type-check) — f186d96
+- [x] 1.2 `npm run lint` — f186d96
 
 #### Manual
 
-- [x] 1.3 Hit an API route importing SRS modules without runtime errors
+- [x] 1.3 Hit an API route importing SRS modules without runtime errors — f186d96
 
 ### Phase 2: API endpoints for due fetch + grading persistence
 
 #### Automated
 
-- [ ] 2.1 `npm run build` (type-check)
-- [ ] 2.2 `npm run lint`
+- [x] 2.1 `npm run build` (type-check)
+- [x] 2.2 `npm run lint`
 
 #### Manual
 
-- [ ] 2.3 `GET /api/srs/due?setId=...` returns due/empty correctly
-- [ ] 2.4 `POST /api/srs/grade` updates `due_at` + `srs_state` and advances session
+- [x] 2.3 `GET /api/srs/due?setId=...` returns due/empty correctly
+- [x] 2.4 `POST /api/srs/grade` updates `due_at` + `srs_state` and advances session
 
 ### Phase 3: Review session page + React island UI
 

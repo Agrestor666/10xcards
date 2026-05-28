@@ -18,7 +18,7 @@ function toFsrsRating(rating: GradeRating): Rating {
 }
 
 export function gradeCard(input: PersistedSrs, now: Date, rating: GradeRating): PersistedSrs {
-  const card = toFsrsCard(input, now);
+  const card = toFsrsCard(input, now, { strict: true });
   const result = scheduler.next(card, now, toFsrsRating(rating));
   return toPersistedSchedule(result.card);
 }

@@ -3,6 +3,7 @@ import { jsonResponse } from "@/lib/api-json";
 import { SUPABASE_NOT_CONFIGURED_MESSAGE } from "@/lib/flashcard-set-errors";
 import { createClient } from "@/lib/supabase";
 import { scheduler } from "@/lib/srs/scheduler";
+import { createEmptyCard, Rating } from "ts-fsrs";
 
 export const prerender = false;
 
@@ -21,5 +22,12 @@ export const GET: APIRoute = async (context) => {
     return jsonResponse({ ok: false, message: "Please sign in to continue." }, 401);
   }
 
-  return jsonResponse({ ok: true, hasNext: typeof scheduler.next === "function" });
+  try {
+    const now = new Date();
+    scheduler.next(createEmptyCard(now), now, Rating.Good);
+    return jsonResponse({ ok: true });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return jsonResponse({ ok: false, message }, 500);
+  }
 };
