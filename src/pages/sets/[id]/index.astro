@@ -11,6 +11,7 @@ if (loaded.kind === "redirect") {
 }
 
 const { set: setRow, initialCards, cardsLoadError } = loaded;
+const reviewUrl = `/sets/${setRow.id}/review`;
 ---
 
 <Layout title={setRow.name}>
@@ -25,6 +26,15 @@ const { set: setRow, initialCards, cardsLoadError } = loaded;
           {setRow.name}
         </h1>
         {cardsLoadError && <p class="mt-2 text-sm text-red-100">Could not load cards. Please refresh.</p>}
+
+        <div class="mt-5 flex flex-wrap items-center gap-3">
+          <a
+            href={reviewUrl}
+            class="inline-flex items-center justify-center rounded-xl bg-purple-500/60 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-500/70 focus-visible:ring-2 focus-visible:ring-purple-300/40 focus-visible:outline-none"
+          >
+            Start review
+          </a>
+        </div>
       </header>
 
       <SetFlashcardsManager client:load setId={setRow.id} setName={setRow.name} initialCards={initialCards} />
