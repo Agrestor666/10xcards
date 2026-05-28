@@ -1,7 +1,8 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import Topbar from "@/components/Topbar.astro";
-import type { FlashcardSet } from "@/types";
+import { SetDashboardList } from "@/components/sets/SetDashboardList";
+import type { DashboardSetRow, FlashcardSet } from "@/types";
 import { SUPABASE_NOT_CONFIGURED_MESSAGE } from "@/lib/flashcard-set-errors";
 import { createClient } from "@/lib/supabase";
 import { FlashcardGenerator } from "@/components/generator/FlashcardGenerator";
@@ -13,6 +14,7 @@ const errorMessage = Astro.url.searchParams.get("error");
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 
 let sets: Pick<FlashcardSet, "id" | "name" | "created_at" | "updated_at">[] = [];
+let dashboardSets: DashboardSetRow[] = [];
 let setsLoadError: string | null = null;
 
 if (!supabase) {
@@ -20,13 +22,30 @@ if (!supabase) {
 } else {
   const { data, error } = await supabase
     .from("flashcard_sets")
-    .select("id,name,created_at,updated_at")
+    .select("id,name,created_at,updated_at,flashcards(count)")
     .order("updated_at", { ascending: false });
 
   if (error) {
     setsLoadError = "Could not load your sets. Please refresh.";
   } else {
-    sets = data;
+    type SetWithCardCount = Pick<FlashcardSet, "id" | "name" | "created_at" | "updated_at"> & {
+      flashcards: { count: number }[];
+    };
+    const rows = data as SetWithCardCount[];
+
+    sets = rows.map(({ id, name, created_at, updated_at }) => ({
+      id,
+      name,
+      created_at,
+      updated_at,
+    }));
+    dashboardSets = rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+      card_count: row.flashcards[0]?.count ?? 0,
+    }));
   }
 }
 ---
@@ -77,31 +96,9 @@ if (!supabase) {
 
       <section class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
         <h2 class="text-lg font-semibold text-white">All sets</h2>
-
-        {
-          sets.length === 0 ? (
-            <div class="mt-4 rounded-xl border border-white/10 bg-white/5 px-4 py-6 text-sm text-blue-100/70">
-              You don’t have any sets yet. Create your first one above.
-            </div>
-          ) : (
-            <ul class="mt-4 divide-y divide-white/10 overflow-hidden rounded-xl border border-white/10 bg-white/5">
-              {sets.map((set) => (
-                <li class="flex items-center justify-between gap-3 px-4 py-3">
-                  <div class="flex flex-col">
-                    <a
-                      href={`/sets/${set.id}`}
-                      class="font-medium text-white transition-colors hover:text-purple-200 hover:underline focus:text-purple-200 focus:underline focus:outline-none"
-                    >
-                      {set.name}
-                    </a>
-                    <span class="mt-1 font-mono text-[11px] text-blue-100/60">{set.id}</span>
-                  </div>
-                  <span class="text-xs text-blue-100/50">Updated {new Date(set.updated_at).toLocaleDateString()}</span>
-                </li>
-              ))}
-            </ul>
-          )
-        }
+        <div class="mt-4">
+          <SetDashboardList client:load initialSets={dashboardSets} />
+        </div>
       </section>
     </div>
   </div>

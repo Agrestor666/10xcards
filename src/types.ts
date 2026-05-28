@@ -19,6 +19,11 @@ export interface Flashcard {
   updated_at: string;
 }
 
+/** Dashboard list row with embedded card count for delete confirmation copy. */
+export type DashboardSetRow = Pick<FlashcardSet, "id" | "name" | "created_at" | "updated_at"> & {
+  card_count: number;
+};
+
 export type FlashcardSetInsert = Pick<FlashcardSet, "user_id" | "name">;
 
 export type FlashcardInsert = Pick<Flashcard, "set_id" | "question" | "answer"> &

@@ -294,23 +294,23 @@ Load card counts server-side, mount the island on `/dashboard`, and verify prese
 
 #### Automated
 
-- [x] 1.1 Lint passes: `npm run lint`
-- [x] 1.2 Build passes: `npm run build`
+- [x] 1.1 Lint passes: `npm run lint` — 3c7857e
+- [x] 1.2 Build passes: `npm run build` — 3c7857e
 
 #### Manual
 
-- [x] 1.3 Manual API checks for update/delete (auth, validation, RLS, cascade)
+- [x] 1.3 Manual API checks for update/delete (auth, validation, RLS, cascade) — 3c7857e
 
 ### Phase 2: Dashboard list island + AlertDialog
 
 #### Automated
 
-- [ ] 2.1 Lint passes: `npm run lint`
-- [ ] 2.2 Build passes: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint`
+- [x] 2.2 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 2.3 Inline rename and empty/non-empty delete flows in UI
+- [x] 2.3 Inline rename and empty/non-empty delete flows in UI
 
 ### Phase 3: Wire dashboard SSR + regression checks
 
