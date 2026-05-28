@@ -92,12 +92,13 @@ if (!supabase) {
         <p class="mt-3 text-xs text-blue-100/60">Name must be 1–80 characters.</p>
       </section>
 
+      {/* AI generator set list is SSR-only on first paint; refresh after rename/delete to sync dropdown. */}
       <FlashcardGenerator client:load sets={sets.map((s) => ({ id: s.id, name: s.name }))} />
 
       <section class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
         <h2 class="text-lg font-semibold text-white">All sets</h2>
         <div class="mt-4">
-          <SetDashboardList client:load initialSets={dashboardSets} />
+          {!setsLoadError && <SetDashboardList client:load initialSets={dashboardSets} />}
         </div>
       </section>
     </div>

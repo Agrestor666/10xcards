@@ -305,20 +305,20 @@ Load card counts server-side, mount the island on `/dashboard`, and verify prese
 
 #### Automated
 
-- [x] 2.1 Lint passes: `npm run lint`
-- [x] 2.2 Build passes: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint` — 3a9b39c
+- [x] 2.2 Build passes: `npm run build` — 3a9b39c
 
 #### Manual
 
-- [x] 2.3 Inline rename and empty/non-empty delete flows in UI
+- [x] 2.3 Inline rename and empty/non-empty delete flows in UI — 3a9b39c
 
 ### Phase 3: Wire dashboard SSR + regression checks
 
 #### Automated
 
-- [ ] 3.1 Lint passes: `npm run lint`
-- [ ] 3.2 Build passes: `npm run build`
+- [x] 3.1 Lint passes: `npm run lint`
+- [x] 3.2 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 3.3 Dashboard E2E + deleted-set URL + preserved flows (create, cards, SRS, AI)
+- [x] 3.3 Dashboard E2E + deleted-set URL + preserved flows (create, cards, SRS, AI)
