@@ -1,41 +1,16 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import Topbar from "@/components/Topbar.astro";
-import { z } from "zod";
-import { SUPABASE_NOT_CONFIGURED_MESSAGE } from "@/lib/flashcard-set-errors";
-import { createClient } from "@/lib/supabase";
+import { loadSetMetaPage } from "@/lib/load-set-detail";
 import { ReviewSession } from "@/components/srs/ReviewSession";
 
-const rawId = Astro.params.id;
-if (!rawId || !z.uuid().safeParse(rawId).success) {
-  return Astro.redirect(`/dashboard?error=${encodeURIComponent("Invalid set")}`);
+const loaded = await loadSetMetaPage(Astro.params.id, Astro.request.headers, Astro.cookies);
+
+if (loaded.kind === "redirect") {
+  return Astro.redirect(loaded.url);
 }
 
-const supabase = createClient(Astro.request.headers, Astro.cookies);
-if (!supabase) {
-  return Astro.redirect(`/dashboard?error=${encodeURIComponent(SUPABASE_NOT_CONFIGURED_MESSAGE)}`);
-}
-
-const { data: setRow, error: setError } = await supabase
-  .from("flashcard_sets")
-  .select("id,name")
-  .eq("id", rawId)
-  .maybeSingle();
-
-if (setError || !setRow) {
-  return Astro.redirect(`/dashboard?error=${encodeURIComponent("Set not found")}`);
-}
-
-const setMetaSchema = z.object({
-  id: z.uuid(),
-  name: z.string(),
-});
-const parsedSet = setMetaSchema.safeParse(setRow);
-if (!parsedSet.success) {
-  return Astro.redirect(`/dashboard?error=${encodeURIComponent("Set not found")}`);
-}
-
-const setMeta = parsedSet.data;
+const setMeta = loaded.set;
 ---
 
 <Layout title={`Review — ${setMeta.name}`}>

@@ -30,6 +30,7 @@ const updatedSchema: z.ZodType<UpdatedRow> = z.object({
 });
 
 const gradeBodySchema = z.object({
+  setId: z.uuid(),
   cardId: z.uuid(),
   rating: z.enum(["again", "hard", "good", "easy"]) satisfies z.ZodType<GradeRating>,
 });
@@ -65,6 +66,7 @@ export const POST: APIRoute = async (context) => {
     .from("flashcards")
     .select("id, due_at, srs_state")
     .eq("id", parsed.data.cardId)
+    .eq("set_id", parsed.data.setId)
     .maybeSingle();
 
   if (cardResult.error) {
@@ -82,14 +84,19 @@ export const POST: APIRoute = async (context) => {
   }
 
   const now = new Date();
-  const persisted = gradeCard(
-    {
-      due_at: cardRow.due_at ?? now.toISOString(),
-      srs_state: (cardRow.srs_state ?? {}) as Record<string, unknown>,
-    },
-    now,
-    parsed.data.rating,
-  );
+  let persisted;
+  try {
+    persisted = gradeCard(
+      {
+        due_at: cardRow.due_at ?? now.toISOString(),
+        srs_state: (cardRow.srs_state ?? {}) as Record<string, unknown>,
+      },
+      now,
+      parsed.data.rating,
+    );
+  } catch {
+    return jsonResponse({ ok: false, message: "Invalid card schedule state." }, 400);
+  }
 
   const updateResult = await supabase
     .from("flashcards")
@@ -99,6 +106,7 @@ export const POST: APIRoute = async (context) => {
       updated_at: now.toISOString(),
     })
     .eq("id", parsed.data.cardId)
+    .eq("set_id", parsed.data.setId)
     .select("id, due_at")
     .maybeSingle();
 

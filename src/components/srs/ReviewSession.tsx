@@ -130,7 +130,7 @@ export function ReviewSession({ setId, setName }: { setId: string; setName: stri
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cardId: card.id, rating }),
+        body: JSON.stringify({ setId, cardId: card.id, rating }),
       });
 
       const body = await parseJson<GradeResponse>(res);
@@ -191,6 +191,12 @@ export function ReviewSession({ setId, setName }: { setId: string; setName: stri
           ) : (
             <p className="text-sm text-blue-100/70">No upcoming cards scheduled yet.</p>
           )}
+          <a
+            href={`/sets/${setId}`}
+            className="text-sm text-purple-300 transition-colors hover:text-purple-100 hover:underline"
+          >
+            ← Back to set
+          </a>
         </div>
       ) : (
         <div className="mt-4 grid gap-4">

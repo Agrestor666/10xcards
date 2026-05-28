@@ -291,8 +291,8 @@ Note: This repo currently has no dedicated test runner scripts; for S-04 MVP the
 
 #### Automated
 
-- [x] 2.1 `npm run build` (type-check)
-- [x] 2.2 `npm run lint`
+- [x] 2.1 `npm run build` (type-check) — 5ee27c5
+- [x] 2.2 `npm run lint` — 5ee27c5
 
 #### Manual
 
