@@ -15,3 +15,19 @@ export function flashcardSetCreateErrorMessage(error: { code?: string }): string
 
   return "Could not create set. Please try again.";
 }
+
+export function flashcardSetUpdateErrorMessage(error: { code?: string }): string {
+  if (error.code === POSTGRES_PERMISSION_DENIED) {
+    return "Could not rename set. You do not have permission to edit it.";
+  }
+
+  return "Could not rename set. Please try again.";
+}
+
+export function flashcardSetDeleteErrorMessage(error: { code?: string }): string {
+  if (error.code === POSTGRES_PERMISSION_DENIED) {
+    return "Could not delete set. You do not have permission to delete it.";
+  }
+
+  return "Could not delete set. Please try again.";
+}
