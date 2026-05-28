@@ -1,7 +1,7 @@
 ---
 change_id: set-dashboard-lifecycle
 title: Set dashboard lifecycle
-status: implemented
+status: impl_reviewed
 created: 2026-05-28
 updated: 2026-05-28
 archived_at: null
@@ -12,6 +12,10 @@ archived_at: null
 ### FlashcardGenerator (MVP)
 
 The dashboard list (`SetDashboardList`) updates in client state after rename/delete. The AI generator dropdown still receives `sets` from SSR on first paint — **refresh the page** to sync generator options after lifecycle changes. Intentional for this slice (see plan Phase 3).
+
+### Stale card count (MVP)
+
+`card_count` on the dashboard list is also an SSR snapshot. If you add or remove cards on `/sets/<id>` and return to the dashboard **without reloading**, the delete modal may show the wrong count (e.g. skip modal when cards were added elsewhere). Cascade delete at the DB level still removes all cards — refresh the dashboard to sync counts before delete.
 
 ### Manual regression checklist (Phase 3)
 
