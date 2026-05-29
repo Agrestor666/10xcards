@@ -3,7 +3,7 @@ change_id: study-hub-ui
 title: Study hub ui
 status: implementing
 created: 2026-05-29
-updated: 2026-05-29
+updated: 2026-05-30
 archived_at: null
 ---
 

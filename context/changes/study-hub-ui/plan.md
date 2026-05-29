@@ -429,13 +429,13 @@ No data migration. Deploy is UI-only.
 
 #### Automated
 
-- [x] 2.1 Lint passes: `npm run lint`
-- [x] 2.2 Build passes: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint` — 5fbc080
+- [x] 2.2 Build passes: `npm run build` — 5fbc080
 
 #### Manual
 
-- [x] 2.3 Due hero and per-tile due counts match review session for at least one set
-- [x] 2.4 Study, + New set, ⋯ rename/delete, and AI save sync work without regression
+- [x] 2.3 Due hero and per-tile due counts match review session for at least one set — 5fbc080
+- [x] 2.4 Study, + New set, ⋯ rename/delete, and AI save sync work without regression — 5fbc080
 
 ### Phase 3: Landing and set detail
 
