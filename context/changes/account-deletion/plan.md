@@ -309,25 +309,25 @@ Document deployment secrets and run a short cross-feature smoke test so account 
 
 #### Automated
 
-- [x] 1.1 Lint passes: `npm run lint`
-- [x] 1.2 Build passes: `npm run build`
+- [x] 1.1 Lint passes: `npm run lint` — 8fbff63
+- [x] 1.2 Build passes: `npm run build` — 8fbff63
 
 #### Manual
 
-- [x] 1.3 Authenticated POST with `{ "confirm": "DELETE" }` returns `{ ok: true }` and removes user + cascaded data
-- [x] 1.4 Invalid body, no session, and missing service role return 400 / 401 / 503 respectively
+- [x] 1.3 Authenticated POST with `{ "confirm": "DELETE" }` returns `{ ok: true }` and removes user + cascaded data — 8fbff63
+- [x] 1.4 Invalid body, no session, and missing service role return 400 / 401 / 503 respectively — 8fbff63
 
 ### Phase 2: Settings page + danger zone UI
 
 #### Automated
 
-- [ ] 2.1 Lint passes: `npm run lint`
-- [ ] 2.2 Build passes: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint`
+- [x] 2.2 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 2.3 Settings link, protected `/settings`, dialog with counts, typed DELETE gate, redirect after success
-- [ ] 2.4 Second user data unchanged after first user deleted
+- [x] 2.3 Settings link, protected `/settings`, dialog with counts, typed DELETE gate, redirect after success
+- [x] 2.4 Second user data unchanged after first user deleted
 
 ### Phase 3: Env wiring docs + regression checklist
 
