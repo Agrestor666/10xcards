@@ -1,5 +1,10 @@
 import * as React from "react";
-import { DASHBOARD_SET_CARDS_ADDED, type DashboardSetCardsAddedDetail } from "@/lib/dashboard-set-sync";
+import {
+  DASHBOARD_SET_CARDS_ADDED,
+  DASHBOARD_SET_DELETED,
+  type DashboardSetCardsAddedDetail,
+  type DashboardSetDeletedDetail,
+} from "@/lib/dashboard-set-sync";
 import { cn } from "@/lib/utils";
 import { NewSetDialog } from "@/components/dashboard/NewSetDialog";
 
@@ -13,9 +18,16 @@ export function StudyHero({ initialTotalDue, hasSets }: { initialTotalDue: numbe
       setTotalDue((prev) => prev + dueDelta);
     }
 
+    function onSetDeleted(event: Event) {
+      const detail = (event as CustomEvent<DashboardSetDeletedDetail>).detail;
+      setTotalDue((prev) => Math.max(0, prev - detail.dueCount));
+    }
+
     window.addEventListener(DASHBOARD_SET_CARDS_ADDED, onCardsAdded);
+    window.addEventListener(DASHBOARD_SET_DELETED, onSetDeleted);
     return () => {
       window.removeEventListener(DASHBOARD_SET_CARDS_ADDED, onCardsAdded);
+      window.removeEventListener(DASHBOARD_SET_DELETED, onSetDeleted);
     };
   }, []);
 

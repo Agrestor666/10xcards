@@ -1,9 +1,10 @@
 ---
 change_id: study-hub-ui
 title: Study hub ui
-status: implementing
+status: impl_reviewed
 created: 2026-05-29
-updated: 2026-05-30
+updated: 2026-05-29
+phase1_reverified: 2026-05-29
 archived_at: null
 ---
 

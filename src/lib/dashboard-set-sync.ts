@@ -12,3 +12,14 @@ export interface DashboardSetCardsAddedDetail {
 export function dispatchDashboardSetCardsAdded(detail: DashboardSetCardsAddedDetail): void {
   window.dispatchEvent(new CustomEvent(DASHBOARD_SET_CARDS_ADDED, { detail }));
 }
+
+export const DASHBOARD_SET_DELETED = "dashboard-set-deleted";
+
+export interface DashboardSetDeletedDetail {
+  setId: string;
+  dueCount: number;
+}
+
+export function dispatchDashboardSetDeleted(detail: DashboardSetDeletedDetail): void {
+  window.dispatchEvent(new CustomEvent(DASHBOARD_SET_DELETED, { detail }));
+}

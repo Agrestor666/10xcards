@@ -11,9 +11,20 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { NewSetDialog } from "@/components/dashboard/NewSetDialog";
-import { DASHBOARD_SET_CARDS_ADDED, type DashboardSetCardsAddedDetail } from "@/lib/dashboard-set-sync";
+import {
+  DASHBOARD_SET_CARDS_ADDED,
+  dispatchDashboardSetDeleted,
+  type DashboardSetCardsAddedDetail,
+} from "@/lib/dashboard-set-sync";
 import { cn } from "@/lib/utils";
 import type { DashboardSetRow } from "@/types";
 
@@ -58,71 +69,31 @@ function SetTileMenu({
   onRename: () => void;
   onDelete: () => void;
 }) {
-  const [open, setOpen] = React.useState(false);
-  const rootRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    if (!open) return;
-
-    function onPointerDown(event: MouseEvent) {
-      if (!rootRef.current?.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-
-    document.addEventListener("mousedown", onPointerDown);
-    return () => {
-      document.removeEventListener("mousedown", onPointerDown);
-    };
-  }, [open]);
-
   return (
-    <div ref={rootRef} className="relative">
-      <Button
-        type="button"
-        variant="outline"
-        size="icon"
-        disabled={disabled}
-        aria-label={`Actions for ${set.name}`}
-        aria-expanded={open}
-        onClick={() => {
-          setOpen((prev) => !prev);
-        }}
-      >
-        <MoreHorizontal className="size-4" />
-      </Button>
-      {open && (
-        <div
-          className={cn(
-            "border-border bg-card absolute top-full right-0 z-10 mt-1 min-w-[10rem] rounded-lg border py-1 shadow-md",
-          )}
-          role="menu"
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button type="button" variant="outline" size="icon" disabled={disabled} aria-label={`Actions for ${set.name}`}>
+          <MoreHorizontal className="size-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-[10rem]">
+        <DropdownMenuItem
+          onSelect={() => {
+            onRename();
+          }}
         >
-          <button
-            type="button"
-            role="menuitem"
-            className="hover:bg-muted w-full px-3 py-2 text-left text-sm"
-            onClick={() => {
-              setOpen(false);
-              onRename();
-            }}
-          >
-            Rename
-          </button>
-          <button
-            type="button"
-            role="menuitem"
-            className="text-destructive hover:bg-muted w-full px-3 py-2 text-left text-sm"
-            onClick={() => {
-              setOpen(false);
-              onDelete();
-            }}
-          >
-            Delete
-          </button>
-        </div>
-      )}
-    </div>
+          Rename
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="text-destructive focus:text-destructive"
+          onSelect={() => {
+            onDelete();
+          }}
+        >
+          Delete
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -133,7 +104,6 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
   const [pendingDelete, setPendingDelete] = React.useState<DashboardSetRow | null>(null);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const [busyId, setBusyId] = React.useState<string | null>(null);
-  const renameDialogRef = React.useRef<HTMLDialogElement>(null);
 
   const renameValidationError = renameTarget ? validateSetName(editName, renameTarget.name) : null;
   const canSaveRename = renameTarget !== null && renameValidationError === null;
@@ -162,12 +132,6 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
     };
   }, []);
 
-  React.useEffect(() => {
-    if (renameTarget) {
-      renameDialogRef.current?.showModal();
-    }
-  }, [renameTarget]);
-
   function showError(message: string) {
     setErrorMessage(message);
   }
@@ -179,7 +143,6 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
   }
 
   function closeRename() {
-    renameDialogRef.current?.close();
     setRenameTarget(null);
     setEditName("");
   }
@@ -238,6 +201,7 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
   async function deleteSet(id: string) {
     setErrorMessage(null);
     setBusyId(id);
+    const deletedSet = sets.find((s) => s.id === id);
 
     try {
       const res = await fetch("/api/flashcard-sets/delete", {
@@ -258,6 +222,9 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
       }
 
       setSets((prev) => prev.filter((s) => s.id !== id));
+      if (deletedSet) {
+        dispatchDashboardSetDeleted({ setId: id, dueCount: deletedSet.due_count });
+      }
       setPendingDelete((prev) => (prev?.id === id ? null : prev));
       if (renameTarget?.id === id) {
         closeRename();
@@ -332,24 +299,19 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
         <NewSetDialog />
       </div>
 
-      {renameTarget && (
-        <dialog
-          ref={renameDialogRef}
-          className={cn(
-            "border-border bg-card text-foreground fixed top-1/2 left-1/2 z-50 w-[min(100%-2rem,28rem)] -translate-x-1/2 -translate-y-1/2 rounded-xl border p-6 shadow-lg backdrop:bg-black/50",
-          )}
-          onClose={() => {
-            setRenameTarget(null);
-            setEditName("");
-          }}
-          onClick={(e) => {
-            if (e.target === renameDialogRef.current) {
-              closeRename();
-            }
-          }}
-        >
-          <div className="flex flex-col gap-4">
-            <h2 className="text-lg font-semibold">Rename set</h2>
+      <Dialog
+        open={renameTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            closeRename();
+          }
+        }}
+      >
+        {renameTarget ? (
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Rename set</DialogTitle>
+            </DialogHeader>
             <Input
               type="text"
               value={editName}
@@ -363,7 +325,7 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
             {renameValidationError && renameValidationError !== "Name is unchanged" ? (
               <span className="text-destructive text-xs">{renameValidationError}</span>
             ) : null}
-            <div className="flex justify-end gap-2">
+            <DialogFooter>
               <Button type="button" variant="outline" onClick={closeRename} disabled={busyId === renameTarget.id}>
                 Cancel
               </Button>
@@ -376,10 +338,10 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
               >
                 {busyId === renameTarget.id ? "Saving…" : "Save"}
               </Button>
-            </div>
-          </div>
-        </dialog>
-      )}
+            </DialogFooter>
+          </DialogContent>
+        ) : null}
+      </Dialog>
 
       <AlertDialog
         open={pendingDelete !== null}
