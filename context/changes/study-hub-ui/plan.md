@@ -419,12 +419,9 @@ No data migration. Deploy is UI-only.
 
 #### Automated
 
-- [x] 1.1 Lint passes: `npm run lint`
-- [x] 1.2 Build passes: `npm run build`
-
-#### Manual
-
-- [x] 1.3 Paper shell shows readable typography and off-white background on a test route or early dashboard wiring
+- [x] 1.1 Lint passes: `npm run lint` — 03517ad
+- [x] 1.2 Build passes: `npm run build` — 03517ad
+- [x] 1.3 Paper shell shows readable typography and off-white background on a test route or early dashboard wiring — 03517ad
 
 ### Phase 2: Dashboard study hub
 
