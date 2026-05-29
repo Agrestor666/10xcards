@@ -95,6 +95,8 @@ Shared visual tokens, typography, and layout shell used by dashboard, landing, a
 
 **Contract**: `@fontsource/dm-sans`, `@fontsource/instrument-serif` in dependencies; import in `global.css`.
 
+**Addendum (2026-05-30, impl-review F1):** Phase 1 shipped with Google Fonts `@import` in `global.css` instead of `@fontsource` (local `npm install` SSL failure). Acceptable for MVP; migrate to self-hosted `@fontsource` in a follow-up when install works.
+
 #### 2. Paper layout shell
 
 **File**: `src/components/layout/PaperShell.astro`

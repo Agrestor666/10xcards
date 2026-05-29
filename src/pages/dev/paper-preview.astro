@@ -1,13 +1,17 @@
 ---
 /**
  * Phase 1 manual verification route — paper shell, typography, tokens.
- * Remove or restrict before production if undesired.
+ * Available only in local dev (`import.meta.env.DEV`).
  */
 import Layout from "@/layouts/Layout.astro";
 import AppTopbar from "@/components/layout/AppTopbar.astro";
 import PaperShell from "@/components/layout/PaperShell.astro";
 
 export const prerender = false;
+
+if (!import.meta.env.DEV) {
+  return new Response(null, { status: 404, statusText: "Not Found" });
+}
 ---
 
 <Layout title="Paper theme preview">
