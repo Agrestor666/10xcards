@@ -97,6 +97,10 @@ Shared visual tokens, typography, and layout shell used by dashboard, landing, a
 
 **Addendum (2026-05-30, impl-review F1):** Phase 1 shipped with Google Fonts `@import` in `global.css` instead of `@fontsource` (local `npm install` SSL failure). Acceptable for MVP; migrate to self-hosted `@fontsource` in a follow-up when install works.
 
+**Addendum (2026-05-29):** Migrated to `@fontsource/dm-sans` and `@fontsource/instrument-serif` after fixing local npm via `.npmrc` (`registry=https://registry.npmmirror.com`). Google CDN `@import` removed. `@fontsource/instrument-serif` ships only weight 400 — display headings use `font-weight: 400`.
+
+**Addendum (2026-05-29, re-review F3):** Paper fonts live in `src/styles/paper-fonts.css`, imported by `PaperShell.astro` only — cosmic routes do not download `@fontsource` assets.
+
 #### 2. Paper layout shell
 
 **File**: `src/components/layout/PaperShell.astro`
@@ -270,6 +274,8 @@ npx shadcn@latest add dropdown-menu dialog
 - Mobile: tiles stack; Study and ⋯ usable
 
 **Implementation Note**: Pause for human verification before Phase 3.
+
+**Addendum (2026-05-29, impl-review F3):** `StudyHero.tsx` extracted from inline `dashboard.astro` hero (clean separation). `FlashcardRow.tsx` gained optional `theme: "cosmic" | "paper"` for generator paper styling (Phase 2 §7 extension).
 
 ---
 

@@ -33,6 +33,14 @@ cd 10x-astro-starter
 npm install
 ```
 
+If `npm install` fails with `ERR_SSL_UNSAFE_LEGACY_RENEGOTIATION_DISABLED`, create a local `.npmrc` (do not commit unless the team standardizes on it):
+
+```
+registry=https://registry.npmmirror.com
+```
+
+CI uses the default npm registry; this workaround is for local development only.
+
 3. Set up Supabase and configure environment variables — see [Supabase Configuration](#supabase-configuration) below.
 
 4. Create a `.dev.vars` file for local Cloudflare dev secrets:
