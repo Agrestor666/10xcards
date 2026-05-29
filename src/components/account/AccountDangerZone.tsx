@@ -10,6 +10,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 const CONFIRM_TEXT = "DELETE";
@@ -130,14 +131,13 @@ export function AccountDangerZone({ email, setCount, cardCount }: AccountDangerZ
             </AlertDialogDescription>
           </AlertDialogHeader>
 
-          <input
+          <Input
             type="text"
             value={confirmText}
             autoComplete="off"
             disabled={busy}
             placeholder={CONFIRM_TEXT}
             aria-label={`Type ${CONFIRM_TEXT} to confirm`}
-            className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-white/40 focus:border-red-300/50 focus:ring-2 focus:ring-red-300/20 focus:outline-none disabled:opacity-50"
             onChange={(e) => {
               setConfirmText(e.target.value);
             }}
