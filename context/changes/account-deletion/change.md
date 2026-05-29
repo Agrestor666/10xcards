@@ -1,7 +1,7 @@
 ---
 change_id: account-deletion
 title: Account deletion (S-06)
-status: implementing
+status: implemented
 created: 2026-05-28
 updated: 2026-05-29
 archived_at: null
