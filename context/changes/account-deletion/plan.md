@@ -333,10 +333,10 @@ Document deployment secrets and run a short cross-feature smoke test so account 
 
 #### Automated
 
-- [ ] 3.1 Lint passes: `npm run lint`
-- [ ] 3.2 Build passes: `npm run build`
+- [x] 3.1 Lint passes: `npm run lint`
+- [x] 3.2 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 3.3 Regression checklist in `change.md` completed
-- [ ] 3.4 Service role secret documented for local and production deploy
+- [x] 3.3 Regression checklist in `change.md` completed
+- [x] 3.4 Service role secret documented for local and production deploy
