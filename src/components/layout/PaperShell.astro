@@ -1,0 +1,15 @@
+---
+import { cn } from "@/lib/utils";
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class="paper-theme bg-background text-foreground min-h-screen">
+  <div class:list={cn("mx-auto w-full px-4 py-6", className)}>
+    <slot />
+  </div>
+</div>

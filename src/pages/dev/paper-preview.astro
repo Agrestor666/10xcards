@@ -1,0 +1,32 @@
+---
+/**
+ * Phase 1 manual verification route — paper shell, typography, tokens.
+ * Remove or restrict before production if undesired.
+ */
+import Layout from "@/layouts/Layout.astro";
+import AppTopbar from "@/components/layout/AppTopbar.astro";
+import PaperShell from "@/components/layout/PaperShell.astro";
+
+export const prerender = false;
+---
+
+<Layout title="Paper theme preview">
+  <PaperShell class="max-w-3xl">
+    <AppTopbar />
+    <header class="border-border bg-card rounded-2xl border p-8 shadow-sm">
+      <h1 class="text-4xl tracking-tight">Your study hub</h1>
+      <p class="text-muted-foreground mt-3 max-w-prose">
+        Off-white paper background, DM Sans body copy, and Instrument Serif for display headings.
+      </p>
+    </header>
+    <section class="border-border bg-muted/50 mt-6 rounded-xl border p-6">
+      <p class="text-foreground text-sm">
+        Primary actions use a deep green accent. Semantic tokens: <code class="text-xs">bg-card</code>,{" "}
+        <code class="text-xs">border-border</code>, <code class="text-xs">text-muted-foreground</code>.
+      </p>
+      <button type="button" class="bg-primary text-primary-foreground mt-4 rounded-lg px-4 py-2 text-sm font-medium">
+        Study
+      </button>
+    </section>
+  </PaperShell>
+</Layout>
