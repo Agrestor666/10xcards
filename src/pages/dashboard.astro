@@ -1,106 +1,59 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import Topbar from "@/components/Topbar.astro";
-import { SetDashboardList } from "@/components/sets/SetDashboardList";
-import type { DashboardSetRow, FlashcardSet } from "@/types";
-import { SUPABASE_NOT_CONFIGURED_MESSAGE } from "@/lib/flashcard-set-errors";
-import { createClient } from "@/lib/supabase";
+import AppTopbar from "@/components/layout/AppTopbar.astro";
+import PaperShell from "@/components/layout/PaperShell.astro";
+import { StudyHero } from "@/components/dashboard/StudyHero";
+import { SetDashboardGrid } from "@/components/dashboard/SetDashboardGrid";
 import { FlashcardGenerator } from "@/components/generator/FlashcardGenerator";
+import { loadDashboardSets } from "@/lib/load-dashboard-sets";
 
 const { user } = Astro.locals;
 
 const errorMessage = Astro.url.searchParams.get("error");
 
-const supabase = createClient(Astro.request.headers, Astro.cookies);
+const {
+  sets: dashboardSets,
+  totalDue,
+  error: setsLoadError,
+} = await loadDashboardSets(Astro.request.headers, Astro.cookies);
 
-let sets: Pick<FlashcardSet, "id" | "name" | "created_at" | "updated_at">[] = [];
-let dashboardSets: DashboardSetRow[] = [];
-let setsLoadError: string | null = null;
-
-if (!supabase) {
-  setsLoadError = SUPABASE_NOT_CONFIGURED_MESSAGE;
-} else {
-  const { data, error } = await supabase
-    .from("flashcard_sets")
-    .select("id,name,created_at,updated_at,flashcards(count)")
-    .order("updated_at", { ascending: false });
-
-  if (error) {
-    setsLoadError = "Could not load your sets. Please refresh.";
-  } else {
-    type SetWithCardCount = Pick<FlashcardSet, "id" | "name" | "created_at" | "updated_at"> & {
-      flashcards: { count: number }[];
-    };
-    const rows = data as SetWithCardCount[];
-
-    sets = rows.map(({ id, name, created_at, updated_at }) => ({
-      id,
-      name,
-      created_at,
-      updated_at,
-    }));
-    dashboardSets = rows.map((row) => ({
-      id: row.id,
-      name: row.name,
-      created_at: row.created_at,
-      updated_at: row.updated_at,
-      card_count: row.flashcards[0]?.count ?? 0,
-    }));
-  }
-}
+const generatorSets = dashboardSets.map((s) => ({ id: s.id, name: s.name }));
 ---
 
-<Layout title="Sets">
-  <div class="bg-cosmic min-h-screen p-4 text-white">
-    <div class="mx-auto flex w-full max-w-3xl flex-col gap-4 pt-6">
-      <Topbar />
-      <header class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
-        <h1 class="bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
-          Your sets
-        </h1>
-        <p class="mt-2 text-sm text-blue-100/70">
-          Signed in as <span class="font-medium text-white">{user?.email}</span>
+<Layout title="Dashboard">
+  <PaperShell class="max-w-3xl">
+    <AppTopbar />
+    {
+      user?.email && (
+        <p class="text-muted-foreground mb-4 text-sm">
+          Signed in as <span class="text-foreground font-medium">{user.email}</span>
         </p>
-      </header>
+      )
+    }
 
-      {
-        (errorMessage ?? setsLoadError) && (
-          <div class="rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
-            {errorMessage ?? setsLoadError}
-          </div>
-        )
-      }
-
-      <section class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
-        <h2 class="text-lg font-semibold text-white">Create a new set</h2>
-        <form method="POST" action="/api/flashcard-sets/create" class="mt-4 flex flex-col gap-3 sm:flex-row">
-          <input
-            type="text"
-            name="name"
-            placeholder="e.g. Biology"
-            maxlength="80"
-            required
-            class="w-full flex-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-white/40 focus:border-purple-300/50 focus:ring-2 focus:ring-purple-300/20 focus:outline-none"
-          />
-          <button
-            type="submit"
-            class="rounded-lg border border-white/10 bg-purple-500/20 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-500/30"
-          >
-            Create
-          </button>
-        </form>
-        <p class="mt-3 text-xs text-blue-100/60">Name must be 1–80 characters.</p>
-      </section>
-
-      {/* AI generator set list is SSR-only on first paint; refresh after rename/delete to sync dropdown. */}
-      <FlashcardGenerator client:load sets={sets.map((s) => ({ id: s.id, name: s.name }))} />
-
-      <section class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
-        <h2 class="text-lg font-semibold text-white">All sets</h2>
-        <div class="mt-4">
-          {!setsLoadError && <SetDashboardList client:load initialSets={dashboardSets} />}
+    {
+      (errorMessage ?? setsLoadError) && (
+        <div class="border-destructive/30 bg-destructive/10 text-destructive mb-4 rounded-xl border px-4 py-3 text-sm">
+          {errorMessage ?? setsLoadError}
         </div>
-      </section>
-    </div>
-  </div>
+      )
+    }
+
+    {!setsLoadError && <StudyHero client:load initialTotalDue={totalDue} hasSets={dashboardSets.length > 0} />}
+
+    {
+      !setsLoadError && (
+        <section class="mt-6">
+          <SetDashboardGrid client:load initialSets={dashboardSets} />
+        </section>
+      )
+    }
+
+    <details class="border-border bg-card mt-6 rounded-xl border shadow-sm">
+      <summary class="cursor-pointer px-5 py-4 text-sm font-medium">Generate flashcards with AI</summary>
+      <div class="border-border border-t px-5 pb-5">
+        <FlashcardGenerator client:load sets={generatorSets} />
+      </div>
+    </details>
+  </PaperShell>
 </Layout>

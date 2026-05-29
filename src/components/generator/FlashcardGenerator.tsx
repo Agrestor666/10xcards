@@ -175,7 +175,11 @@ export function FlashcardGenerator({
       const setName = sets.find((s) => s.id === selectedSetId)?.name ?? "your set";
       setSaveStatus("success");
       setSuccessMessage(`Saved ${body.insertedCount} card(s) to ${setName}.`);
-      dispatchDashboardSetCardsAdded({ setId: selectedSetId, addedCount: body.insertedCount });
+      dispatchDashboardSetCardsAdded({
+        setId: selectedSetId,
+        addedCount: body.insertedCount,
+        dueAddedCount: body.insertedCount,
+      });
       setText("");
       setCardsDraft([]);
     } catch {
@@ -185,10 +189,11 @@ export function FlashcardGenerator({
   }
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
+    <section className="text-foreground pt-4">
       <div className="flex flex-col gap-1">
-        <h2 className="text-lg font-semibold text-white">Generate flashcards</h2>
-        <p className="text-sm text-blue-100/70">Paste text, generate Q&amp;A cards, edit them, then save to a set.</p>
+        <p className="text-muted-foreground text-sm">
+          Paste text, generate Q&amp;A cards, edit them, then save to a set.
+        </p>
       </div>
 
       {(errorMessage ?? successMessage) && (
@@ -196,8 +201,8 @@ export function FlashcardGenerator({
           className={cn(
             "mt-4 rounded-xl border px-4 py-3 text-sm",
             errorMessage
-              ? "border-red-400/20 bg-red-500/10 text-red-100"
-              : "border-emerald-400/20 bg-emerald-500/10 text-emerald-100",
+              ? "border-destructive/30 bg-destructive/10 text-destructive"
+              : "border-primary/30 bg-primary/10 text-foreground",
           )}
         >
           {errorMessage ?? successMessage}
@@ -207,11 +212,11 @@ export function FlashcardGenerator({
       <div className="mt-4 grid gap-3">
         <div className="grid gap-2">
           <div className="flex items-center justify-between gap-3">
-            <label className="text-sm font-medium text-white">Source text</label>
+            <label className="text-sm font-medium">Source text</label>
             <span
               className={cn(
-                "font-mono text-xs",
-                textTrimmed.length > MAX_SOURCE_TEXT_CHARS ? "text-red-200" : "text-blue-100/60",
+                "text-muted-foreground font-mono text-xs",
+                textTrimmed.length > MAX_SOURCE_TEXT_CHARS && "text-destructive",
               )}
             >
               {textTrimmed.length}/{MAX_SOURCE_TEXT_CHARS}
@@ -224,7 +229,7 @@ export function FlashcardGenerator({
             }}
             rows={6}
             placeholder="Paste your notes here…"
-            className="w-full resize-y rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-purple-300/50 focus:ring-2 focus:ring-purple-300/20 focus:outline-none"
+            className="border-border bg-background text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-ring/30 w-full resize-y rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
           />
         </div>
 
@@ -234,23 +239,23 @@ export function FlashcardGenerator({
             onClick={onGenerate}
             disabled={!canGenerate}
             className={cn(
-              "inline-flex items-center justify-center rounded-lg border border-white/10 px-4 py-2 text-sm font-medium transition-colors",
+              "inline-flex items-center justify-center rounded-lg border px-4 py-2 text-sm font-medium transition-colors",
               canGenerate
-                ? "bg-blue-500/20 text-white hover:bg-blue-500/30"
-                : "cursor-not-allowed bg-white/5 text-white/40",
+                ? "border-border bg-primary/15 hover:bg-primary/25"
+                : "border-border bg-muted text-muted-foreground cursor-not-allowed",
             )}
           >
             {isGenerating ? "Generating…" : "Generate"}
           </button>
 
           <div className="flex flex-col gap-1 sm:items-end">
-            <label className="text-xs text-blue-100/60">Save to set</label>
+            <label className="text-muted-foreground text-xs">Save to set</label>
             <select
               value={selectedSetId}
               onChange={(e) => {
                 setSelectedSetId(e.target.value);
               }}
-              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:border-purple-300/50 focus:ring-2 focus:ring-purple-300/20 focus:outline-none sm:w-[260px]"
+              className="border-border bg-background text-foreground focus:border-ring focus:ring-ring/30 w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none sm:w-[260px]"
             >
               {sets.length === 0 ? (
                 <option value="">Create a set first…</option>
@@ -268,16 +273,16 @@ export function FlashcardGenerator({
           </div>
         </div>
 
-        <div className="mt-2 rounded-xl border border-white/10 bg-white/5 p-4">
+        <div className="border-border bg-card mt-2 rounded-xl border p-4 shadow-sm">
           <div className="flex items-center justify-between gap-3">
-            <h3 className="text-sm font-semibold text-white">Draft cards</h3>
-            <span className="text-xs text-blue-100/60">
+            <h3 className="text-sm font-semibold">Draft cards</h3>
+            <span className="text-muted-foreground text-xs">
               {cardsDraft.length}/{MAX_CARDS_PER_REQUEST}
             </span>
           </div>
 
           {cardsDraft.length === 0 ? (
-            <div className="mt-3 text-sm text-blue-100/70">
+            <div className="text-muted-foreground mt-3 text-sm">
               Generate to see cards here. You can edit or delete before saving.
             </div>
           ) : (
@@ -285,6 +290,7 @@ export function FlashcardGenerator({
               {cardsDraft.map((c) => (
                 <li key={c.id}>
                   <FlashcardRow
+                    theme="paper"
                     mode="draft"
                     question={c.question}
                     answer={c.answer}
@@ -305,7 +311,7 @@ export function FlashcardGenerator({
           )}
 
           <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div className="text-xs text-blue-100/60">
+            <div className="text-muted-foreground text-xs">
               Save will insert up to {MAX_CARDS_PER_REQUEST} cards in one request.
             </div>
             <div className="flex flex-col items-stretch gap-1 sm:items-end">
@@ -314,15 +320,17 @@ export function FlashcardGenerator({
                 onClick={onSave}
                 disabled={!canSave}
                 className={cn(
-                  "inline-flex items-center justify-center rounded-lg border border-white/10 px-4 py-2 text-sm font-medium transition-colors",
+                  "inline-flex items-center justify-center rounded-lg border px-4 py-2 text-sm font-medium transition-colors",
                   canSave
-                    ? "bg-purple-500/20 text-white hover:bg-purple-500/30"
-                    : "cursor-not-allowed bg-white/5 text-white/40",
+                    ? "border-border bg-primary text-primary-foreground hover:opacity-90"
+                    : "border-border bg-muted text-muted-foreground cursor-not-allowed",
                 )}
               >
                 {saveStatus === "saving" ? "Saving…" : "Save"}
               </button>
-              {!canSave && saveDisabledReason && <div className="text-xs text-blue-100/60">{saveDisabledReason}</div>}
+              {!canSave && saveDisabledReason && (
+                <div className="text-muted-foreground text-xs">{saveDisabledReason}</div>
+              )}
             </div>
           </div>
         </div>
