@@ -321,13 +321,13 @@ Document deployment secrets and run a short cross-feature smoke test so account 
 
 #### Automated
 
-- [x] 2.1 Lint passes: `npm run lint`
-- [x] 2.2 Build passes: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint` — 0238796
+- [x] 2.2 Build passes: `npm run build` — 0238796
 
 #### Manual
 
-- [x] 2.3 Settings link, protected `/settings`, dialog with counts, typed DELETE gate, redirect after success
-- [x] 2.4 Second user data unchanged after first user deleted
+- [x] 2.3 Settings link, protected `/settings`, dialog with counts, typed DELETE gate, redirect after success — 0238796
+- [x] 2.4 Second user data unchanged after first user deleted — 0238796
 
 ### Phase 3: Env wiring docs + regression checklist
 
