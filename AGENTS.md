@@ -4,7 +4,7 @@
 
 ## Hard Rules
 
-- Never expose `SUPABASE_URL` or `SUPABASE_KEY` to client — these are server-only secrets via `astro:env`.
+- Never expose `SUPABASE_URL`, `SUPABASE_KEY`, or `SUPABASE_SERVICE_ROLE_KEY` to the client — server-only via `astro:env`. Service role is for account deletion only.
 - Always use `cn()` from `@/lib/utils` for conditional Tailwind classes; never concatenate class strings manually.
 - Enable RLS on any new Supabase tables with per-operation, per-role policies.
 - React components must be PascalCase (`SignUpForm.tsx`); utilities camelCase (`utils.ts`).
