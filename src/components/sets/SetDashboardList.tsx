@@ -10,6 +10,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { DASHBOARD_SET_CARDS_ADDED, type DashboardSetCardsAddedDetail } from "@/lib/dashboard-set-sync";
 import { cn } from "@/lib/utils";
 import type { DashboardSetRow } from "@/types";
 
@@ -54,6 +55,28 @@ export function SetDashboardList({ initialSets }: { initialSets: DashboardSetRow
   const editingSet = sets.find((s) => s.id === editingId);
   const renameValidationError = editingSet ? validateSetName(editName, editingSet.name) : null;
   const canSaveRename = editingSet !== undefined && renameValidationError === null;
+
+  React.useEffect(() => {
+    function onCardsAdded(event: Event) {
+      const { setId, addedCount } = (event as CustomEvent<DashboardSetCardsAddedDetail>).detail;
+      setSets((prev) =>
+        prev.map((s) =>
+          s.id === setId
+            ? {
+                ...s,
+                card_count: s.card_count + addedCount,
+                updated_at: new Date().toISOString(),
+              }
+            : s,
+        ),
+      );
+    }
+
+    window.addEventListener(DASHBOARD_SET_CARDS_ADDED, onCardsAdded);
+    return () => {
+      window.removeEventListener(DASHBOARD_SET_CARDS_ADDED, onCardsAdded);
+    };
+  }, []);
 
   function showError(message: string) {
     setErrorMessage(message);

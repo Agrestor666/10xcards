@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { FlashcardRow } from "@/components/flashcards/FlashcardRow";
 import { MAX_CARD_FIELD_CHARS, MAX_CARDS_PER_REQUEST, MAX_SOURCE_TEXT_CHARS } from "@/lib/ai-generation-limits";
+import { dispatchDashboardSetCardsAdded } from "@/lib/dashboard-set-sync";
 import { cn } from "@/lib/utils";
 
 interface FlashcardSetOption {
@@ -174,6 +175,7 @@ export function FlashcardGenerator({
       const setName = sets.find((s) => s.id === selectedSetId)?.name ?? "your set";
       setSaveStatus("success");
       setSuccessMessage(`Saved ${body.insertedCount} card(s) to ${setName}.`);
+      dispatchDashboardSetCardsAdded({ setId: selectedSetId, addedCount: body.insertedCount });
       setText("");
       setCardsDraft([]);
     } catch {
