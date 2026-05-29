@@ -52,8 +52,14 @@ if (!supabase) {
       }
 
       {
-        user?.email && !statsLoadError && (
-          <AccountDangerZone client:load email={user.email} setCount={setCount} cardCount={cardCount} />
+        user?.email && (
+          <AccountDangerZone
+            client:load
+            email={user.email}
+            setCount={setCount}
+            cardCount={cardCount}
+            statsUnavailable={!!statsLoadError}
+          />
         )
       }
     </div>

@@ -51,7 +51,11 @@ export const POST: APIRoute = async (context) => {
     return jsonResponse({ ok: false, message: accountDeleteErrorMessage(deleteError) }, 403);
   }
 
-  await supabase.auth.signOut();
+  const { error: signOutError } = await supabase.auth.signOut();
+  if (signOutError) {
+    // eslint-disable-next-line no-console -- user deleted; cookie cleanup failure should be observable
+    console.error("delete-account: signOut after deleteUser failed", signOutError);
+  }
 
   return jsonResponse({ ok: true });
 };

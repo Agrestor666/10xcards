@@ -29,9 +29,11 @@ interface AccountDangerZoneProps {
   email: string;
   setCount: number;
   cardCount: number;
+  /** When true, counts could not be loaded; deletion still available. */
+  statsUnavailable?: boolean;
 }
 
-export function AccountDangerZone({ email, setCount, cardCount }: AccountDangerZoneProps) {
+export function AccountDangerZone({ email, setCount, cardCount, statsUnavailable = false }: AccountDangerZoneProps) {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [confirmText, setConfirmText] = React.useState("");
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
@@ -84,13 +86,33 @@ export function AccountDangerZone({ email, setCount, cardCount }: AccountDangerZ
   const setLabel = setCount === 1 ? "set" : "sets";
   const cardLabel = cardCount === 1 ? "flashcard" : "flashcards";
 
+  const dataRemovalCopy = statsUnavailable ? (
+    <>
+      all sets and flashcards on your account. We could not load exact counts right now; deletion will still remove
+      everything.
+    </>
+  ) : (
+    <>
+      <strong className="text-white">{setCount}</strong> {setLabel} and{" "}
+      <strong className="text-white">{cardCount}</strong> {cardLabel}
+    </>
+  );
+
+  const dialogDataCopy = statsUnavailable ? (
+    <>all sets and flashcards on your account</>
+  ) : (
+    <>
+      <strong className="text-white">{setCount}</strong> {setLabel}, and{" "}
+      <strong className="text-white">{cardCount}</strong> {cardLabel}
+    </>
+  );
+
   return (
     <section className="rounded-2xl border border-red-400/30 bg-red-500/5 p-6 backdrop-blur-xl">
       <h2 className="text-lg font-semibold text-red-100">Danger zone</h2>
       <p className="mt-2 text-sm text-blue-100/80">
         Permanently delete the account <strong className="text-white">{email}</strong> and all associated data. This
-        removes <strong className="text-white">{setCount}</strong> {setLabel} and{" "}
-        <strong className="text-white">{cardCount}</strong> {cardLabel}. This cannot be undone.
+        removes {dataRemovalCopy}. This cannot be undone.
       </p>
 
       {errorMessage && !dialogOpen && (
@@ -125,8 +147,7 @@ export function AccountDangerZone({ email, setCount, cardCount }: AccountDangerZ
           <AlertDialogHeader>
             <AlertDialogTitle>Delete your account?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete your account, <strong className="text-white">{setCount}</strong> {setLabel},
-              and <strong className="text-white">{cardCount}</strong> {cardLabel}. Type{" "}
+              This will permanently delete your account, {dialogDataCopy}. Type{" "}
               <strong className="text-white">{CONFIRM_TEXT}</strong> below to confirm.
             </AlertDialogDescription>
           </AlertDialogHeader>

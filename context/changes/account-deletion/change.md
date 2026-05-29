@@ -1,7 +1,7 @@
 ---
 change_id: account-deletion
 title: Account deletion (S-06)
-status: implemented
+status: impl_reviewed
 created: 2026-05-28
 updated: 2026-05-29
 archived_at: null
@@ -30,3 +30,7 @@ Run after Phase 1–2 land or before release. Tick when verified.
 - [x] **Sign-up** with same email allowed (fresh account, no orphaned app rows)
 - [x] **Unrelated user:** dashboard, set CRUD, SRS review, AI generate still work
 - [x] Delete without service role configured — UI/API shows 503 message; user and data remain intact
+
+### Addendum (Phase 3 regression, commit `383841a`)
+
+During regression testing, dashboard set **card counts** did not update after saving from the generator (separate React islands). Fixed with `src/lib/dashboard-set-sync.ts` (`CustomEvent`) wired in `FlashcardGenerator.tsx` and `SetDashboardList.tsx`. Out of original S-06 scope; no impact on account deletion.
