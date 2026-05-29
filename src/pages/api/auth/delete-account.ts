@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { z } from "zod";
 import { accountDeleteErrorMessage, SUPABASE_ADMIN_NOT_CONFIGURED_MESSAGE } from "@/lib/account-errors";
 import { jsonResponse } from "@/lib/api-json";
+import { SUPABASE_NOT_CONFIGURED_MESSAGE } from "@/lib/flashcard-set-errors";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { createClient } from "@/lib/supabase";
 
@@ -14,7 +15,7 @@ const deleteAccountBodySchema = z.object({
 export const POST: APIRoute = async (context) => {
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) {
-    return jsonResponse({ ok: false, message: "Supabase is not configured." }, 503);
+    return jsonResponse({ ok: false, message: SUPABASE_NOT_CONFIGURED_MESSAGE }, 503);
   }
 
   const {
