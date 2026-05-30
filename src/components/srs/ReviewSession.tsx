@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
+import { dispatchDashboardSetReviewGraded } from "@/lib/dashboard-set-sync";
 import { cn } from "@/lib/utils";
 
 type DueResponse =
@@ -143,6 +144,7 @@ export function ReviewSession({ setId, setName }: { setId: string; setName: stri
         return;
       }
 
+      dispatchDashboardSetReviewGraded({ setId, dueRemovedCount: 1 });
       await loadNext();
     } catch {
       setError("Could not save your rating. Please try again.");

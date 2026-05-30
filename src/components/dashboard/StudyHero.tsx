@@ -2,8 +2,11 @@ import * as React from "react";
 import {
   DASHBOARD_SET_CARDS_ADDED,
   DASHBOARD_SET_DELETED,
+  DASHBOARD_SET_REVIEW_GRADED,
+  fetchDashboardDueSummary,
   type DashboardSetCardsAddedDetail,
   type DashboardSetDeletedDetail,
+  type DashboardSetReviewGradedDetail,
 } from "@/lib/dashboard-set-sync";
 import { cn } from "@/lib/utils";
 import { NewSetDialog } from "@/components/dashboard/NewSetDialog";
@@ -23,11 +26,30 @@ export function StudyHero({ initialTotalDue, hasSets }: { initialTotalDue: numbe
       setTotalDue((prev) => Math.max(0, prev - detail.dueCount));
     }
 
+    function onReviewGraded(event: Event) {
+      const detail = (event as CustomEvent<DashboardSetReviewGradedDetail>).detail;
+      const delta = detail.dueRemovedCount ?? 1;
+      setTotalDue((prev) => Math.max(0, prev - delta));
+    }
+
+    function onPageShow(event: PageTransitionEvent) {
+      if (!event.persisted) return;
+      void fetchDashboardDueSummary().then((summary) => {
+        if (summary) {
+          setTotalDue(summary.totalDue);
+        }
+      });
+    }
+
     window.addEventListener(DASHBOARD_SET_CARDS_ADDED, onCardsAdded);
     window.addEventListener(DASHBOARD_SET_DELETED, onSetDeleted);
+    window.addEventListener(DASHBOARD_SET_REVIEW_GRADED, onReviewGraded);
+    window.addEventListener("pageshow", onPageShow);
     return () => {
       window.removeEventListener(DASHBOARD_SET_CARDS_ADDED, onCardsAdded);
       window.removeEventListener(DASHBOARD_SET_DELETED, onSetDeleted);
+      window.removeEventListener(DASHBOARD_SET_REVIEW_GRADED, onReviewGraded);
+      window.removeEventListener("pageshow", onPageShow);
     };
   }, []);
 
@@ -46,7 +68,7 @@ export function StudyHero({ initialTotalDue, hasSets }: { initialTotalDue: numbe
   }
 
   if (totalDue > 0) {
-    const label = totalDue === 1 ? "1 card due today" : `${totalDue} cards due today`;
+    const label = totalDue === 1 ? "1 card ready to review" : `${totalDue} cards ready to review`;
     return (
       <header className={cn("border-border bg-card rounded-2xl border p-8 shadow-sm")}>
         <h1 className="font-display text-4xl tracking-tight">{label}</h1>

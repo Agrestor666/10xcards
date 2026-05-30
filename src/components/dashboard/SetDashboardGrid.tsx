@@ -22,8 +22,11 @@ import { Input } from "@/components/ui/input";
 import { NewSetDialog } from "@/components/dashboard/NewSetDialog";
 import {
   DASHBOARD_SET_CARDS_ADDED,
+  DASHBOARD_SET_REVIEW_GRADED,
   dispatchDashboardSetDeleted,
+  fetchDashboardDueSummary,
   type DashboardSetCardsAddedDetail,
+  type DashboardSetReviewGradedDetail,
 } from "@/lib/dashboard-set-sync";
 import { cn } from "@/lib/utils";
 import type { DashboardSetRow } from "@/types";
@@ -126,9 +129,34 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
       );
     }
 
+    function onReviewGraded(event: Event) {
+      const detail = (event as CustomEvent<DashboardSetReviewGradedDetail>).detail;
+      const delta = detail.dueRemovedCount ?? 1;
+      setSets((prev) =>
+        prev.map((s) => (s.id === detail.setId ? { ...s, due_count: Math.max(0, s.due_count - delta) } : s)),
+      );
+    }
+
+    function onPageShow(event: PageTransitionEvent) {
+      if (!event.persisted) return;
+      void fetchDashboardDueSummary().then((summary) => {
+        if (!summary) return;
+        setSets((prev) =>
+          prev.map((s) => ({
+            ...s,
+            due_count: summary.dueBySetId[s.id] ?? 0,
+          })),
+        );
+      });
+    }
+
     window.addEventListener(DASHBOARD_SET_CARDS_ADDED, onCardsAdded);
+    window.addEventListener(DASHBOARD_SET_REVIEW_GRADED, onReviewGraded);
+    window.addEventListener("pageshow", onPageShow);
     return () => {
       window.removeEventListener(DASHBOARD_SET_CARDS_ADDED, onCardsAdded);
+      window.removeEventListener(DASHBOARD_SET_REVIEW_GRADED, onReviewGraded);
+      window.removeEventListener("pageshow", onPageShow);
     };
   }, []);
 
