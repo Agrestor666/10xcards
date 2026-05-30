@@ -30,7 +30,7 @@ interface DraftProps extends BaseProps {
 export type FlashcardRowTheme = "cosmic" | "paper";
 
 export type FlashcardRowProps = (PersistedProps | DraftProps) & {
-  /** `paper` for dashboard generator; default `cosmic` for set detail until phase 3. */
+  /** `paper` for study surfaces (set detail, dashboard generator); default `cosmic` for review. */
   theme?: FlashcardRowTheme;
 };
 

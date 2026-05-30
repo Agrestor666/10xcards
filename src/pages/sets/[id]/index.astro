@@ -1,8 +1,10 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import Topbar from "@/components/Topbar.astro";
+import AppTopbar from "@/components/layout/AppTopbar.astro";
+import PaperShell from "@/components/layout/PaperShell.astro";
 import { SetFlashcardsManager } from "@/components/flashcards/SetFlashcardsManager";
 import { loadSetDetailPage } from "@/lib/load-set-detail";
+import { cn } from "@/lib/utils";
 
 const loaded = await loadSetDetailPage(Astro.params.id, Astro.request.headers, Astro.cookies);
 
@@ -15,29 +17,26 @@ const reviewUrl = `/sets/${setRow.id}/review`;
 ---
 
 <Layout title={setRow.name}>
-  <div class="bg-cosmic min-h-screen p-4 text-white">
-    <div class="mx-auto flex w-full max-w-3xl flex-col gap-4 pt-6">
-      <Topbar />
-      <header class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
-        <a href="/dashboard" class="text-sm text-purple-300 transition-colors hover:text-purple-100 hover:underline">
-          ← Back to sets
+  <PaperShell class="max-w-3xl">
+    <AppTopbar />
+    <header class="border-border bg-card rounded-2xl border p-6 shadow-sm">
+      <a href="/dashboard" class="text-primary text-sm font-medium transition-colors hover:underline"> ← Dashboard </a>
+      <h1 class="font-display mt-3 text-3xl tracking-tight">{setRow.name}</h1>
+      {cardsLoadError && <p class="text-destructive mt-2 text-sm">Could not load cards. Please refresh.</p>}
+
+      <div class="mt-5 flex flex-wrap items-center gap-3">
+        <a
+          href={reviewUrl}
+          class:list={cn(
+            "bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-xs transition-colors",
+            "focus-visible:ring-ring/50 focus-visible:ring-[3px] focus-visible:outline-none",
+          )}
+        >
+          Start review
         </a>
-        <h1 class="mt-3 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
-          {setRow.name}
-        </h1>
-        {cardsLoadError && <p class="mt-2 text-sm text-red-100">Could not load cards. Please refresh.</p>}
+      </div>
+    </header>
 
-        <div class="mt-5 flex flex-wrap items-center gap-3">
-          <a
-            href={reviewUrl}
-            class="inline-flex items-center justify-center rounded-xl bg-purple-500/60 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-500/70 focus-visible:ring-2 focus-visible:ring-purple-300/40 focus-visible:outline-none"
-          >
-            Start review
-          </a>
-        </div>
-      </header>
-
-      <SetFlashcardsManager client:load setId={setRow.id} setName={setRow.name} initialCards={initialCards} />
-    </div>
-  </div>
+    <SetFlashcardsManager client:load setId={setRow.id} setName={setRow.name} initialCards={initialCards} />
+  </PaperShell>
 </Layout>

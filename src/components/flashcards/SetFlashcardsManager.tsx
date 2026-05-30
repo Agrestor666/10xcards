@@ -246,24 +246,24 @@ export function SetFlashcardsManager({
           className={cn(
             "rounded-xl border px-4 py-3 text-sm",
             errorMessage
-              ? "border-red-400/20 bg-red-500/10 text-red-100"
-              : "border-emerald-400/20 bg-emerald-500/10 text-emerald-100",
+              ? "border-destructive/30 bg-destructive/10 text-destructive"
+              : "border-primary/30 bg-primary/10 text-foreground",
           )}
         >
           {errorMessage ?? successMessage}
         </div>
       )}
 
-      <section className="rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
+      <section className="border-border bg-card rounded-2xl border p-6 shadow-sm">
         <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold text-white">Add a card</h2>
-          <p className="text-sm text-blue-100/70">Create a new flashcard in {setName}.</p>
+          <h2 className="text-lg font-semibold">Add a card</h2>
+          <p className="text-muted-foreground text-sm">Create a new flashcard in {setName}.</p>
         </div>
 
         <div className="mt-4 grid gap-3">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <div className="grid gap-2">
-              <label className="text-sm font-medium text-white">Question</label>
+              <label className="text-sm font-medium">Question</label>
               <textarea
                 value={newQuestion}
                 onChange={(e) => {
@@ -271,12 +271,12 @@ export function SetFlashcardsManager({
                 }}
                 rows={3}
                 maxLength={MAX_CARD_FIELD_CHARS}
-                className="w-full resize-y rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-purple-300/50 focus:ring-2 focus:ring-purple-300/20 focus:outline-none"
+                className="border-border bg-background text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-ring/30 w-full resize-y rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
                 placeholder="e.g. What is DNA?"
               />
             </div>
             <div className="grid gap-2">
-              <label className="text-sm font-medium text-white">Answer</label>
+              <label className="text-sm font-medium">Answer</label>
               <textarea
                 value={newAnswer}
                 onChange={(e) => {
@@ -284,34 +284,29 @@ export function SetFlashcardsManager({
                 }}
                 rows={3}
                 maxLength={MAX_CARD_FIELD_CHARS}
-                className="w-full resize-y rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-purple-300/50 focus:ring-2 focus:ring-purple-300/20 focus:outline-none"
+                className="border-border bg-background text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-ring/30 w-full resize-y rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
                 placeholder="e.g. Genetic material"
               />
             </div>
           </div>
 
           <div className="flex items-center justify-end">
-            <Button
-              type="button"
-              onClick={onAddCard}
-              disabled={isAdding}
-              className={cn("bg-purple-500/60 text-white hover:bg-purple-500/70")}
-            >
+            <Button type="button" onClick={onAddCard} disabled={isAdding}>
               {isAdding ? "Adding…" : "Add card"}
             </Button>
           </div>
         </div>
       </section>
 
-      <section className="rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
+      <section className="border-border bg-card rounded-2xl border p-6 shadow-sm">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold text-white">Cards</h2>
-          <span className="text-xs text-blue-100/60">{cards.length} total</span>
+          <h2 className="text-lg font-semibold">Cards</h2>
+          <span className="text-muted-foreground text-xs">{cards.length} total</span>
         </div>
 
         <div className="mt-4 flex flex-col gap-3">
           {cards.length === 0 ? (
-            <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-6 text-sm text-blue-100/70">
+            <div className="border-border bg-muted/50 text-muted-foreground rounded-xl border px-4 py-6 text-sm">
               No cards yet. Add your first one above.
             </div>
           ) : (
@@ -319,6 +314,7 @@ export function SetFlashcardsManager({
               <FlashcardRow
                 key={c.id}
                 mode="persisted"
+                theme="paper"
                 question={c.question}
                 answer={c.answer}
                 onQuestionChange={(next) => {

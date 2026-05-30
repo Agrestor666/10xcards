@@ -1,126 +1,120 @@
 ---
-import Topbar from "@/components/Topbar.astro";
+import AppTopbar from "@/components/layout/AppTopbar.astro";
+import PaperShell from "@/components/layout/PaperShell.astro";
+import { cn } from "@/lib/utils";
+
+const featureCards = [
+  {
+    title: "AI from your text",
+    description: "Paste a chapter, article, or notes. Get flashcards you can edit before they land in a set.",
+    icon: "book",
+  },
+  {
+    title: "Reviews on a schedule",
+    description:
+      "Start with what's due today. After each answer, the app plans the next review—no spreadsheet required.",
+    icon: "calendar",
+  },
+  {
+    title: "One place to learn",
+    description: "Generate, organize sets, and study from your dashboard. Your library stays private to your account.",
+    icon: "stack",
+  },
+] as const;
+
+const cardClass = cn("border-border bg-card rounded-xl border p-6 shadow-sm");
+const iconClass = cn("text-primary mb-4 size-6");
 ---
 
-<div class="bg-cosmic relative min-h-screen w-full overflow-hidden">
-  <!-- Cosmic orbs -->
-  <div
-    class="pointer-events-none absolute top-1/4 -left-24 h-[350px] w-[350px] rounded-full bg-purple-500/20 blur-[120px]"
-  >
-  </div>
-  <div
-    class="pointer-events-none absolute top-2/3 -right-16 h-[250px] w-[250px] rounded-full bg-blue-500/15 blur-[100px]"
-  >
-  </div>
-  <div
-    class="pointer-events-none absolute top-0 left-1/2 h-[300px] w-[300px] -translate-x-1/2 rounded-full bg-indigo-400/10 blur-[140px]"
-  >
-  </div>
+<PaperShell class="max-w-4xl">
+  <AppTopbar />
 
-  <!-- Star field -->
-  <div
-    class="pointer-events-none absolute inset-0"
-    style="background-image: radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px), radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px); background-size: 200px 200px, 150px 150px, 100px 100px; background-position: 0 0, 40px 60px, 80px 30px;"
-  >
-  </div>
-
-  <div class="relative z-10 p-4 sm:p-8">
-    <Topbar />
-
-    <!-- Hero section -->
-    <div class="mx-auto flex max-w-4xl flex-col items-center justify-center px-4 py-24 text-center sm:py-32 lg:py-40">
-      <h1
-        class="mb-6 bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 bg-clip-text text-5xl leading-tight font-bold text-transparent sm:text-6xl lg:text-7xl"
+  <section class="flex flex-col items-center px-2 py-16 text-center sm:py-24">
+    <h1 class="font-display max-w-3xl text-4xl leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+      Flashcards from your text. Reviews on autopilot.
+    </h1>
+    <p class="text-muted-foreground mt-6 max-w-2xl text-lg sm:text-xl">
+      10xCards combines AI generation with spaced repetition—so you spend time learning, not formatting cards.
+    </p>
+    <div class="mt-10 flex flex-col gap-3 sm:flex-row sm:gap-4">
+      <a
+        href="/auth/signup"
+        class="bg-primary text-primary-foreground inline-flex items-center justify-center rounded-lg px-6 py-3 text-base font-medium shadow-xs transition-colors hover:opacity-90"
       >
-        10x Astro Starter
-      </h1>
-      <p class="mb-10 max-w-2xl text-lg text-blue-100/70 sm:text-xl">
-        A production-ready starter with authentication, modern tooling, and a cosmic developer experience.
-      </p>
-      <div class="flex flex-col gap-4 sm:flex-row">
-        <a
-          href="/auth/signin"
-          class="inline-flex items-center justify-center rounded-lg bg-purple-600 px-6 py-3 text-base font-medium text-white transition-colors hover:bg-purple-500"
-        >
-          Sign In
-        </a>
-        <a
-          href="/auth/signup"
-          class="inline-flex items-center justify-center rounded-lg border border-white/20 px-6 py-3 text-base font-medium text-white transition-colors hover:bg-white/10"
-        >
-          Sign Up
-        </a>
-      </div>
+        Get started
+      </a>
+      <a
+        href="/auth/signin"
+        class="border-border bg-background text-foreground hover:bg-accent inline-flex items-center justify-center rounded-lg border px-6 py-3 text-base font-medium shadow-xs transition-colors"
+      >
+        Sign in
+      </a>
     </div>
+  </section>
 
-    <!-- Feature cards -->
-    <div class="mx-auto grid max-w-4xl grid-cols-1 gap-6 px-4 pb-24 sm:grid-cols-3">
-      <div class="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="mb-4 text-purple-300"
-        >
-          <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-        </svg>
-        <h3 class="mb-2 text-lg font-semibold text-white">Authentication Ready</h3>
-        <p class="text-sm leading-relaxed text-blue-100/60">
-          Built-in Supabase auth with sign in, sign up, and protected routes out of the box.
-        </p>
-      </div>
-
-      <div class="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="mb-4 text-purple-300"
-        >
-          <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-          <polyline points="2 17 12 22 22 17"></polyline>
-          <polyline points="2 12 12 17 22 12"></polyline>
-        </svg>
-        <h3 class="mb-2 text-lg font-semibold text-white">Modern Stack</h3>
-        <p class="text-sm leading-relaxed text-blue-100/60">
-          Astro 5, React 19, Tailwind 4, and TypeScript — the latest tools, ready to go.
-        </p>
-      </div>
-
-      <div class="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="mb-4 text-purple-300"
-        >
-          <polyline points="16 18 22 12 16 6"></polyline>
-          <polyline points="8 6 2 12 8 18"></polyline>
-        </svg>
-        <h3 class="mb-2 text-lg font-semibold text-white">Developer Experience</h3>
-        <p class="text-sm leading-relaxed text-blue-100/60">
-          ESLint, Prettier, and pre-commit hooks keep your codebase clean from day one.
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
+  <section class="grid grid-cols-1 gap-6 pb-16 sm:grid-cols-3">
+    {
+      featureCards.map((card) => (
+        <div class:list={cardClass}>
+          {card.icon === "book" && (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class:list={iconClass}
+              aria-hidden="true"
+            >
+              <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a2.5 2.5 0 0 1 0-5H20" />
+            </svg>
+          )}
+          {card.icon === "calendar" && (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class:list={iconClass}
+              aria-hidden="true"
+            >
+              <path d="M8 2v4" />
+              <path d="M16 2v4" />
+              <rect width="18" height="18" x="3" y="4" rx="2" />
+              <path d="M3 10h18" />
+              <path d="M8 14h.01" />
+              <path d="M12 14h.01" />
+              <path d="M16 14h.01" />
+              <path d="M8 18h.01" />
+              <path d="M12 18h.01" />
+            </svg>
+          )}
+          {card.icon === "stack" && (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class:list={iconClass}
+              aria-hidden="true"
+            >
+              <path d="M12 2 2 7l10 5 10-5-10-5Z" />
+              <path d="m2 17 10 5 10-5" />
+              <path d="m2 12 10 5 10-5" />
+            </svg>
+          )}
+          <h3 class="text-lg font-semibold">{card.title}</h3>
+          <p class="text-muted-foreground mt-2 text-sm leading-relaxed">{card.description}</p>
+        </div>
+      ))
+    }
+  </section>
+</PaperShell>

@@ -447,13 +447,13 @@ No data migration. Deploy is UI-only.
 
 #### Automated
 
-- [ ] 3.1 Lint passes: `npm run lint`
-- [ ] 3.2 Build passes: `npm run build`
+- [x] 3.1 Lint passes: `npm run lint`
+- [x] 3.2 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 3.3 Landing variant A copy and CTAs verified
-- [ ] 3.4 Set detail paper theme with CRUD and Start review verified
+- [x] 3.3 Landing variant A copy and CTAs verified
+- [x] 3.4 Set detail paper theme with CRUD and Start review verified
 
 ### Phase 4: Regression and docs
 
