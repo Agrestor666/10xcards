@@ -374,12 +374,12 @@ Remove obsolete cosmic topbar, verify no user route references cosmic shell, fin
 
 #### Automated
 
-- [x] 4.1 `npm run lint` passes
-- [x] 4.2 `npm run build` passes
-- [x] 4.3 No `Topbar.astro` imports under `src/`
-- [x] 4.4 No `bg-cosmic` under `src/pages/`
+- [x] 4.1 `npm run lint` passes — eed4c4a
+- [x] 4.2 `npm run build` passes — eed4c4a
+- [x] 4.3 No `Topbar.astro` imports under `src/` — eed4c4a
+- [x] 4.4 No `bg-cosmic` under `src/pages/` — eed4c4a
 
 #### Manual
 
-- [x] 4.5 Full navigation loop paper continuity (landing, auth, dashboard, set, review, settings)
-- [x] 4.6 S-07 dashboard features regression smoke
+- [x] 4.5 Full navigation loop paper continuity (landing, auth, dashboard, set, review, settings) — eed4c4a
+- [x] 4.6 S-07 dashboard features regression smoke — eed4c4a
