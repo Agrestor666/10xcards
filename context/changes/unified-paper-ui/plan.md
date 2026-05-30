@@ -349,26 +349,26 @@ Remove obsolete cosmic topbar, verify no user route references cosmic shell, fin
 
 #### Automated
 
-- [x] 2.1 `npm run lint` passes
-- [x] 2.2 `npm run build` passes
+- [x] 2.1 `npm run lint` passes — ef888a6
+- [x] 2.2 `npm run build` passes — ef888a6
 
 #### Manual
 
-- [x] 2.3 Auth sign-in and sign-up flows on paper (fields, errors, redirect)
-- [x] 2.4 Settings page and AppTopbar navigation on paper
-- [x] 2.5 Account deletion dialog opens and confirm field works (cancel without delete)
+- [x] 2.3 Auth sign-in and sign-up flows on paper (fields, errors, redirect) — ef888a6
+- [x] 2.4 Settings page and AppTopbar navigation on paper — ef888a6
+- [x] 2.5 Account deletion dialog opens and confirm field works (cancel without delete) — ef888a6
 
 ### Phase 3: Review session on paper
 
 #### Automated
 
-- [ ] 3.1 `npm run lint` passes
-- [ ] 3.2 `npm run build` passes
+- [x] 3.1 `npm run lint` passes
+- [x] 3.2 `npm run build` passes
 
 #### Manual
 
-- [ ] 3.3 Study → review → grade flow on paper with dashboard due sync
-- [ ] 3.4 Empty due state and back link on paper
+- [x] 3.3 Study → review → grade flow on paper with dashboard due sync
+- [x] 3.4 Empty due state and back link on paper
 
 ### Phase 4: Legacy cleanup and regression
 

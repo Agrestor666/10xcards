@@ -32,12 +32,12 @@ interface DraftProps extends BaseProps {
 export type FlashcardRowTheme = UiTheme;
 
 export type FlashcardRowProps = (PersistedProps | DraftProps) & {
-  /** `paper` for study surfaces (set detail, dashboard generator); default `cosmic` for review. */
+  /** `paper` for all user-facing study surfaces; cosmic branch retained until Phase 4 grep. */
   theme?: UiTheme;
 };
 
 export function FlashcardRow(props: FlashcardRowProps) {
-  const { question, answer, onQuestionChange, onAnswerChange, maxChars = 2000, theme = "cosmic" } = props;
+  const { question, answer, onQuestionChange, onAnswerChange, maxChars = 2000, theme = "paper" } = props;
   const [isDeleteConfirming, setIsDeleteConfirming] = React.useState(false);
   const isPaper = theme === "paper";
 
