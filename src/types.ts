@@ -1,3 +1,6 @@
+/** Shared UI theme for cosmic (legacy) vs paper surfaces. */
+export type UiTheme = "cosmic" | "paper";
+
 /** Row shape for `public.flashcard_sets` (Supabase returns timestamptz as ISO strings). */
 export interface FlashcardSet {
   id: string;

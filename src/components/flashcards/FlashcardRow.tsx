@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import type { UiTheme } from "@/types";
 
 export type FlashcardRowMode = "persisted" | "draft";
 
@@ -27,11 +28,12 @@ interface DraftProps extends BaseProps {
   onRemove: () => void;
 }
 
-export type FlashcardRowTheme = "cosmic" | "paper";
+/** @deprecated Use `UiTheme` from `@/types`. */
+export type FlashcardRowTheme = UiTheme;
 
 export type FlashcardRowProps = (PersistedProps | DraftProps) & {
   /** `paper` for study surfaces (set detail, dashboard generator); default `cosmic` for review. */
-  theme?: FlashcardRowTheme;
+  theme?: UiTheme;
 };
 
 export function FlashcardRow(props: FlashcardRowProps) {
