@@ -362,24 +362,24 @@ Remove obsolete cosmic topbar, verify no user route references cosmic shell, fin
 
 #### Automated
 
-- [x] 3.1 `npm run lint` passes
-- [x] 3.2 `npm run build` passes
+- [x] 3.1 `npm run lint` passes — 931cbd4
+- [x] 3.2 `npm run build` passes — 931cbd4
 
 #### Manual
 
-- [x] 3.3 Study → review → grade flow on paper with dashboard due sync
-- [x] 3.4 Empty due state and back link on paper
+- [x] 3.3 Study → review → grade flow on paper with dashboard due sync — 931cbd4
+- [x] 3.4 Empty due state and back link on paper — 931cbd4
 
 ### Phase 4: Legacy cleanup and regression
 
 #### Automated
 
-- [ ] 4.1 `npm run lint` passes
-- [ ] 4.2 `npm run build` passes
-- [ ] 4.3 No `Topbar.astro` imports under `src/`
-- [ ] 4.4 No `bg-cosmic` under `src/pages/`
+- [x] 4.1 `npm run lint` passes
+- [x] 4.2 `npm run build` passes
+- [x] 4.3 No `Topbar.astro` imports under `src/`
+- [x] 4.4 No `bg-cosmic` under `src/pages/`
 
 #### Manual
 
-- [ ] 4.5 Full navigation loop paper continuity (landing, auth, dashboard, set, review, settings)
-- [ ] 4.6 S-07 dashboard features regression smoke
+- [x] 4.5 Full navigation loop paper continuity (landing, auth, dashboard, set, review, settings)
+- [x] 4.6 S-07 dashboard features regression smoke

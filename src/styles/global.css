@@ -110,6 +110,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* Retained for optional dev/marketing use; not used on user app routes (S-08 paper migration). */
 @utility bg-cosmic {
   background-image: linear-gradient(to bottom, #0a0e1a, #0f1529, #0a0e1a);
 }

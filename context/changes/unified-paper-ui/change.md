@@ -27,3 +27,58 @@ Baseline from `rg "bg-cosmic|Topbar\.astro|white/10|purple-300"` under `src/` be
 **Already paper (S-07):** `dashboard.astro`, `Welcome.astro` (`/`), `sets/[id]/index.astro`, `PaperShell`, `AppTopbar`, `FlashcardRow` with `theme="paper"` on set detail / generator.
 
 **Phase 1 primitives:** `src/components/ui/input.tsx` → shadcn tokens; `UiTheme` in `src/types.ts`; auth helpers accept optional `theme` (default `cosmic`).
+
+### Cosmic inventory (Phase 4 — final)
+
+Verified via `rg "Topbar\.astro" src/` and `rg "bg-cosmic" src/pages` after Phase 2–3 migrations.
+
+| Check | Result |
+| ----- | ------ |
+| `@/components/Topbar.astro` imports | **None** — `Topbar.astro` deleted |
+| `bg-cosmic` in `src/pages/**` | **None** |
+| `theme="cosmic"` callers in `src/` | **None** |
+| Intentional exception | `@utility bg-cosmic` in `global.css` (commented, unused on app routes) |
+
+**All user-facing routes now paper:** `/`, `/dashboard`, `/sets/<id>`, `/sets/<id>/review`, `/settings`, `/auth/signin`, `/auth/signup`, `/auth/confirm-email`.
+
+### Manual regression checklist (Phase 4)
+
+Run end-to-end before archive or release. Tick when verified.
+
+**Paper continuity**
+
+- [ ] Logged out `/`: paper shell, variant A headline, **Get started** → signup, **Sign in** → signin
+- [ ] Full loop: `/` → sign up/in → dashboard → set → review → settings → sign out → `/` (no cosmic flash)
+- [ ] Mobile-width: auth card and review grade grid do not overflow
+
+**Auth**
+
+- [ ] `/auth/signin` and `/auth/signup`: readable fields, validation errors, successful sign-in redirect
+- [ ] `/auth/confirm-email` renders (DEV and prod copy modes smoke)
+- [ ] Footer cross-links (sign up ↔ sign in) use paper link styling
+
+**Settings / account**
+
+- [ ] `/settings`: email, stats, danger zone on paper; `AppTopbar` Settings / Sets / Sign out work
+- [ ] Delete-account dialog: opens, confirm field readable, cancel works (do not complete deletion unless testing account-deletion change)
+
+**Review SRS**
+
+- [ ] Dashboard **Study** → review: paper shell, show answer, grade **Again/Good**, card advances
+- [ ] Return dashboard: due counts decrease (dashboard-set-sync)
+- [ ] Empty due state: message + back link to set
+- [ ] Set detail **Start review**: same paper session; no console errors on fetch/grade failures (retry works)
+
+**S-07 dashboard regression**
+
+- [ ] Due hero total matches sum of per-tile due counts (or both zero)
+- [ ] **Study** on tile opens review with expected due cards
+- [ ] **+ New set** dialog creates set; **⋯** rename/delete behave as S-05
+- [ ] AI generate + bulk save updates tile counts without full reload
+- [ ] Generator `<details>` collapsed by default; expands on paper background
+
+**Out of scope / preserved APIs**
+
+- [ ] SRS algorithm, `/api/srs/due`, `/api/srs/grade` unchanged (behavior-only smoke via review flow)
+- [ ] Auth API and middleware unchanged (sign-in/out smoke)
+- [ ] No database or RLS changes this slice
