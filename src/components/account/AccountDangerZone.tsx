@@ -148,7 +148,7 @@ export function AccountDangerZone({ email, setCount, cardCount, statsUnavailable
             <AlertDialogTitle>Delete your account?</AlertDialogTitle>
             <AlertDialogDescription>
               This will permanently delete your account, {dialogDataCopy}. Type{" "}
-              <strong className="text-white">{CONFIRM_TEXT}</strong> below to confirm.
+              <strong className="text-foreground">{CONFIRM_TEXT}</strong> below to confirm.
             </AlertDialogDescription>
           </AlertDialogHeader>
 

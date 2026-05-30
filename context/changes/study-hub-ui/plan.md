@@ -459,9 +459,9 @@ No data migration. Deploy is UI-only.
 
 #### Automated
 
-- [ ] 4.1 Lint passes: `npm run lint`
-- [ ] 4.2 Build passes: `npm run build`
+- [x] 4.1 Lint passes: `npm run lint`
+- [x] 4.2 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 4.3 Full regression checklist in `change.md` completed
+- [x] 4.3 Full regression checklist in `change.md` completed
