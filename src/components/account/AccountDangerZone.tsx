@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import type { UiTheme } from "@/types";
 
 const CONFIRM_TEXT = "DELETE";
 
@@ -31,14 +32,22 @@ interface AccountDangerZoneProps {
   cardCount: number;
   /** When true, counts could not be loaded; deletion still available. */
   statsUnavailable?: boolean;
+  theme?: UiTheme;
 }
 
-export function AccountDangerZone({ email, setCount, cardCount, statsUnavailable = false }: AccountDangerZoneProps) {
+export function AccountDangerZone({
+  email,
+  setCount,
+  cardCount,
+  statsUnavailable = false,
+  theme = "paper",
+}: AccountDangerZoneProps) {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [confirmText, setConfirmText] = React.useState("");
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
 
+  const isPaper = theme === "paper";
   const canConfirm = confirmText === CONFIRM_TEXT && !busy;
 
   function resetDialog() {
@@ -86,6 +95,8 @@ export function AccountDangerZone({ email, setCount, cardCount, statsUnavailable
   const setLabel = setCount === 1 ? "set" : "sets";
   const cardLabel = cardCount === 1 ? "flashcard" : "flashcards";
 
+  const strongClass = isPaper ? "text-foreground" : "text-white";
+
   const dataRemovalCopy = statsUnavailable ? (
     <>
       all sets and flashcards on your account. We could not load exact counts right now; deletion will still remove
@@ -93,8 +104,8 @@ export function AccountDangerZone({ email, setCount, cardCount, statsUnavailable
     </>
   ) : (
     <>
-      <strong className="text-white">{setCount}</strong> {setLabel} and{" "}
-      <strong className="text-white">{cardCount}</strong> {cardLabel}
+      <strong className={strongClass}>{setCount}</strong> {setLabel} and{" "}
+      <strong className={strongClass}>{cardCount}</strong> {cardLabel}
     </>
   );
 
@@ -102,30 +113,40 @@ export function AccountDangerZone({ email, setCount, cardCount, statsUnavailable
     <>all sets and flashcards on your account</>
   ) : (
     <>
-      <strong className="text-white">{setCount}</strong> {setLabel}, and{" "}
-      <strong className="text-white">{cardCount}</strong> {cardLabel}
+      <strong className={strongClass}>{setCount}</strong> {setLabel}, and{" "}
+      <strong className={strongClass}>{cardCount}</strong> {cardLabel}
     </>
   );
 
+  const sectionClass = isPaper
+    ? "border-border bg-card mt-4 rounded-2xl border p-6 shadow-sm"
+    : "rounded-2xl border border-red-400/30 bg-red-500/5 p-6 backdrop-blur-xl";
+
+  const headingClass = isPaper ? "text-destructive text-lg font-semibold" : "text-lg font-semibold text-red-100";
+
+  const bodyClass = isPaper ? "text-muted-foreground mt-2 text-sm" : "mt-2 text-sm text-blue-100/80";
+
+  const inlineErrorClass = isPaper
+    ? "border-destructive/30 bg-destructive/10 text-destructive mt-4 rounded-xl border px-4 py-3 text-sm"
+    : "mt-4 rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100";
+
+  const destructiveBtnClass = isPaper ? undefined : cn("bg-red-500/80 hover:bg-red-500");
+
   return (
-    <section className="rounded-2xl border border-red-400/30 bg-red-500/5 p-6 backdrop-blur-xl">
-      <h2 className="text-lg font-semibold text-red-100">Danger zone</h2>
-      <p className="mt-2 text-sm text-blue-100/80">
-        Permanently delete the account <strong className="text-white">{email}</strong> and all associated data. This
+    <section className={sectionClass}>
+      <h2 className={headingClass}>Danger zone</h2>
+      <p className={bodyClass}>
+        Permanently delete the account <strong className={strongClass}>{email}</strong> and all associated data. This
         removes {dataRemovalCopy}. This cannot be undone.
       </p>
 
-      {errorMessage && !dialogOpen && (
-        <div className="mt-4 rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
-          {errorMessage}
-        </div>
-      )}
+      {errorMessage && !dialogOpen && <div className={inlineErrorClass}>{errorMessage}</div>}
 
       <div className="mt-4">
         <Button
           type="button"
           variant="destructive"
-          className={cn("bg-red-500/80 hover:bg-red-500")}
+          className={destructiveBtnClass}
           disabled={busy}
           onClick={openDialog}
         >
@@ -164,17 +185,13 @@ export function AccountDangerZone({ email, setCount, cardCount, statsUnavailable
             }}
           />
 
-          {errorMessage && dialogOpen && (
-            <div className="rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
-              {errorMessage}
-            </div>
-          )}
+          {errorMessage && dialogOpen && <div className={inlineErrorClass}>{errorMessage}</div>}
 
           <AlertDialogFooter>
             <AlertDialogCancel disabled={busy}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               disabled={!canConfirm}
-              className={cn("bg-red-500/80 hover:bg-red-500")}
+              className={destructiveBtnClass}
               onClick={(e) => {
                 e.preventDefault();
                 void deleteAccount();

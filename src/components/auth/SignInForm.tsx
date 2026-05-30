@@ -53,6 +53,7 @@ export default function SignInForm({ serverError }: Props) {
         id="email"
         type="email"
         label="Email"
+        theme="paper"
         uncontrolled
         onInput={() => {
           clearError("email");
@@ -65,6 +66,7 @@ export default function SignInForm({ serverError }: Props) {
       <FormField
         id="password"
         label="Password"
+        theme="paper"
         uncontrolled
         passwordVisible={showPassword}
         onInput={() => {
@@ -75,6 +77,7 @@ export default function SignInForm({ serverError }: Props) {
         icon={<Lock className="size-4" />}
         endContent={
           <PasswordToggle
+            theme="paper"
             visible={showPassword}
             onToggle={() => {
               setShowPassword((prev) => !prev);
@@ -83,7 +86,7 @@ export default function SignInForm({ serverError }: Props) {
         }
       />
 
-      <ServerError message={serverError} />
+      <ServerError message={serverError} theme="paper" />
 
       <SubmitButton pendingText="Signing in..." icon={<LogIn className="size-4" />}>
         Sign in

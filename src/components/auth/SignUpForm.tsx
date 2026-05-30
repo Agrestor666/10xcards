@@ -65,7 +65,7 @@ export default function SignUpForm({ serverError }: Props) {
 
   const passwordHint =
     !errors.password && passwordLengthHint > 0 && passwordLengthHint < MIN_PASSWORD_LENGTH ? (
-      <p className="mt-1 text-xs text-blue-100/50">
+      <p className="text-muted-foreground mt-1 text-xs">
         {MIN_PASSWORD_LENGTH - passwordLengthHint} more character
         {MIN_PASSWORD_LENGTH - passwordLengthHint !== 1 ? "s" : ""} needed
       </p>
@@ -77,6 +77,7 @@ export default function SignUpForm({ serverError }: Props) {
         id="email"
         type="email"
         label="Email"
+        theme="paper"
         uncontrolled
         onInput={() => {
           clearError("email");
@@ -89,6 +90,7 @@ export default function SignUpForm({ serverError }: Props) {
       <FormField
         id="password"
         label="Password"
+        theme="paper"
         uncontrolled
         passwordVisible={showPassword}
         onInput={(e) => {
@@ -101,6 +103,7 @@ export default function SignUpForm({ serverError }: Props) {
         icon={<Lock className="size-4" />}
         endContent={
           <PasswordToggle
+            theme="paper"
             visible={showPassword}
             onToggle={() => {
               setShowPassword((prev) => !prev);
@@ -113,6 +116,7 @@ export default function SignUpForm({ serverError }: Props) {
         id="confirmPassword"
         name="confirmPassword"
         label="Confirm password"
+        theme="paper"
         uncontrolled
         passwordVisible={showConfirmPassword}
         onInput={() => {
@@ -123,6 +127,7 @@ export default function SignUpForm({ serverError }: Props) {
         icon={<Lock className="size-4" />}
         endContent={
           <PasswordToggle
+            theme="paper"
             visible={showConfirmPassword}
             onToggle={() => {
               setShowConfirmPassword((prev) => !prev);
@@ -131,7 +136,7 @@ export default function SignUpForm({ serverError }: Props) {
         }
       />
 
-      <ServerError message={serverError} />
+      <ServerError message={serverError} theme="paper" />
 
       <SubmitButton pendingText="Creating account..." icon={<UserPlus className="size-4" />}>
         Create account

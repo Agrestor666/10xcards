@@ -1,6 +1,7 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import Topbar from "@/components/Topbar.astro";
+import AppTopbar from "@/components/layout/AppTopbar.astro";
+import PaperShell from "@/components/layout/PaperShell.astro";
 import { AccountDangerZone } from "@/components/account/AccountDangerZone";
 import { SUPABASE_NOT_CONFIGURED_MESSAGE } from "@/lib/flashcard-set-errors";
 import { createClient } from "@/lib/supabase";
@@ -31,37 +32,34 @@ if (!supabase) {
 ---
 
 <Layout title="Settings">
-  <div class="bg-cosmic min-h-screen p-4 text-white">
-    <div class="mx-auto flex w-full max-w-3xl flex-col gap-4 pt-6">
-      <Topbar />
-      <header class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
-        <h1 class="bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
-          Settings
-        </h1>
-        <p class="mt-2 text-sm text-blue-100/70">
-          Signed in as <span class="font-medium text-white">{user?.email}</span>
-        </p>
-      </header>
+  <PaperShell class="max-w-3xl">
+    <AppTopbar />
+    <header class="border-border bg-card rounded-2xl border p-6 shadow-sm">
+      <h1 class="font-display text-3xl tracking-tight">Settings</h1>
+      <p class="text-muted-foreground mt-2 text-sm">
+        Signed in as <span class="text-foreground font-medium">{user?.email}</span>
+      </p>
+    </header>
 
-      {
-        statsLoadError && (
-          <div class="rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
-            {statsLoadError}
-          </div>
-        )
-      }
+    {
+      statsLoadError && (
+        <div class="border-destructive/30 bg-destructive/10 text-destructive mt-4 rounded-xl border px-4 py-3 text-sm">
+          {statsLoadError}
+        </div>
+      )
+    }
 
-      {
-        user?.email && (
-          <AccountDangerZone
-            client:load
-            email={user.email}
-            setCount={setCount}
-            cardCount={cardCount}
-            statsUnavailable={!!statsLoadError}
-          />
-        )
-      }
-    </div>
-  </div>
+    {
+      user?.email && (
+        <AccountDangerZone
+          client:load
+          theme="paper"
+          email={user.email}
+          setCount={setCount}
+          cardCount={cardCount}
+          statsUnavailable={!!statsLoadError}
+        />
+      )
+    }
+  </PaperShell>
 </Layout>

@@ -338,25 +338,25 @@ Remove obsolete cosmic topbar, verify no user route references cosmic shell, fin
 
 #### Automated
 
-- [x] 1.1 `npm run lint` passes
-- [x] 1.2 `npm run build` passes
+- [x] 1.1 `npm run lint` passes — 46eb88d
+- [x] 1.2 `npm run build` passes — 46eb88d
 
 #### Manual
 
-- [x] 1.3 Settings delete dialog input readable after input.tsx token fix (smoke)
+- [x] 1.3 Settings delete dialog input readable after input.tsx token fix (smoke) — 46eb88d
 
 ### Phase 2: Auth and settings on paper
 
 #### Automated
 
-- [ ] 2.1 `npm run lint` passes
-- [ ] 2.2 `npm run build` passes
+- [x] 2.1 `npm run lint` passes
+- [x] 2.2 `npm run build` passes
 
 #### Manual
 
-- [ ] 2.3 Auth sign-in and sign-up flows on paper (fields, errors, redirect)
-- [ ] 2.4 Settings page and AppTopbar navigation on paper
-- [ ] 2.5 Account deletion dialog opens and confirm field works (cancel without delete)
+- [x] 2.3 Auth sign-in and sign-up flows on paper (fields, errors, redirect)
+- [x] 2.4 Settings page and AppTopbar navigation on paper
+- [x] 2.5 Account deletion dialog opens and confirm field works (cancel without delete)
 
 ### Phase 3: Review session on paper
 
