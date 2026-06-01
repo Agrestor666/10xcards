@@ -40,7 +40,7 @@ Ręczne tworzenie fiszek edukacyjnych jest skrajnie czasochłonne — ta bariera
 | S-03 | manual-flashcard-crud | ręcznie dodać, edytować i usunąć fiszkę w zestawie                                                                     | F-01, S-01    | FR-006, FR-008, FR-009, US-02                | proposed |
 | S-04 | srs-review-session    | rozpocząć sesję powtórkową SRS i zobaczyć, że system automatycznie planuje kolejną datę przeglądu po każdej odpowiedzi | F-01, S-01    | FR-010, FR-011, US-01                        | proposed |
 | S-06 | account-deletion      | trwale usunąć swoje konto wraz ze wszystkimi zestawami i fiszkami (po potwierdzeniu)                                   | F-01          | NFR prywatność, Access Control               | planned  |
-| S-07 | study-hub-ui          | study hub na `/dashboard` + landing `/` + paper theme na `/sets/<id>`; due dziś, **Study**, kafelki zestawów | F-01, S-01, S-02, S-04, S-05 | prd-v3, US-01–US-04, landing-copy.md | proposed |
+| S-07 | study-hub-ui          | study hub na `/dashboard` + landing `/` + paper theme na `/sets/<id>`; due dziś, **Study**, kafelki zestawów | F-01, S-01, S-02, S-04, S-05 | prd-v3, US-01–US-04, landing-copy.md | done |
 | S-08 | unified-paper-ui      | cała aplikacja w jednym stylu paper (review, settings, auth); brak skoków cosmic ↔ paper między ekranami | S-07 | study-hub-ui plan, paper tokens | done |
 | S-09 | bilingual-ui          | cała aplikacja po polsku lub po angielsku; wybór języka na landingu (domyślnie z przeglądarki); po zalogowaniu bez zmiany | S-07, S-08 | shape-notes (ex-i18n non-goal), landing-copy.md | done |
 
@@ -192,7 +192,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
   - Fonty paper theme (np. Instrument Serif + DM Sans) — Owner: user/plan. Block: no.
   - Copy hero: `context/changes/study-hub-ui/landing-copy.md` (domyślne EN).
 - **Risk:** Wyższy — paper theme na dashboard + landing + set detail; review/settings/auth celowo poza slice → **S-08**; brak testów auto. ~3 tyg. after-hours raczej ciasno — fazowanie: (1) tokeny + dashboard, (2) landing + set detail.
-- **Status:** proposed
+- **Status:** done
 
 > Non-goals (slice): **pełna i18n PL/EN** (→ **S-09**), **redesign UI sesji review** (funkcja SRS bez zmian), migracje DB, glassmorphism. W scope: landing + `/sets/<id>` paper theme (2026-05-30). Copy: `landing-copy.md`. Pełna unifikacja UI (review, settings, auth) → **S-08**.
 
@@ -260,6 +260,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Done
 
+- **S-07: Study hub — redesign dashboardu** — Archived 2026-06-01 → `context/archive/2026-05-29-study-hub-ui/`. Lesson: —.
 - **S-08: Unified paper UI — pełna spójność wizualna** — Archived 2026-06-01 → `context/archive/2026-05-30-unified-paper-ui/`. Lesson: —.
 - **S-09: Dwujęzyczny interfejs (PL / EN)** — Archived 2026-06-01 → `context/archive/2026-05-30-bilingual-ui/`. Lesson: —.
 
