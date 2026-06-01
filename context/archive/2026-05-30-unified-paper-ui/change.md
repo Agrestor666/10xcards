@@ -1,10 +1,10 @@
 ---
 change_id: unified-paper-ui
 title: Unified paper UI: review, settings, auth + full route audit
-status: impl_reviewed
+status: archived
 created: 2026-05-30
-updated: 2026-05-30
-archived_at: null
+updated: 2026-06-01
+archived_at: 2026-06-01T20:10:29Z
 ---
 
 ## Notes
