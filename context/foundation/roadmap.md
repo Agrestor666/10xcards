@@ -41,7 +41,7 @@ Ręczne tworzenie fiszek edukacyjnych jest skrajnie czasochłonne — ta bariera
 | S-04 | srs-review-session    | rozpocząć sesję powtórkową SRS i zobaczyć, że system automatycznie planuje kolejną datę przeglądu po każdej odpowiedzi | F-01, S-01    | FR-010, FR-011, US-01                        | proposed |
 | S-06 | account-deletion      | trwale usunąć swoje konto wraz ze wszystkimi zestawami i fiszkami (po potwierdzeniu)                                   | F-01          | NFR prywatność, Access Control               | planned  |
 | S-07 | study-hub-ui          | study hub na `/dashboard` + landing `/` + paper theme na `/sets/<id>`; due dziś, **Study**, kafelki zestawów | F-01, S-01, S-02, S-04, S-05 | prd-v3, US-01–US-04, landing-copy.md | proposed |
-| S-08 | unified-paper-ui      | cała aplikacja w jednym stylu paper (review, settings, auth); brak skoków cosmic ↔ paper między ekranami | S-07 | study-hub-ui plan, paper tokens | proposed |
+| S-08 | unified-paper-ui      | cała aplikacja w jednym stylu paper (review, settings, auth); brak skoków cosmic ↔ paper między ekranami | S-07 | study-hub-ui plan, paper tokens | done |
 | S-09 | bilingual-ui          | cała aplikacja po polsku lub po angielsku; wybór języka na landingu (domyślnie z przeglądarki); po zalogowaniu bez zmiany | S-07, S-08 | shape-notes (ex-i18n non-goal), landing-copy.md | done |
 
 ## Streams
@@ -208,7 +208,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
   - Czy zachować `bg-cosmic` jako utility dla ewentualnych marketingowych one-offów — Owner: implementer przy `/10x-plan`. Block: no (domyślnie: usunąć z tras użytkownika, zostawić w CSS tylko jeśli potrzebne).
   - Zakres re-skinu komponentów React (review card, grade buttons, auth forms) vs. same strony Astro — Owner: implementer. Block: no.
 - **Risk:** Średni — dotyka wielu plików i islandów React; sesja SRS wymaga ostrożności (nie zmieniać logiki grading). Warto fazować: (1) impl-review wszystkich tras + inventory cosmic classes, (2) auth + settings, (3) review UI, (4) cleanup `Topbar.astro` / dev preview / martwe style.
-- **Status:** proposed
+- **Status:** done
 
 > Scope (planowane trasy): `index.astro`, `dashboard.astro`, `sets/[id]/index.astro`, `sets/[id]/review.astro`, `settings.astro`, `auth/*.astro`, wspólne komponenty (`SignInForm`, review UI, `FlashcardRow` theme default → paper). Non-goals: zmiany algorytmu SRS, migracje DB, **pełna i18n PL** (→ **S-09**), nowe funkcje.
 
@@ -260,6 +260,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Done
 
+- **S-08: Unified paper UI — pełna spójność wizualna** — Archived 2026-06-01 → `context/archive/2026-05-30-unified-paper-ui/`. Lesson: —.
 - **S-09: Dwujęzyczny interfejs (PL / EN)** — Archived 2026-06-01 → `context/archive/2026-05-30-bilingual-ui/`. Lesson: —.
 
 (Empty on first generation. `/10x-archive` appends an entry here — and flips that item's `Status` to `done` — when a change whose `Change ID` matches the item is archived.)
