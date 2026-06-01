@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import type { UiTheme } from "@/types";
+import { useLocale } from "@/components/i18n/useLocale";
 
 export type FlashcardRowMode = "persisted" | "draft";
 
@@ -28,39 +27,18 @@ interface DraftProps extends BaseProps {
   onRemove: () => void;
 }
 
-/** @deprecated Use `UiTheme` from `@/types`. */
-export type FlashcardRowTheme = UiTheme;
-
-export type FlashcardRowProps = (PersistedProps | DraftProps) & {
-  /** `paper` for all user-facing study surfaces; cosmic branch retained until Phase 4 grep. */
-  theme?: UiTheme;
-};
+export type FlashcardRowProps = PersistedProps | DraftProps;
 
 export function FlashcardRow(props: FlashcardRowProps) {
-  const { question, answer, onQuestionChange, onAnswerChange, maxChars = 2000, theme = "paper" } = props;
+  const { t } = useLocale();
+  const { question, answer, onQuestionChange, onAnswerChange, maxChars = 2000 } = props;
   const [isDeleteConfirming, setIsDeleteConfirming] = React.useState(false);
-  const isPaper = theme === "paper";
-
-  const shellClass = isPaper
-    ? "border-border bg-card rounded-xl border p-4 shadow-sm"
-    : "rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl";
-
-  const labelClass = isPaper ? "text-muted-foreground text-xs font-medium" : "text-xs font-medium text-blue-100/70";
-
-  const fieldClass = isPaper
-    ? "border-border bg-background text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-ring/30 w-full resize-y rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
-    : "w-full resize-y rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-purple-300/50 focus:ring-2 focus:ring-purple-300/20 focus:outline-none";
-
-  const counterClass = isPaper ? "text-muted-foreground text-[11px]" : "text-[11px] text-blue-100/50";
-
-  const cosmicOutlineBtn = cn("border-white/15 bg-white/0 text-white hover:bg-white/10");
-  const cosmicDestructiveBtn = cn("bg-red-500/80 hover:bg-red-500");
 
   return (
-    <div className={shellClass}>
+    <div className="border-border bg-card rounded-xl border p-4 shadow-sm">
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         <label className="flex flex-col gap-2">
-          <span className={labelClass}>Question</span>
+          <span className="text-muted-foreground text-xs font-medium">{t("flashcards.field.question")}</span>
           <textarea
             value={question}
             onChange={(e) => {
@@ -68,15 +46,15 @@ export function FlashcardRow(props: FlashcardRowProps) {
             }}
             rows={3}
             maxLength={maxChars}
-            className={fieldClass}
+            className="border-border bg-background text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-ring/30 w-full resize-y rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
           />
-          <span className={counterClass}>
+          <span className="text-muted-foreground text-[11px]">
             {question.length}/{maxChars}
           </span>
         </label>
 
         <label className="flex flex-col gap-2">
-          <span className={labelClass}>Answer</span>
+          <span className="text-muted-foreground text-xs font-medium">{t("flashcards.field.answer")}</span>
           <textarea
             value={answer}
             onChange={(e) => {
@@ -84,9 +62,9 @@ export function FlashcardRow(props: FlashcardRowProps) {
             }}
             rows={3}
             maxLength={maxChars}
-            className={fieldClass}
+            className="border-border bg-background text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-ring/30 w-full resize-y rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
           />
-          <span className={counterClass}>
+          <span className="text-muted-foreground text-[11px]">
             {answer.length}/{maxChars}
           </span>
         </label>
@@ -95,9 +73,9 @@ export function FlashcardRow(props: FlashcardRowProps) {
       <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-h-[18px] text-xs">
           {props.mode === "persisted" && props.saveError ? (
-            <span className={isPaper ? "text-destructive" : "text-red-200"}>{props.saveError}</span>
+            <span className="text-destructive">{props.saveError}</span>
           ) : (
-            <span className={isPaper ? "text-muted-foreground" : "text-blue-100/50"} />
+            <span className="text-muted-foreground" />
           )}
         </div>
 
@@ -106,25 +84,23 @@ export function FlashcardRow(props: FlashcardRowProps) {
             <Button
               type="button"
               variant="outline"
-              className={isPaper ? undefined : cosmicOutlineBtn}
               onClick={() => {
                 props.onRemove();
               }}
             >
-              Remove
+              {t("flashcards.row.remove")}
             </Button>
           ) : (
             <>
               <Button
                 type="button"
                 variant="outline"
-                className={isPaper ? undefined : cosmicOutlineBtn}
                 onClick={() => {
                   props.onSave();
                 }}
                 disabled={props.isSaving || props.isDeleting}
               >
-                {props.isSaving ? "Saving…" : "Save"}
+                {props.isSaving ? t("common.saving") : t("common.save")}
               </Button>
 
               {!isDeleteConfirming ? (
@@ -135,9 +111,8 @@ export function FlashcardRow(props: FlashcardRowProps) {
                     setIsDeleteConfirming(true);
                   }}
                   disabled={props.isSaving || props.isDeleting}
-                  className={isPaper ? undefined : cosmicDestructiveBtn}
                 >
-                  Delete
+                  {t("common.delete")}
                 </Button>
               ) : (
                 <>
@@ -149,20 +124,18 @@ export function FlashcardRow(props: FlashcardRowProps) {
                       props.onDelete();
                     }}
                     disabled={props.isSaving || props.isDeleting}
-                    className={isPaper ? undefined : cosmicDestructiveBtn}
                   >
-                    {props.isDeleting ? "Deleting…" : "Confirm delete"}
+                    {props.isDeleting ? t("common.deleting") : t("flashcards.row.confirm_delete")}
                   </Button>
                   <Button
                     type="button"
                     variant="outline"
-                    className={isPaper ? undefined : cosmicOutlineBtn}
                     onClick={() => {
                       setIsDeleteConfirming(false);
                     }}
                     disabled={props.isSaving || props.isDeleting}
                   >
-                    Cancel
+                    {t("common.cancel")}
                   </Button>
                 </>
               )}

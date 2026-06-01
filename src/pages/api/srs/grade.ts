@@ -3,8 +3,6 @@ import { z } from "zod";
 import { jsonResponse } from "@/lib/api-json";
 import { SUPABASE_NOT_CONFIGURED_MESSAGE } from "@/lib/flashcard-set-errors";
 import { gradeCard, type GradeRating } from "@/lib/srs/grade-card";
-import { createClient } from "@/lib/supabase";
-
 export const prerender = false;
 
 interface CardScheduleRow {
@@ -36,7 +34,7 @@ const gradeBodySchema = z.object({
 });
 
 export const POST: APIRoute = async (context) => {
-  const supabase = createClient(context.request.headers, context.cookies);
+  const supabase = context.locals.supabase;
   if (!supabase) {
     return jsonResponse({ ok: false, message: SUPABASE_NOT_CONFIGURED_MESSAGE }, 503);
   }

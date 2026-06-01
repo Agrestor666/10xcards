@@ -4,9 +4,12 @@ import AppTopbar from "@/components/layout/AppTopbar.astro";
 import PaperShell from "@/components/layout/PaperShell.astro";
 import { SetFlashcardsManager } from "@/components/flashcards/SetFlashcardsManager";
 import { loadSetDetailPage } from "@/lib/load-set-detail";
+import { t } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
-const loaded = await loadSetDetailPage(Astro.params.id, Astro.request.headers, Astro.cookies);
+const { locale } = Astro.locals;
+
+const loaded = await loadSetDetailPage(Astro.params.id, Astro.locals.supabase);
 
 if (loaded.kind === "redirect") {
   return Astro.redirect(loaded.url);
@@ -16,13 +19,15 @@ const { set: setRow, initialCards, cardsLoadError } = loaded;
 const reviewUrl = `/sets/${setRow.id}/review`;
 ---
 
-<Layout title={setRow.name}>
+<Layout title={t(locale, "pages.set.title", { name: setRow.name })}>
   <PaperShell class="max-w-3xl">
     <AppTopbar />
     <header class="border-border bg-card rounded-2xl border p-6 shadow-sm">
-      <a href="/dashboard" class="text-primary text-sm font-medium transition-colors hover:underline"> ← Dashboard </a>
+      <a href="/dashboard" class="text-primary text-sm font-medium transition-colors hover:underline">
+        {t(locale, "set.back_to_dashboard")}
+      </a>
       <h1 class="font-display mt-3 text-3xl tracking-tight">{setRow.name}</h1>
-      {cardsLoadError && <p class="text-destructive mt-2 text-sm">Could not load cards. Please refresh.</p>}
+      {cardsLoadError && <p class="text-destructive mt-2 text-sm">{t(locale, "set.load_cards_error")}</p>}
 
       <div class="mt-5 flex flex-wrap items-center gap-3">
         <a
@@ -32,11 +37,17 @@ const reviewUrl = `/sets/${setRow.id}/review`;
             "focus-visible:ring-ring/50 focus-visible:ring-[3px] focus-visible:outline-none",
           )}
         >
-          Start review
+          {t(locale, "set.start_review")}
         </a>
       </div>
     </header>
 
-    <SetFlashcardsManager client:load setId={setRow.id} setName={setRow.name} initialCards={initialCards} />
+    <SetFlashcardsManager
+      client:load
+      locale={locale}
+      setId={setRow.id}
+      setName={setRow.name}
+      initialCards={initialCards}
+    />
   </PaperShell>
 </Layout>

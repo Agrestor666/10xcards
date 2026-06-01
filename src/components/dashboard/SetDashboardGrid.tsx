@@ -20,6 +20,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { NewSetDialog } from "@/components/dashboard/NewSetDialog";
+import { LocaleProvider } from "@/components/i18n/LocaleProvider";
+import { useLocale } from "@/components/i18n/useLocale";
+import { tPlural } from "@/lib/i18n";
 import {
   DASHBOARD_SET_CARDS_ADDED,
   DASHBOARD_SET_REVIEW_GRADED,
@@ -28,6 +31,7 @@ import {
   type DashboardSetCardsAddedDetail,
   type DashboardSetReviewGradedDetail,
 } from "@/lib/dashboard-set-sync";
+import type { AppLocale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import type { DashboardSetRow } from "@/types";
 
@@ -47,20 +51,6 @@ async function parseJson<T>(res: Response): Promise<T | null> {
   }
 }
 
-function validateSetName(name: string, originalName: string): string | null {
-  const trimmed = name.trim();
-  if (trimmed.length < 1) {
-    return "Set name cannot be empty";
-  }
-  if (trimmed.length > MAX_SET_NAME_LENGTH) {
-    return `Set name must be at most ${MAX_SET_NAME_LENGTH} characters`;
-  }
-  if (trimmed === originalName.trim()) {
-    return "Name is unchanged";
-  }
-  return null;
-}
-
 function SetTileMenu({
   set,
   disabled,
@@ -72,10 +62,18 @@ function SetTileMenu({
   onRename: () => void;
   onDelete: () => void;
 }) {
+  const { t } = useLocale();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button type="button" variant="outline" size="icon" disabled={disabled} aria-label={`Actions for ${set.name}`}>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          disabled={disabled}
+          aria-label={t("sets.grid.actions_for", { name: set.name })}
+        >
           <MoreHorizontal className="size-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -85,7 +83,7 @@ function SetTileMenu({
             onRename();
           }}
         >
-          Rename
+          {t("sets.grid.rename")}
         </DropdownMenuItem>
         <DropdownMenuItem
           className="text-destructive focus:text-destructive"
@@ -93,14 +91,15 @@ function SetTileMenu({
             onDelete();
           }}
         >
-          Delete
+          {t("sets.grid.delete")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 }
 
-export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow[] }) {
+function SetDashboardGridInner({ initialSets }: { initialSets: DashboardSetRow[] }) {
+  const { locale, t } = useLocale();
   const [sets, setSets] = React.useState(initialSets);
   const [renameTarget, setRenameTarget] = React.useState<DashboardSetRow | null>(null);
   const [editName, setEditName] = React.useState("");
@@ -108,8 +107,23 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const [busyId, setBusyId] = React.useState<string | null>(null);
 
+  function validateSetName(name: string, originalName: string): string | null {
+    const trimmed = name.trim();
+    if (trimmed.length < 1) {
+      return t("sets.grid.validation.name_empty");
+    }
+    if (trimmed.length > MAX_SET_NAME_LENGTH) {
+      return t("sets.grid.validation.name_max", { max: MAX_SET_NAME_LENGTH });
+    }
+    if (trimmed === originalName.trim()) {
+      return t("sets.grid.validation.name_unchanged");
+    }
+    return null;
+  }
+
   const renameValidationError = renameTarget ? validateSetName(editName, renameTarget.name) : null;
   const canSaveRename = renameTarget !== null && renameValidationError === null;
+  const unchangedKey = t("sets.grid.validation.name_unchanged");
 
   React.useEffect(() => {
     function onCardsAdded(event: Event) {
@@ -199,7 +213,7 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
 
       const body = await parseJson<UpdateResponse>(res);
       if (!body || !("ok" in body)) {
-        showError("Could not rename set. Please try again.");
+        showError(t("sets.grid.error.rename"));
         return;
       }
       if (!body.ok) {
@@ -220,7 +234,7 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
       );
       closeRename();
     } catch {
-      showError("Could not rename set. Please try again.");
+      showError(t("sets.grid.error.rename"));
     } finally {
       setBusyId(null);
     }
@@ -241,7 +255,7 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
 
       const body = await parseJson<DeleteResponse>(res);
       if (!body || !("ok" in body)) {
-        showError("Could not delete set. Please try again.");
+        showError(t("sets.grid.error.delete"));
         return;
       }
       if (!body.ok) {
@@ -258,7 +272,7 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
         closeRename();
       }
     } catch {
-      showError("Could not delete set. Please try again.");
+      showError(t("sets.grid.error.delete"));
     } finally {
       setBusyId(null);
     }
@@ -271,6 +285,13 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
       return;
     }
     setPendingDelete(set);
+  }
+
+  function cardCountLabel(count: number): string {
+    if (count === 0) {
+      return t("sets.grid.card_count_zero");
+    }
+    return tPlural(locale, "sets.grid.card_count", count);
   }
 
   const menuDisabled = busyId !== null;
@@ -286,9 +307,8 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {sets.map((set) => {
           const isBusy = busyId === set.id;
-          const cardLabel =
-            set.card_count === 0 ? "0 cards" : `${set.card_count} card${set.card_count === 1 ? "" : "s"}`;
-          const dueLabel = `${set.due_count} due`;
+          const cardLabel = cardCountLabel(set.card_count);
+          const dueLabel = t("sets.grid.due_count", { count: set.due_count });
 
           return (
             <article
@@ -319,7 +339,7 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
                 />
               </div>
               <Button asChild className="w-full sm:w-auto" disabled={isBusy}>
-                <a href={`/sets/${set.id}/review`}>Study</a>
+                <a href={`/sets/${set.id}/review`}>{t("sets.grid.study")}</a>
               </Button>
             </article>
           );
@@ -336,9 +356,9 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
         }}
       >
         {renameTarget ? (
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-md" closeLabel={t("a11y.close")}>
             <DialogHeader>
-              <DialogTitle>Rename set</DialogTitle>
+              <DialogTitle>{t("sets.grid.rename_dialog.title")}</DialogTitle>
             </DialogHeader>
             <Input
               type="text"
@@ -350,12 +370,12 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
               }}
               className={cn("border-border bg-background text-foreground")}
             />
-            {renameValidationError && renameValidationError !== "Name is unchanged" ? (
+            {renameValidationError && renameValidationError !== unchangedKey ? (
               <span className="text-destructive text-xs">{renameValidationError}</span>
             ) : null}
             <DialogFooter>
               <Button type="button" variant="outline" onClick={closeRename} disabled={busyId === renameTarget.id}>
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button
                 type="button"
@@ -364,7 +384,7 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
                   void saveRename();
                 }}
               >
-                {busyId === renameTarget.id ? "Saving…" : "Save"}
+                {busyId === renameTarget.id ? t("common.saving") : t("common.save")}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -381,17 +401,16 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
       >
         <AlertDialogContent className={cn("border-border bg-card text-foreground")}>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-foreground">Delete this set?</AlertDialogTitle>
+            <AlertDialogTitle className="text-foreground">{t("sets.grid.delete_dialog.title")}</AlertDialogTitle>
             <AlertDialogDescription className="text-muted-foreground">
-              This will permanently delete{" "}
-              <strong className="text-foreground">
-                {pendingDelete?.card_count ?? 0} flashcard{(pendingDelete?.card_count ?? 0) === 1 ? "" : "s"}
-              </strong>{" "}
-              and the set <strong className="text-foreground">{pendingDelete?.name}</strong>.
+              {t("sets.grid.delete_dialog.description", {
+                cardPhrase: tPlural(locale, "sets.grid.delete_dialog.card", pendingDelete?.card_count ?? 0),
+                setName: pendingDelete?.name ?? "",
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={busyId === pendingDelete?.id}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={busyId === pendingDelete?.id}>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               disabled={busyId === pendingDelete?.id}
               className={cn("bg-destructive hover:bg-destructive/90")}
@@ -402,11 +421,19 @@ export function SetDashboardGrid({ initialSets }: { initialSets: DashboardSetRow
                 }
               }}
             >
-              {busyId === pendingDelete?.id ? "Deleting…" : "Delete set"}
+              {busyId === pendingDelete?.id ? t("common.deleting") : t("sets.grid.delete_set")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>
+  );
+}
+
+export function SetDashboardGrid({ locale, initialSets }: { locale: AppLocale; initialSets: DashboardSetRow[] }) {
+  return (
+    <LocaleProvider locale={locale}>
+      <SetDashboardGridInner initialSets={initialSets} />
+    </LocaleProvider>
   );
 }

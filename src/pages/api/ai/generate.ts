@@ -4,8 +4,6 @@ import { MAX_SOURCE_TEXT_CHARS } from "@/lib/ai-generation-limits";
 import { jsonResponse } from "@/lib/api-json";
 import { generateFlashcardsFromText } from "@/lib/openrouter-generate";
 import { SUPABASE_NOT_CONFIGURED_MESSAGE } from "@/lib/flashcard-set-errors";
-import { createClient } from "@/lib/supabase";
-
 export const prerender = false;
 
 const generateBodySchema = z.object({
@@ -13,7 +11,7 @@ const generateBodySchema = z.object({
 });
 
 export const POST: APIRoute = async (context) => {
-  const supabase = createClient(context.request.headers, context.cookies);
+  const supabase = context.locals.supabase;
   if (!supabase) {
     return jsonResponse({ ok: false, message: SUPABASE_NOT_CONFIGURED_MESSAGE }, 503);
   }
@@ -57,7 +55,7 @@ export const POST: APIRoute = async (context) => {
   const result = await generateFlashcardsFromText(text);
 
   if (!result.ok) {
-    return jsonResponse({ ok: false, message: result.message }, 502);
+    return jsonResponse({ ok: false, errorKey: result.errorKey }, 502);
   }
 
   return jsonResponse({ ok: true, cards: result.cards });

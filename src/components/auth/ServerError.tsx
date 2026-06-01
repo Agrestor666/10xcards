@@ -7,7 +7,7 @@ interface ServerErrorProps {
   theme?: UiTheme;
 }
 
-export function ServerError({ message, theme = "cosmic" }: ServerErrorProps) {
+export function ServerError({ message, theme = "paper" }: ServerErrorProps) {
   if (!message) return null;
 
   const isPaper = theme === "paper";

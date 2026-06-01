@@ -8,10 +8,15 @@ import {
   type DashboardSetDeletedDetail,
   type DashboardSetReviewGradedDetail,
 } from "@/lib/dashboard-set-sync";
+import { LocaleProvider } from "@/components/i18n/LocaleProvider";
+import { useLocale } from "@/components/i18n/useLocale";
+import { tPlural } from "@/lib/i18n";
+import type { AppLocale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import { NewSetDialog } from "@/components/dashboard/NewSetDialog";
 
-export function StudyHero({ initialTotalDue, hasSets }: { initialTotalDue: number; hasSets: boolean }) {
+function StudyHeroInner({ initialTotalDue, hasSets }: { initialTotalDue: number; hasSets: boolean }) {
+  const { locale, t } = useLocale();
   const [totalDue, setTotalDue] = React.useState(initialTotalDue);
 
   React.useEffect(() => {
@@ -56,31 +61,45 @@ export function StudyHero({ initialTotalDue, hasSets }: { initialTotalDue: numbe
   if (!hasSets) {
     return (
       <header className={cn("border-border bg-card rounded-2xl border p-8 shadow-sm")}>
-        <h1 className="font-display text-4xl tracking-tight">Your study hub</h1>
-        <p className="text-muted-foreground mt-3 max-w-prose">
-          Create your first set to start studying with spaced repetition.
-        </p>
+        <h1 className="font-display text-4xl tracking-tight">{t("dashboard.hero.empty.title")}</h1>
+        <p className="text-muted-foreground mt-3 max-w-prose">{t("dashboard.hero.empty.description")}</p>
         <div className="mt-6">
-          <NewSetDialog triggerLabel="Create your first set" triggerVariant="primary" />
+          <NewSetDialog triggerLabel={t("dashboard.hero.empty.cta")} triggerVariant="primary" />
         </div>
       </header>
     );
   }
 
   if (totalDue > 0) {
-    const label = totalDue === 1 ? "1 card ready to review" : `${totalDue} cards ready to review`;
+    const label = tPlural(locale, "dashboard.hero.due.title", totalDue);
     return (
       <header className={cn("border-border bg-card rounded-2xl border p-8 shadow-sm")}>
         <h1 className="font-display text-4xl tracking-tight">{label}</h1>
-        <p className="text-muted-foreground mt-3">Pick a set below and hit Study when you are ready.</p>
+        <p className="text-muted-foreground mt-3">{t("dashboard.hero.due.subtitle")}</p>
       </header>
     );
   }
 
   return (
     <header className={cn("border-border bg-card rounded-2xl border p-8 shadow-sm")}>
-      <h1 className="font-display text-4xl tracking-tight">You&apos;re all caught up</h1>
-      <p className="text-muted-foreground mt-3">No cards are due right now. Add more cards or check back later.</p>
+      <h1 className="font-display text-4xl tracking-tight">{t("dashboard.hero.caught_up.title")}</h1>
+      <p className="text-muted-foreground mt-3">{t("dashboard.hero.caught_up.subtitle")}</p>
     </header>
+  );
+}
+
+export function StudyHero({
+  locale,
+  initialTotalDue,
+  hasSets,
+}: {
+  locale: AppLocale;
+  initialTotalDue: number;
+  hasSets: boolean;
+}) {
+  return (
+    <LocaleProvider locale={locale}>
+      <StudyHeroInner initialTotalDue={initialTotalDue} hasSets={hasSets} />
+    </LocaleProvider>
   );
 }

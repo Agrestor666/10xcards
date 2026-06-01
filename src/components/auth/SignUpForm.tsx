@@ -10,6 +10,16 @@ import type { AppLocale } from "@/lib/locale";
 
 const MIN_PASSWORD_LENGTH = 6;
 
+function passwordCharsNeededKey(remaining: number) {
+  if (remaining === 1) {
+    return "auth.validation.password_chars_needed_one" as const;
+  }
+  if (remaining >= 2 && remaining <= 4) {
+    return "auth.validation.password_chars_needed_other" as const;
+  }
+  return "auth.validation.password_chars_needed_many" as const;
+}
+
 interface Props {
   locale: AppLocale;
   serverError?: string | null;
@@ -72,12 +82,9 @@ function SignUpFormInner({ serverError }: Pick<Props, "serverError">) {
   const passwordHint =
     !errors.password && passwordLengthHint > 0 && passwordLengthHint < MIN_PASSWORD_LENGTH ? (
       <p className="text-muted-foreground mt-1 text-xs">
-        {t(
-          remaining === 1 ? "auth.validation.password_chars_needed_one" : "auth.validation.password_chars_needed_other",
-          {
-            count: remaining,
-          },
-        )}
+        {t(passwordCharsNeededKey(remaining), {
+          count: remaining,
+        })}
       </p>
     ) : undefined;
 

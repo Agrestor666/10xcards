@@ -31,7 +31,7 @@ const openRouterChatResponseSchema = z.object({
     .min(1),
 });
 
-export type GenerateFlashcardsResult = { ok: true; cards: FlashcardDraft[] } | { ok: false; message: string };
+export type GenerateFlashcardsResult = { ok: true; cards: FlashcardDraft[] } | { ok: false; errorKey: string };
 
 const SYSTEM_PROMPT = `You are a flashcard generator. Given source study text, produce concise question-and-answer pairs that help the learner review the material.
 
@@ -65,10 +65,7 @@ function parseCardsFromLlmPayload(payload: unknown): FlashcardDraft[] | null {
 
 export async function generateFlashcardsFromText(text: string): Promise<GenerateFlashcardsResult> {
   if (!OPENROUTER_API_KEY) {
-    return {
-      ok: false,
-      message: "AI generation is not configured. Contact the site administrator.",
-    };
+    return { ok: false, errorKey: "generator.error.generate" };
   }
 
   const controller = new AbortController();
@@ -95,58 +92,49 @@ export async function generateFlashcardsFromText(text: string): Promise<Generate
     });
 
     if (!response.ok) {
-      return {
-        ok: false,
-        message: "Could not generate flashcards right now. Please try again in a moment.",
-      };
+      if (import.meta.env.DEV) {
+        const errText = await response.text().catch(() => "(unreadable)");
+        // eslint-disable-next-line no-console -- dev-only OpenRouter diagnostics
+        console.error(`OpenRouter HTTP ${response.status}:`, errText);
+      }
+      return { ok: false, errorKey: "generator.error.generate" };
     }
 
     const body: unknown = await response.json();
     const parsed = openRouterChatResponseSchema.safeParse(body);
 
     if (!parsed.success) {
-      return {
-        ok: false,
-        message: "Could not generate flashcards. The AI returned an unexpected response.",
-      };
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console -- dev-only OpenRouter diagnostics
+        console.error("OpenRouter unexpected response shape:", body);
+      }
+      return { ok: false, errorKey: "generator.error.generate" };
     }
 
     let payload: unknown;
     try {
       payload = extractJsonPayload(parsed.data.choices[0].message.content);
     } catch {
-      return {
-        ok: false,
-        message: "Could not generate flashcards. The AI returned invalid data.",
-      };
+      return { ok: false, errorKey: "generator.error.generate" };
     }
 
     const drafts = parseCardsFromLlmPayload(payload);
     if (!drafts) {
-      return {
-        ok: false,
-        message: "Could not generate flashcards. The AI returned an unexpected format.",
-      };
+      return { ok: false, errorKey: "generator.error.generate" };
     }
 
     const validated = validateFlashcardDrafts(drafts);
     if (!validated.ok) {
-      return { ok: false, message: validated.error };
+      return { ok: false, errorKey: "generator.error.generate" };
     }
 
     return { ok: true, cards: validated.cards };
   } catch (error) {
     if (error instanceof Error && error.name === "AbortError") {
-      return {
-        ok: false,
-        message: "Generation took too long. Try a shorter passage or try again.",
-      };
+      return { ok: false, errorKey: "generator.error.timeout" };
     }
 
-    return {
-      ok: false,
-      message: "Could not generate flashcards right now. Please try again.",
-    };
+    return { ok: false, errorKey: "generator.error.generate" };
   } finally {
     clearTimeout(timeoutId);
   }

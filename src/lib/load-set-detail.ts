@@ -1,7 +1,10 @@
-import { SUPABASE_NOT_CONFIGURED_MESSAGE } from "@/lib/flashcard-set-errors";
-import { createClient } from "@/lib/supabase";
-import type { AstroCookies } from "astro";
+import type { FlashcardSetErrorKey } from "@/lib/flashcard-set-errors";
+import type { AppSupabaseClient } from "@/lib/supabase";
 import { z } from "zod";
+
+function dashboardErrorUrl(errorKey: FlashcardSetErrorKey): string {
+  return `/dashboard?error=${encodeURIComponent(errorKey)}`;
+}
 
 export interface SetMeta {
   id: string;
@@ -31,13 +34,9 @@ const setMetaSchema = z.object({
   name: z.string(),
 });
 
-async function fetchSetMeta(rawId: string, headers: Headers, cookies: AstroCookies): Promise<SetMetaLoadResult> {
-  const supabase = createClient(headers, cookies);
+async function fetchSetMeta(supabase: AppSupabaseClient | null, rawId: string): Promise<SetMetaLoadResult> {
   if (!supabase) {
-    return {
-      kind: "redirect",
-      url: `/dashboard?error=${encodeURIComponent(SUPABASE_NOT_CONFIGURED_MESSAGE)}`,
-    };
+    return { kind: "redirect", url: dashboardErrorUrl("supabase_unconfigured") };
   }
 
   const { data: setRow, error: setError } = await supabase
@@ -48,7 +47,7 @@ async function fetchSetMeta(rawId: string, headers: Headers, cookies: AstroCooki
 
   const parsed = setMetaSchema.safeParse(setRow);
   if (setError || !parsed.success) {
-    return { kind: "redirect", url: `/dashboard?error=${encodeURIComponent("Set not found")}` };
+    return { kind: "redirect", url: dashboardErrorUrl("set_not_found") };
   }
 
   return { kind: "ok", set: parsed.data };
@@ -56,36 +55,30 @@ async function fetchSetMeta(rawId: string, headers: Headers, cookies: AstroCooki
 
 export async function loadSetMetaPage(
   rawId: string | undefined,
-  headers: Headers,
-  cookies: AstroCookies,
+  supabase: AppSupabaseClient | null,
 ): Promise<SetMetaLoadResult> {
   if (!rawId || !z.uuid().safeParse(rawId).success) {
-    return { kind: "redirect", url: `/dashboard?error=${encodeURIComponent("Invalid set")}` };
+    return { kind: "redirect", url: dashboardErrorUrl("set_invalid") };
   }
 
-  return fetchSetMeta(rawId, headers, cookies);
+  return fetchSetMeta(supabase, rawId);
 }
 
 export async function loadSetDetailPage(
   rawId: string | undefined,
-  headers: Headers,
-  cookies: AstroCookies,
+  supabase: AppSupabaseClient | null,
 ): Promise<SetDetailLoadResult> {
   if (!rawId || !z.uuid().safeParse(rawId).success) {
-    return { kind: "redirect", url: `/dashboard?error=${encodeURIComponent("Invalid set")}` };
+    return { kind: "redirect", url: dashboardErrorUrl("set_invalid") };
   }
 
-  const metaResult = await fetchSetMeta(rawId, headers, cookies);
+  const metaResult = await fetchSetMeta(supabase, rawId);
   if (metaResult.kind === "redirect") {
     return metaResult;
   }
 
-  const supabase = createClient(headers, cookies);
   if (!supabase) {
-    return {
-      kind: "redirect",
-      url: `/dashboard?error=${encodeURIComponent(SUPABASE_NOT_CONFIGURED_MESSAGE)}`,
-    };
+    return { kind: "redirect", url: dashboardErrorUrl("supabase_unconfigured") };
   }
 
   const { data: cards, error: cardsError } = await supabase

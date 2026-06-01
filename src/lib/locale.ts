@@ -42,6 +42,7 @@ export function setLocaleCookie(cookies: AstroCookies, locale: AppLocale): void 
     maxAge: ONE_YEAR_SECONDS,
     sameSite: "lax",
     httpOnly: true,
+    secure: import.meta.env.PROD,
   });
 }
 
@@ -63,4 +64,8 @@ export function resolveLocale(input: {
   }
 
   return parseAcceptLanguage(input.acceptLanguage);
+}
+
+export function localeToBcp47(locale: AppLocale): string {
+  return locale === "pl" ? "pl-PL" : "en-US";
 }

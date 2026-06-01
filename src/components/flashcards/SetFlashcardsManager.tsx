@@ -1,7 +1,10 @@
 import * as React from "react";
 import { FlashcardRow } from "@/components/flashcards/FlashcardRow";
 import { Button } from "@/components/ui/button";
+import { LocaleProvider } from "@/components/i18n/LocaleProvider";
+import { useLocale } from "@/components/i18n/useLocale";
 import { MAX_CARD_FIELD_CHARS } from "@/lib/ai-generation-limits";
+import type { AppLocale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
 interface InitialCard {
@@ -52,7 +55,7 @@ async function parseJson<T>(res: Response): Promise<T | null> {
   }
 }
 
-export function SetFlashcardsManager({
+function SetFlashcardsManagerInner({
   setId,
   setName,
   initialCards,
@@ -61,6 +64,7 @@ export function SetFlashcardsManager({
   setName: string;
   initialCards: InitialCard[];
 }) {
+  const { t } = useLocale();
   const [cards, setCards] = React.useState<Card[]>(
     initialCards.map((c) => ({ ...c, isSaving: false, isDeleting: false })),
   );
@@ -97,11 +101,11 @@ export function SetFlashcardsManager({
     const a = newAnswer.trim();
 
     if (!q || !a) {
-      showError("Both question and answer are required.");
+      showError(t("flashcards.error.both_required"));
       return;
     }
     if (q.length > MAX_CARD_FIELD_CHARS || a.length > MAX_CARD_FIELD_CHARS) {
-      showError(`Each question and answer must be at most ${MAX_CARD_FIELD_CHARS} characters.`);
+      showError(t("flashcards.error.max_chars", { max: MAX_CARD_FIELD_CHARS }));
       return;
     }
 
@@ -116,7 +120,7 @@ export function SetFlashcardsManager({
 
       const body = await parseJson<CreateResponse>(res);
       if (!body || !("ok" in body)) {
-        showError("Could not add this card. Please try again.");
+        showError(t("flashcards.error.add"));
         return;
       }
       if (!body.ok) {
@@ -137,9 +141,9 @@ export function SetFlashcardsManager({
       ]);
       setNewQuestion("");
       setNewAnswer("");
-      showSuccess(`Added a card to ${setName}.`);
+      showSuccess(t("flashcards.success.added", { setName }));
     } catch {
-      showError("Could not add this card. Please try again.");
+      showError(t("flashcards.error.add"));
     } finally {
       setIsAdding(false);
     }
@@ -156,12 +160,12 @@ export function SetFlashcardsManager({
     const a = current.answer.trim();
 
     if (!q || !a) {
-      updateCardLocal(id, { saveError: "Both question and answer are required." });
+      updateCardLocal(id, { saveError: t("flashcards.error.both_required") });
       return;
     }
     if (q.length > MAX_CARD_FIELD_CHARS || a.length > MAX_CARD_FIELD_CHARS) {
       updateCardLocal(id, {
-        saveError: `Each question and answer must be at most ${MAX_CARD_FIELD_CHARS} characters.`,
+        saveError: t("flashcards.error.max_chars", { max: MAX_CARD_FIELD_CHARS }),
       });
       return;
     }
@@ -177,7 +181,7 @@ export function SetFlashcardsManager({
 
       const body = await parseJson<UpdateResponse>(res);
       if (!body || !("ok" in body)) {
-        updateCardLocal(id, { saveError: "Could not save this card. Please try again." });
+        updateCardLocal(id, { saveError: t("flashcards.error.save") });
         return;
       }
       if (!body.ok) {
@@ -199,9 +203,9 @@ export function SetFlashcardsManager({
             : c,
         ),
       );
-      showSuccess("Saved.");
+      showSuccess(t("flashcards.success.saved"));
     } catch {
-      updateCardLocal(id, { saveError: "Could not save this card. Please try again." });
+      updateCardLocal(id, { saveError: t("flashcards.error.save") });
     } finally {
       setCards((prev) => prev.map((c) => (c.id === id ? { ...c, isSaving: false } : c)));
     }
@@ -222,7 +226,7 @@ export function SetFlashcardsManager({
 
       const body = await parseJson<DeleteResponse>(res);
       if (!body || !("ok" in body)) {
-        showError("Could not delete this card. Please try again.");
+        showError(t("flashcards.error.delete"));
         return;
       }
       if (!body.ok) {
@@ -231,9 +235,9 @@ export function SetFlashcardsManager({
       }
 
       setCards((prev) => prev.filter((c) => c.id !== id));
-      showSuccess("Deleted.");
+      showSuccess(t("flashcards.success.deleted"));
     } catch {
-      showError("Could not delete this card. Please try again.");
+      showError(t("flashcards.error.delete"));
     } finally {
       setCards((prev) => prev.map((c) => (c.id === id ? { ...c, isDeleting: false } : c)));
     }
@@ -256,14 +260,14 @@ export function SetFlashcardsManager({
 
       <section className="border-border bg-card rounded-2xl border p-6 shadow-sm">
         <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold">Add a card</h2>
-          <p className="text-muted-foreground text-sm">Create a new flashcard in {setName}.</p>
+          <h2 className="text-lg font-semibold">{t("flashcards.add.title")}</h2>
+          <p className="text-muted-foreground text-sm">{t("flashcards.add.description", { setName })}</p>
         </div>
 
         <div className="mt-4 grid gap-3">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <div className="grid gap-2">
-              <label className="text-sm font-medium">Question</label>
+              <label className="text-sm font-medium">{t("flashcards.field.question")}</label>
               <textarea
                 value={newQuestion}
                 onChange={(e) => {
@@ -272,11 +276,11 @@ export function SetFlashcardsManager({
                 rows={3}
                 maxLength={MAX_CARD_FIELD_CHARS}
                 className="border-border bg-background text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-ring/30 w-full resize-y rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
-                placeholder="e.g. What is DNA?"
+                placeholder={t("flashcards.placeholder.question")}
               />
             </div>
             <div className="grid gap-2">
-              <label className="text-sm font-medium">Answer</label>
+              <label className="text-sm font-medium">{t("flashcards.field.answer")}</label>
               <textarea
                 value={newAnswer}
                 onChange={(e) => {
@@ -285,14 +289,14 @@ export function SetFlashcardsManager({
                 rows={3}
                 maxLength={MAX_CARD_FIELD_CHARS}
                 className="border-border bg-background text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-ring/30 w-full resize-y rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
-                placeholder="e.g. Genetic material"
+                placeholder={t("flashcards.placeholder.answer")}
               />
             </div>
           </div>
 
           <div className="flex items-center justify-end">
             <Button type="button" onClick={onAddCard} disabled={isAdding}>
-              {isAdding ? "Adding…" : "Add card"}
+              {isAdding ? t("flashcards.adding") : t("flashcards.add_card")}
             </Button>
           </div>
         </div>
@@ -300,21 +304,20 @@ export function SetFlashcardsManager({
 
       <section className="border-border bg-card rounded-2xl border p-6 shadow-sm">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold">Cards</h2>
-          <span className="text-muted-foreground text-xs">{cards.length} total</span>
+          <h2 className="text-lg font-semibold">{t("flashcards.cards.title")}</h2>
+          <span className="text-muted-foreground text-xs">{t("flashcards.cards.total", { count: cards.length })}</span>
         </div>
 
         <div className="mt-4 flex flex-col gap-3">
           {cards.length === 0 ? (
             <div className="border-border bg-muted/50 text-muted-foreground rounded-xl border px-4 py-6 text-sm">
-              No cards yet. Add your first one above.
+              {t("flashcards.empty")}
             </div>
           ) : (
             cards.map((c) => (
               <FlashcardRow
                 key={c.id}
                 mode="persisted"
-                theme="paper"
                 question={c.question}
                 answer={c.answer}
                 onQuestionChange={(next) => {
@@ -339,5 +342,23 @@ export function SetFlashcardsManager({
         </div>
       </section>
     </div>
+  );
+}
+
+export function SetFlashcardsManager({
+  locale,
+  setId,
+  setName,
+  initialCards,
+}: {
+  locale: AppLocale;
+  setId: string;
+  setName: string;
+  initialCards: InitialCard[];
+}) {
+  return (
+    <LocaleProvider locale={locale}>
+      <SetFlashcardsManagerInner setId={setId} setName={setName} initialCards={initialCards} />
+    </LocaleProvider>
   );
 }

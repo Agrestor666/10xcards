@@ -4,8 +4,6 @@ import { accountDeleteErrorMessage, SUPABASE_ADMIN_NOT_CONFIGURED_MESSAGE } from
 import { jsonResponse } from "@/lib/api-json";
 import { SUPABASE_NOT_CONFIGURED_MESSAGE } from "@/lib/flashcard-set-errors";
 import { createAdminClient } from "@/lib/supabase-admin";
-import { createClient } from "@/lib/supabase";
-
 export const prerender = false;
 
 const deleteAccountBodySchema = z.object({
@@ -13,7 +11,7 @@ const deleteAccountBodySchema = z.object({
 });
 
 export const POST: APIRoute = async (context) => {
-  const supabase = createClient(context.request.headers, context.cookies);
+  const supabase = context.locals.supabase;
   if (!supabase) {
     return jsonResponse({ ok: false, message: SUPABASE_NOT_CONFIGURED_MESSAGE }, 503);
   }

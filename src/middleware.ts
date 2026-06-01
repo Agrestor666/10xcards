@@ -6,12 +6,34 @@ const PROTECTED_ROUTES = ["/dashboard", "/sets", "/settings"];
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const supabase = createClient(context.request.headers, context.cookies);
+  context.locals.supabase = supabase;
 
   if (supabase) {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    context.locals.user = user ?? null;
+    try {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
+      if (error) {
+        const isFatalAuthError =
+          error.code === "refresh_token_not_found" || error.code === "session_not_found" || error.status === 401;
+
+        if (isFatalAuthError) {
+          await supabase.auth.signOut();
+        }
+        context.locals.user = null;
+      } else {
+        context.locals.user = user ?? null;
+      }
+    } catch {
+      try {
+        await supabase.auth.signOut();
+      } catch {
+        // ignore secondary sign-out failures
+      }
+      context.locals.user = null;
+    }
   } else {
     context.locals.user = null;
   }

@@ -2,8 +2,6 @@ import type { APIRoute } from "astro";
 import { z } from "zod";
 import { jsonResponse } from "@/lib/api-json";
 import { flashcardSetDeleteErrorMessage, SUPABASE_NOT_CONFIGURED_MESSAGE } from "@/lib/flashcard-set-errors";
-import { createClient } from "@/lib/supabase";
-
 export const prerender = false;
 
 const deleteBodySchema = z.object({
@@ -11,7 +9,7 @@ const deleteBodySchema = z.object({
 });
 
 export const POST: APIRoute = async (context) => {
-  const supabase = createClient(context.request.headers, context.cookies);
+  const supabase = context.locals.supabase;
   if (!supabase) {
     return jsonResponse({ ok: false, message: SUPABASE_NOT_CONFIGURED_MESSAGE }, 503);
   }

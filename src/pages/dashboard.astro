@@ -6,65 +6,69 @@ import { StudyHero } from "@/components/dashboard/StudyHero";
 import { SetDashboardGrid } from "@/components/dashboard/SetDashboardGrid";
 import { FlashcardGenerator } from "@/components/generator/FlashcardGenerator";
 import { loadDashboardSets } from "@/lib/load-dashboard-sets";
+import { resolveFlashcardSetErrorMessage } from "@/lib/flashcard-set-errors";
+import { t, type MessageKey } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
-const { user } = Astro.locals;
+const { user, locale, supabase } = Astro.locals;
 
-const errorMessage = Astro.url.searchParams.get("error");
+const errorParam = Astro.url.searchParams.get("error");
 
 const {
   sets: dashboardSets,
   totalDue,
-  error: setsLoadError,
-  dueCountsWarning,
-} = await loadDashboardSets(Astro.request.headers, Astro.cookies);
+  error: setsLoadErrorKey,
+  dueCountsWarning: dueCountsWarningKey,
+} = await loadDashboardSets(supabase);
+
+function localizeMessage(key: MessageKey | null): string | null {
+  if (!key) return null;
+  return t(locale, key);
+}
+
+const setsLoadError = localizeMessage(setsLoadErrorKey);
+const dueCountsWarning = localizeMessage(dueCountsWarningKey);
+const redirectError = resolveFlashcardSetErrorMessage(locale, errorParam, { max: 80 });
+const bannerMessage = redirectError ?? setsLoadError ?? dueCountsWarning;
 
 const generatorSets = dashboardSets.map((s) => ({ id: s.id, name: s.name }));
 
 const bannerClass = cn(
   "mb-4 rounded-xl border px-4 py-3 text-sm",
-  dueCountsWarning && !errorMessage && !setsLoadError
+  dueCountsWarning && !redirectError && !setsLoadError
     ? "border-border bg-muted text-muted-foreground"
     : "border-destructive/30 bg-destructive/10 text-destructive",
 );
 ---
 
-<Layout title="Dashboard">
+<Layout title={t(locale, "pages.dashboard.title")}>
   <PaperShell class="max-w-3xl">
     <AppTopbar />
     {
       user?.email && (
         <p class="text-muted-foreground mb-4 text-sm">
-          Signed in as <span class="text-foreground font-medium">{user.email}</span>
+          {t(locale, "dashboard.signed_in_as")} <span class="text-foreground font-medium">{user.email}</span>
         </p>
       )
     }
 
-    {
-      (errorMessage ?? setsLoadError ?? dueCountsWarning) && (
-        <div class:list={bannerClass}>{errorMessage ?? setsLoadError ?? dueCountsWarning}</div>
-      )
-    }
+    {bannerMessage && <div class:list={bannerClass}>{bannerMessage}</div>}
 
-    {!setsLoadError && <StudyHero client:load initialTotalDue={totalDue} hasSets={dashboardSets.length > 0} />}
+    {errorParam && <script is:inline>{`history.replaceState(null, "", "/dashboard");`}</script>}
 
-    {
-      !setsLoadError && (
-        <section class="mt-6">
-          <SetDashboardGrid client:load initialSets={dashboardSets} />
-        </section>
-      )
-    }
+    <StudyHero client:load locale={locale} initialTotalDue={totalDue} hasSets={dashboardSets.length > 0} />
 
-    {
-      !setsLoadError && (
-        <details class="border-border bg-card mt-6 rounded-xl border shadow-sm">
-          <summary class="cursor-pointer px-5 py-4 text-sm font-medium">Generate flashcards with AI</summary>
-          <div class="border-border border-t px-5 pb-5">
-            <FlashcardGenerator client:load sets={generatorSets} />
-          </div>
-        </details>
-      )
-    }
+    <section class="mt-6">
+      <SetDashboardGrid client:load locale={locale} initialSets={dashboardSets} />
+    </section>
+
+    <details class="border-border bg-card mt-6 rounded-xl border shadow-sm">
+      <summary class="cursor-pointer px-5 py-4 text-sm font-medium">
+        {t(locale, "dashboard.generator.summary")}
+      </summary>
+      <div class="border-border border-t px-5 pb-5">
+        <FlashcardGenerator client:load locale={locale} sets={generatorSets} />
+      </div>
+    </details>
   </PaperShell>
 </Layout>

@@ -1,24 +1,20 @@
-import type { AstroCookies } from "astro";
 import { aggregateDueCountsBySetId } from "@/lib/aggregate-due-counts";
-import { SUPABASE_NOT_CONFIGURED_MESSAGE } from "@/lib/flashcard-set-errors";
-import { createClient } from "@/lib/supabase";
+import type { MessageKey } from "@/lib/i18n";
+import type { AppSupabaseClient } from "@/lib/supabase";
 import type { DashboardSetRow, FlashcardSet } from "@/types";
 
 export interface LoadDashboardSetsResult {
   sets: DashboardSetRow[];
   totalDue: number;
-  error: string | null;
-  /** Non-fatal: sets loaded but due aggregation failed. */
-  dueCountsWarning: string | null;
+  /** MessageKey for load failure, or null. */
+  error: MessageKey | null;
+  /** MessageKey for non-fatal due-count warning, or null. */
+  dueCountsWarning: MessageKey | null;
 }
 
-export async function loadDashboardSets(
-  requestHeaders: Headers,
-  cookies: AstroCookies,
-): Promise<LoadDashboardSetsResult> {
-  const supabase = createClient(requestHeaders, cookies);
+export async function loadDashboardSets(supabase: AppSupabaseClient | null): Promise<LoadDashboardSetsResult> {
   if (!supabase) {
-    return { sets: [], totalDue: 0, error: SUPABASE_NOT_CONFIGURED_MESSAGE, dueCountsWarning: null };
+    return { sets: [], totalDue: 0, error: "config.supabase.message", dueCountsWarning: null };
   }
 
   const { data, error } = await supabase
@@ -27,7 +23,7 @@ export async function loadDashboardSets(
     .order("updated_at", { ascending: false });
 
   if (error) {
-    return { sets: [], totalDue: 0, error: "Could not load your sets. Please refresh.", dueCountsWarning: null };
+    return { sets: [], totalDue: 0, error: "dashboard.error.load_sets", dueCountsWarning: null };
   }
 
   type SetWithCardCount = Pick<FlashcardSet, "id" | "name" | "created_at" | "updated_at"> & {
@@ -53,7 +49,7 @@ export async function loadDashboardSets(
       sets: mapSetsWithoutDue(),
       totalDue: 0,
       error: null,
-      dueCountsWarning: "Due counts are temporarily unavailable. Your sets are shown below; refresh to retry.",
+      dueCountsWarning: "dashboard.warning.due_counts",
     };
   }
 

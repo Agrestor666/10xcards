@@ -6,8 +6,6 @@ import { flashcardBulkCreateErrorMessage } from "@/lib/flashcard-errors";
 import { SUPABASE_NOT_CONFIGURED_MESSAGE } from "@/lib/flashcard-set-errors";
 import { validateFlashcardDraft } from "@/lib/flashcard-draft-validation";
 import { touchFlashcardSetUpdatedAt } from "@/lib/flashcard-set-touch";
-import { createClient } from "@/lib/supabase";
-
 export const prerender = false;
 
 const createBodySchema = z.object({
@@ -17,7 +15,7 @@ const createBodySchema = z.object({
 });
 
 export const POST: APIRoute = async (context) => {
-  const supabase = createClient(context.request.headers, context.cookies);
+  const supabase = context.locals.supabase;
   if (!supabase) {
     return jsonResponse({ ok: false, message: SUPABASE_NOT_CONFIGURED_MESSAGE }, 503);
   }

@@ -26,7 +26,7 @@ interface FormFieldProps {
   value?: string;
   onChange?: (value: string) => void;
   onInput?: (event: React.InputEvent<HTMLInputElement>) => void;
-  /** `paper` for auth on PaperShell; default `cosmic` until Phase 2 callers pass `paper`. */
+  /** Paper-first default; cosmic branch kept for backward compatibility. */
   theme?: UiTheme;
 }
 
@@ -45,7 +45,7 @@ export function FormField({
   value,
   onChange,
   onInput,
-  theme = "cosmic",
+  theme = "paper",
 }: FormFieldProps) {
   const isPaper = theme === "paper";
   const inputType = passwordVisible !== undefined ? (passwordVisible ? "text" : "password") : type;

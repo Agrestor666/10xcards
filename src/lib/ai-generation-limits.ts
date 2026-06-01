@@ -13,4 +13,4 @@ export const OPENROUTER_REQUEST_TIMEOUT_MS = 15_000;
 export const OPENROUTER_DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 
 /** Small/fast default; override via OPENROUTER_MODEL when wired. */
-export const OPENROUTER_DEFAULT_MODEL = "google/gemini-2.0-flash-001";
+export const OPENROUTER_DEFAULT_MODEL = "google/gemini-2.5-flash-lite";

@@ -11,8 +11,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import type { UiTheme } from "@/types";
+import { LocaleProvider } from "@/components/i18n/LocaleProvider";
+import { useLocale } from "@/components/i18n/useLocale";
+import { tPlural } from "@/lib/i18n";
+import type { AppLocale } from "@/lib/locale";
 
 const CONFIRM_TEXT = "DELETE";
 
@@ -26,28 +28,23 @@ async function parseJson<T>(res: Response): Promise<T | null> {
   }
 }
 
-interface AccountDangerZoneProps {
-  email: string;
-  setCount: number;
-  cardCount: number;
-  /** When true, counts could not be loaded; deletion still available. */
-  statsUnavailable?: boolean;
-  theme?: UiTheme;
-}
-
-export function AccountDangerZone({
+function AccountDangerZoneInner({
   email,
   setCount,
   cardCount,
   statsUnavailable = false,
-  theme = "paper",
-}: AccountDangerZoneProps) {
+}: {
+  email: string;
+  setCount: number;
+  cardCount: number;
+  statsUnavailable?: boolean;
+}) {
+  const { locale, t } = useLocale();
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [confirmText, setConfirmText] = React.useState("");
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
 
-  const isPaper = theme === "paper";
   const canConfirm = confirmText === CONFIRM_TEXT && !busy;
 
   function resetDialog() {
@@ -76,7 +73,7 @@ export function AccountDangerZone({
 
       const body = await parseJson<DeleteAccountResponse>(res);
       if (!body || !("ok" in body)) {
-        setErrorMessage("Could not delete your account. Please try again.");
+        setErrorMessage(t("account.danger_zone.error.delete"));
         return;
       }
       if (!body.ok) {
@@ -86,71 +83,40 @@ export function AccountDangerZone({
 
       window.location.href = "/";
     } catch {
-      setErrorMessage("Could not delete your account. Please try again.");
+      setErrorMessage(t("account.danger_zone.error.delete"));
     } finally {
       setBusy(false);
     }
   }
 
-  const setLabel = setCount === 1 ? "set" : "sets";
-  const cardLabel = cardCount === 1 ? "flashcard" : "flashcards";
+  const dataSummary = statsUnavailable
+    ? t("account.danger_zone.data_fallback")
+    : t("account.danger_zone.data_sets_cards", {
+        setPhrase: tPlural(locale, "account.danger_zone.set", setCount),
+        and: t("common.and"),
+        cardPhrase: tPlural(locale, "account.danger_zone.card", cardCount),
+      });
 
-  const strongClass = isPaper ? "text-foreground" : "text-white";
-
-  const dataRemovalCopy = statsUnavailable ? (
-    <>
-      all sets and flashcards on your account. We could not load exact counts right now; deletion will still remove
-      everything.
-    </>
-  ) : (
-    <>
-      <strong className={strongClass}>{setCount}</strong> {setLabel} and{" "}
-      <strong className={strongClass}>{cardCount}</strong> {cardLabel}
-    </>
-  );
-
-  const dialogDataCopy = statsUnavailable ? (
-    <>all sets and flashcards on your account</>
-  ) : (
-    <>
-      <strong className={strongClass}>{setCount}</strong> {setLabel}, and{" "}
-      <strong className={strongClass}>{cardCount}</strong> {cardLabel}
-    </>
-  );
-
-  const sectionClass = isPaper
-    ? "border-border bg-card mt-4 rounded-2xl border p-6 shadow-sm"
-    : "rounded-2xl border border-red-400/30 bg-red-500/5 p-6 backdrop-blur-xl";
-
-  const headingClass = isPaper ? "text-destructive text-lg font-semibold" : "text-lg font-semibold text-red-100";
-
-  const bodyClass = isPaper ? "text-muted-foreground mt-2 text-sm" : "mt-2 text-sm text-blue-100/80";
-
-  const inlineErrorClass = isPaper
-    ? "border-destructive/30 bg-destructive/10 text-destructive mt-4 rounded-xl border px-4 py-3 text-sm"
-    : "mt-4 rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100";
-
-  const destructiveBtnClass = isPaper ? undefined : cn("bg-red-500/80 hover:bg-red-500");
+  const dialogDataSummary = statsUnavailable
+    ? t("account.danger_zone.dialog.data_fallback")
+    : `${tPlural(locale, "account.danger_zone.set", setCount)}, ${t("common.and")} ${tPlural(locale, "account.danger_zone.card", cardCount)}`;
 
   return (
-    <section className={sectionClass}>
-      <h2 className={headingClass}>Danger zone</h2>
-      <p className={bodyClass}>
-        Permanently delete the account <strong className={strongClass}>{email}</strong> and all associated data. This
-        removes {dataRemovalCopy}. This cannot be undone.
+    <section className="border-border bg-card mt-4 rounded-2xl border p-6 shadow-sm">
+      <h2 className="text-destructive text-lg font-semibold">{t("account.danger_zone.title")}</h2>
+      <p className="text-muted-foreground mt-2 text-sm">
+        {t("account.danger_zone.description", { email, dataSummary })}
       </p>
 
-      {errorMessage && !dialogOpen && <div className={inlineErrorClass}>{errorMessage}</div>}
+      {errorMessage && !dialogOpen && (
+        <div className="border-destructive/30 bg-destructive/10 text-destructive mt-4 rounded-xl border px-4 py-3 text-sm">
+          {errorMessage}
+        </div>
+      )}
 
       <div className="mt-4">
-        <Button
-          type="button"
-          variant="destructive"
-          className={destructiveBtnClass}
-          disabled={busy}
-          onClick={openDialog}
-        >
-          Delete account
+        <Button type="button" variant="destructive" disabled={busy} onClick={openDialog}>
+          {t("account.danger_zone.delete_button")}
         </Button>
       </div>
 
@@ -166,10 +132,12 @@ export function AccountDangerZone({
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete your account?</AlertDialogTitle>
+            <AlertDialogTitle>{t("account.danger_zone.dialog.title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete your account, {dialogDataCopy}. Type{" "}
-              <strong className="text-foreground">{CONFIRM_TEXT}</strong> below to confirm.
+              {t("account.danger_zone.dialog.description", {
+                dataSummary: dialogDataSummary,
+                confirmToken: CONFIRM_TEXT,
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
 
@@ -179,29 +147,57 @@ export function AccountDangerZone({
             autoComplete="off"
             disabled={busy}
             placeholder={CONFIRM_TEXT}
-            aria-label={`Type ${CONFIRM_TEXT} to confirm`}
+            aria-label={t("account.danger_zone.dialog.confirm_aria", { confirmToken: CONFIRM_TEXT })}
             onChange={(e) => {
               setConfirmText(e.target.value);
             }}
           />
 
-          {errorMessage && dialogOpen && <div className={inlineErrorClass}>{errorMessage}</div>}
+          {errorMessage && dialogOpen && (
+            <div className="border-destructive/30 bg-destructive/10 text-destructive rounded-xl border px-4 py-3 text-sm">
+              {errorMessage}
+            </div>
+          )}
 
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={busy}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={busy}>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               disabled={!canConfirm}
-              className={destructiveBtnClass}
               onClick={(e) => {
                 e.preventDefault();
                 void deleteAccount();
               }}
             >
-              {busy ? "Deleting…" : "Delete account"}
+              {busy ? t("common.deleting") : t("account.danger_zone.delete_button")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </section>
+  );
+}
+
+export function AccountDangerZone({
+  locale,
+  email,
+  setCount,
+  cardCount,
+  statsUnavailable = false,
+}: {
+  locale: AppLocale;
+  email: string;
+  setCount: number;
+  cardCount: number;
+  statsUnavailable?: boolean;
+}) {
+  return (
+    <LocaleProvider locale={locale}>
+      <AccountDangerZoneInner
+        email={email}
+        setCount={setCount}
+        cardCount={cardCount}
+        statsUnavailable={statsUnavailable}
+      />
+    </LocaleProvider>
   );
 }

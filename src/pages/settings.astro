@@ -4,11 +4,11 @@ import AppTopbar from "@/components/layout/AppTopbar.astro";
 import PaperShell from "@/components/layout/PaperShell.astro";
 import { AccountDangerZone } from "@/components/account/AccountDangerZone";
 import { SUPABASE_NOT_CONFIGURED_MESSAGE } from "@/lib/flashcard-set-errors";
-import { createClient } from "@/lib/supabase";
+import { t } from "@/lib/i18n";
 
-const { user } = Astro.locals;
+const { user, locale } = Astro.locals;
 
-const supabase = createClient(Astro.request.headers, Astro.cookies);
+const supabase = Astro.locals.supabase;
 
 let setCount = 0;
 let cardCount = 0;
@@ -23,7 +23,7 @@ if (!supabase) {
   ]);
 
   if (setsResult.error || cardsResult.error) {
-    statsLoadError = "Could not load account stats. Please refresh.";
+    statsLoadError = t(locale, "settings.stats_error");
   } else {
     setCount = setsResult.count ?? 0;
     cardCount = cardsResult.count ?? 0;
@@ -31,13 +31,14 @@ if (!supabase) {
 }
 ---
 
-<Layout title="Settings">
+<Layout title={t(locale, "pages.settings.title")}>
   <PaperShell class="max-w-3xl">
     <AppTopbar />
     <header class="border-border bg-card rounded-2xl border p-6 shadow-sm">
-      <h1 class="font-display text-3xl tracking-tight">Settings</h1>
+      <h1 class="font-display text-3xl tracking-tight">{t(locale, "settings.title")}</h1>
       <p class="text-muted-foreground mt-2 text-sm">
-        Signed in as <span class="text-foreground font-medium">{user?.email}</span>
+        {t(locale, "settings.signed_in_as")}{" "}
+        <span class="text-foreground font-medium">{user?.email}</span>
       </p>
     </header>
 
@@ -53,7 +54,7 @@ if (!supabase) {
       user?.email && (
         <AccountDangerZone
           client:load
-          theme="paper"
+          locale={locale}
           email={user.email}
           setCount={setCount}
           cardCount={cardCount}

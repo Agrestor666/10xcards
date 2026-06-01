@@ -445,21 +445,21 @@ Localize server-side error templates and API inline messages; grep audit for mis
 
 #### Automated
 
-- [x] 2.1 `npm run lint` passes
-- [x] 2.2 `npm run build` passes
+- [x] 2.1 `npm run lint` passes — bc458d7
+- [x] 2.2 `npm run build` passes — bc458d7
 
 #### Manual
 
-- [x] 2.3 Landing PL/EN toggle and auth flow localized
-- [x] 2.4 Auth errors show mapped localized messages (no raw Supabase text)
-- [x] 2.5 Authenticated topbar has no language toggle
+- [x] 2.3 Landing PL/EN toggle and auth flow localized — bc458d7
+- [x] 2.4 Auth errors show mapped localized messages (no raw Supabase text) — bc458d7
+- [x] 2.5 Authenticated topbar has no language toggle — bc458d7
 
 ### Phase 3: Dashboard, sets, review, and settings
 
 #### Automated
 
-- [ ] 3.1 `npm run lint` passes
-- [ ] 3.2 `npm run build` passes
+- [x] 3.1 `npm run lint` passes
+- [x] 3.2 `npm run build` passes
 
 #### Manual
 

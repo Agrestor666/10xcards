@@ -1,25 +1,43 @@
 import type { APIRoute } from "astro";
-import { flashcardSetCreateErrorMessage, SUPABASE_NOT_CONFIGURED_MESSAGE } from "@/lib/flashcard-set-errors";
+import { jsonResponse } from "@/lib/api-json";
+import {
+  toFlashcardSetCreateErrorKey,
+  toFlashcardSetValidationErrorKey,
+  type FlashcardSetErrorKey,
+} from "@/lib/flashcard-set-errors";
 import { validateFlashcardSetName } from "@/lib/flashcard-set-name";
-import { createClient } from "@/lib/supabase";
 
 export const prerender = false;
 
-function dashboardErrorRedirect(context: Parameters<APIRoute>[0], message: string) {
-  return context.redirect(`/dashboard?error=${encodeURIComponent(message)}`);
+function wantsJsonResponse(request: Request): boolean {
+  const accept = request.headers.get("Accept") ?? "";
+  return accept.includes("application/json");
+}
+
+function dashboardErrorRedirect(context: Parameters<APIRoute>[0], errorKey: FlashcardSetErrorKey) {
+  return context.redirect(`/dashboard?error=${encodeURIComponent(errorKey)}`);
 }
 
 export const POST: APIRoute = async (context) => {
+  const asJson = wantsJsonResponse(context.request);
   const form = await context.request.formData();
   const validation = validateFlashcardSetName(form.get("name"));
 
   if (!validation.ok) {
-    return dashboardErrorRedirect(context, validation.error);
+    const errorKey = toFlashcardSetValidationErrorKey(validation.error);
+    if (asJson) {
+      return jsonResponse({ ok: false, errorKey }, 400);
+    }
+    return dashboardErrorRedirect(context, errorKey);
   }
 
-  const supabase = createClient(context.request.headers, context.cookies);
+  const supabase = context.locals.supabase;
   if (!supabase) {
-    return dashboardErrorRedirect(context, SUPABASE_NOT_CONFIGURED_MESSAGE);
+    const errorKey = "supabase_unconfigured" satisfies FlashcardSetErrorKey;
+    if (asJson) {
+      return jsonResponse({ ok: false, errorKey }, 503);
+    }
+    return dashboardErrorRedirect(context, errorKey);
   }
 
   const {
@@ -28,17 +46,31 @@ export const POST: APIRoute = async (context) => {
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
+    if (asJson) {
+      return jsonResponse({ ok: false, errorKey: "set_create_failed" }, 401);
+    }
     return context.redirect("/auth/signin");
   }
 
-  // Ownership comes only from the authenticated session — never from form fields.
   const { error } = await supabase.from("flashcard_sets").insert({
     user_id: user.id,
     name: validation.name,
   });
 
   if (error) {
-    return dashboardErrorRedirect(context, flashcardSetCreateErrorMessage(error));
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console -- dev-only insert diagnostics
+      console.error("flashcard_sets insert failed:", error);
+    }
+    const errorKey = toFlashcardSetCreateErrorKey(error);
+    if (asJson) {
+      return jsonResponse({ ok: false, errorKey }, 400);
+    }
+    return dashboardErrorRedirect(context, errorKey);
+  }
+
+  if (asJson) {
+    return jsonResponse({ ok: true }, 201);
   }
 
   return context.redirect("/dashboard");

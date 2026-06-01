@@ -1,6 +1,5 @@
 import type { APIRoute } from "astro";
 import { aggregateDueCountsBySetId } from "@/lib/aggregate-due-counts";
-import { createClient } from "@/lib/supabase";
 
 export const prerender = false;
 
@@ -15,8 +14,8 @@ function jsonResponse(body: DueSummaryResponse, status: number): Response {
   });
 }
 
-export const GET: APIRoute = async ({ request, cookies }) => {
-  const supabase = createClient(request.headers, cookies);
+export const GET: APIRoute = async ({ locals }) => {
+  const supabase = locals.supabase;
   if (!supabase) {
     return jsonResponse({ ok: false, message: "Service unavailable." }, 503);
   }

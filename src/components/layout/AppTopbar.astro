@@ -29,14 +29,14 @@ const localeToggleClass = (active: boolean) =>
         </a>
         <div class="flex flex-wrap items-center gap-4">
           <a href="/dashboard" class:list={linkClass}>
-            Sets
+            {t(locale, "topbar.sets")}
           </a>
           <a href="/settings" class:list={linkClass}>
-            Settings
+            {t(locale, "topbar.settings")}
           </a>
           <form method="POST" action="/api/auth/signout">
             <button type="submit" class:list={linkClass}>
-              Sign out
+              {t(locale, "topbar.sign_out")}
             </button>
           </form>
         </div>
@@ -50,7 +50,7 @@ const localeToggleClass = (active: boolean) =>
           <div
             class="border-border bg-background flex items-center gap-0.5 rounded-lg border p-0.5"
             role="group"
-            aria-label="Language"
+            aria-label={t(locale, "a11y.language_selector")}
           >
             <a href="/api/locale?lang=pl" class:list={localeToggleClass(locale === "pl")}>
               {t(locale, "locale.pl")}
