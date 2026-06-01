@@ -1,3 +1,4 @@
+import type { APIContext } from "astro";
 import type { AstroCookies } from "astro";
 import type { User } from "@supabase/supabase-js";
 
@@ -68,4 +69,10 @@ export function resolveLocale(input: {
 
 export function localeToBcp47(locale: AppLocale): string {
   return locale === "pl" ? "pl-PL" : "en-US";
+}
+
+/** Resolve locale for API routes (`locals.locale` is set in middleware on every request). */
+export function getLocaleFromContext(context: APIContext): AppLocale {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- guard against edge cases where middleware didn't run
+  return context.locals.locale ?? DEFAULT_LOCALE;
 }

@@ -125,7 +125,8 @@ export async function generateFlashcardsFromText(text: string): Promise<Generate
 
     const validated = validateFlashcardDrafts(drafts);
     if (!validated.ok) {
-      return { ok: false, errorKey: "generator.error.generate" };
+      const errorKey = validated.key === "no_valid" ? "generator.error.no_valid_drafts" : "generator.error.generate";
+      return { ok: false, errorKey };
     }
 
     return { ok: true, cards: validated.cards };

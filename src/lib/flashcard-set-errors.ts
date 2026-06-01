@@ -1,9 +1,10 @@
 import { t, type MessageKey } from "@/lib/i18n";
 import type { AppLocale } from "@/lib/locale";
+import { FLASHCARD_SET_NAME_MAX_LENGTH } from "@/lib/flashcard-set-name";
 
-/** Shown when server env lacks Supabase URL/key. */
-export const SUPABASE_NOT_CONFIGURED_MESSAGE =
-  "Supabase is not configured. Check SUPABASE_URL and SUPABASE_KEY in your environment.";
+export function supabaseNotConfiguredMessage(locale: AppLocale): string {
+  return t(locale, "config.supabase.message");
+}
 
 export type FlashcardSetErrorKey =
   | "set_create_failed"
@@ -13,6 +14,10 @@ export type FlashcardSetErrorKey =
   | "set_name_max"
   | "set_not_found"
   | "set_invalid"
+  | "set_update_failed"
+  | "set_update_forbidden"
+  | "set_delete_failed"
+  | "set_delete_forbidden"
   | "supabase_unconfigured";
 
 const FLASHCARD_SET_ERROR_KEYS = new Set<string>([
@@ -23,6 +28,10 @@ const FLASHCARD_SET_ERROR_KEYS = new Set<string>([
   "set_name_max",
   "set_not_found",
   "set_invalid",
+  "set_update_failed",
+  "set_update_forbidden",
+  "set_delete_failed",
+  "set_delete_forbidden",
   "supabase_unconfigured",
 ]);
 
@@ -34,6 +43,10 @@ const FLASHCARD_SET_MESSAGE_KEYS: Record<FlashcardSetErrorKey, MessageKey> = {
   set_name_max: "sets.grid.validation.name_max",
   set_not_found: "sets.error.not_found",
   set_invalid: "sets.error.invalid",
+  set_update_failed: "sets.error.update_failed",
+  set_update_forbidden: "sets.error.update_forbidden",
+  set_delete_failed: "sets.error.delete_failed",
+  set_delete_forbidden: "sets.error.delete_forbidden",
   supabase_unconfigured: "config.supabase.message",
 };
 
@@ -48,7 +61,10 @@ export function flashcardSetErrorMessage(
   key: FlashcardSetErrorKey,
   params?: Record<string, string | number>,
 ): string {
-  return t(locale, FLASHCARD_SET_MESSAGE_KEYS[key], params);
+  const resolvedParams =
+    key === "set_name_max" && params?.max === undefined ? { max: FLASHCARD_SET_NAME_MAX_LENGTH, ...params } : params;
+
+  return t(locale, FLASHCARD_SET_MESSAGE_KEYS[key], resolvedParams);
 }
 
 const LEGACY_ERROR_MESSAGES: Record<string, FlashcardSetErrorKey> = {
@@ -92,41 +108,30 @@ export function toFlashcardSetCreateErrorKey(error: { code?: string }): Flashcar
   return "set_create_failed";
 }
 
-export function toFlashcardSetValidationErrorKey(message: string): FlashcardSetErrorKey {
-  if (message.includes("required")) {
-    return "set_name_required";
-  }
-  if (message.includes("empty")) {
-    return "set_name_empty";
-  }
-  if (message.includes("at most")) {
-    return "set_name_max";
+export function toFlashcardSetUpdateErrorKey(error: { code?: string }): FlashcardSetErrorKey {
+  if (error.code === POSTGRES_PERMISSION_DENIED) {
+    return "set_update_forbidden";
   }
 
-  return "set_create_failed";
+  return "set_update_failed";
 }
 
-/** Legacy English mapper — Phase 4 will migrate update/delete routes to error keys. */
-export function flashcardSetCreateErrorMessage(error: { code?: string }): string {
+export function toFlashcardSetDeleteErrorKey(error: { code?: string }): FlashcardSetErrorKey {
   if (error.code === POSTGRES_PERMISSION_DENIED) {
-    return "Could not create set. You do not have permission to perform this action.";
+    return "set_delete_forbidden";
   }
 
-  return "Could not create set. Please try again.";
+  return "set_delete_failed";
 }
 
-export function flashcardSetUpdateErrorMessage(error: { code?: string }): string {
-  if (error.code === POSTGRES_PERMISSION_DENIED) {
-    return "Could not rename set. You do not have permission to edit it.";
-  }
-
-  return "Could not rename set. Please try again.";
+export function flashcardSetCreateErrorMessage(locale: AppLocale, error: { code?: string }): string {
+  return flashcardSetErrorMessage(locale, toFlashcardSetCreateErrorKey(error));
 }
 
-export function flashcardSetDeleteErrorMessage(error: { code?: string }): string {
-  if (error.code === POSTGRES_PERMISSION_DENIED) {
-    return "Could not delete set. You do not have permission to delete it.";
-  }
+export function flashcardSetUpdateErrorMessage(locale: AppLocale, error: { code?: string }): string {
+  return flashcardSetErrorMessage(locale, toFlashcardSetUpdateErrorKey(error));
+}
 
-  return "Could not delete set. Please try again.";
+export function flashcardSetDeleteErrorMessage(locale: AppLocale, error: { code?: string }): string {
+  return flashcardSetErrorMessage(locale, toFlashcardSetDeleteErrorKey(error));
 }

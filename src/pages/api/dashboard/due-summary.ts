@@ -1,5 +1,7 @@
 import type { APIRoute } from "astro";
 import { aggregateDueCountsBySetId } from "@/lib/aggregate-due-counts";
+import { t } from "@/lib/i18n";
+import { getLocaleFromContext } from "@/lib/locale";
 
 export const prerender = false;
 
@@ -14,10 +16,11 @@ function jsonResponse(body: DueSummaryResponse, status: number): Response {
   });
 }
 
-export const GET: APIRoute = async ({ locals }) => {
-  const supabase = locals.supabase;
+export const GET: APIRoute = async (context) => {
+  const locale = getLocaleFromContext(context);
+  const supabase = context.locals.supabase;
   if (!supabase) {
-    return jsonResponse({ ok: false, message: "Service unavailable." }, 503);
+    return jsonResponse({ ok: false, message: t(locale, "api.error.service_unavailable") }, 503);
   }
 
   const {
@@ -26,14 +29,14 @@ export const GET: APIRoute = async ({ locals }) => {
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    return jsonResponse({ ok: false, message: "Unauthorized." }, 401);
+    return jsonResponse({ ok: false, message: t(locale, "api.error.unauthorized") }, 401);
   }
 
   const nowIso = new Date().toISOString();
   const { data: dueRows, error: dueError } = await supabase.from("flashcards").select("set_id").lte("due_at", nowIso);
 
   if (dueError) {
-    return jsonResponse({ ok: false, message: "Could not load due counts." }, 500);
+    return jsonResponse({ ok: false, message: t(locale, "api.error.load_due_counts") }, 500);
   }
 
   const { dueBySetId, totalDue } = aggregateDueCountsBySetId(dueRows);

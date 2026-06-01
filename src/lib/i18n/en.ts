@@ -79,6 +79,21 @@ export const en = {
   "config.supabase.message": "Supabase is not configured — authentication features are disabled.",
   "config.docs_label": "See configuration instructions",
 
+  "api.error.unauthorized": "Please sign in to continue.",
+  "api.error.invalid_body": "Invalid request body.",
+  "api.error.invalid_request": "Invalid request.",
+  "api.error.service_unavailable": "Service unavailable.",
+  "api.error.invalid_response": "Invalid response.",
+  "api.error.load_due_counts": "Could not load due counts.",
+  "api.error.sign_in_delete_account": "Please sign in to delete your account.",
+  "api.error.sign_in_generate": "Please sign in to generate flashcards.",
+  "api.error.sign_in_rename_set": "Please sign in to rename a set.",
+  "api.error.sign_in_delete_set": "Please sign in to delete a set.",
+  "api.error.sign_in_add_flashcard": "Please sign in to add a flashcard.",
+  "api.error.sign_in_update_flashcard": "Please sign in to update a flashcard.",
+  "api.error.sign_in_delete_flashcard": "Please sign in to delete a flashcard.",
+  "api.error.sign_in_save_flashcards": "Please sign in to save flashcards.",
+
   "a11y.close": "Close",
 
   "common.cancel": "Cancel",
@@ -124,6 +139,10 @@ export const en = {
   "sets.error.create_forbidden": "Could not create set. You do not have permission to perform this action.",
   "sets.error.not_found": "Set not found.",
   "sets.error.invalid": "Invalid set.",
+  "sets.error.update_failed": "Could not rename set. Please try again.",
+  "sets.error.update_forbidden": "Could not rename set. You do not have permission to edit it.",
+  "sets.error.delete_failed": "Could not delete set. Please try again.",
+  "sets.error.delete_forbidden": "Could not delete set. You do not have permission to delete it.",
 
   "sets.grid.study": "Study",
   "sets.grid.rename": "Rename",
@@ -165,6 +184,7 @@ export const en = {
   "generator.error.generate": "Could not generate flashcards. Please try again.",
   "generator.error.timeout": "Generation timed out. Try a shorter passage.",
   "generator.error.no_cards": "No flashcards were generated. Please try again.",
+  "generator.error.no_valid_drafts": "No valid flashcards were found. Try editing the text or generating again.",
   "generator.error.choose_set": "Choose a set to save to.",
   "generator.error.add_card": "Add at least one card to save.",
   "generator.error.create_set_first": "Create a set first to save cards.",
@@ -192,6 +212,11 @@ export const en = {
   "flashcards.error.add": "Could not add this card. Please try again.",
   "flashcards.error.save": "Could not save this card. Please try again.",
   "flashcards.error.delete": "Could not delete this card. Please try again.",
+  "flashcards.error.add_forbidden": "Could not add this card. You do not have permission to add cards to this set.",
+  "flashcards.error.save_forbidden": "Could not save cards. You do not have permission to add cards to this set.",
+  "flashcards.error.update_forbidden": "Could not update this card. You do not have permission to edit it.",
+  "flashcards.error.delete_forbidden": "Could not delete this card. You do not have permission to delete it.",
+  "flashcards.error.not_found": "Flashcard not found.",
   "flashcards.success.added": "Added a card to {setName}.",
   "flashcards.success.saved": "Saved.",
   "flashcards.success.deleted": "Deleted.",
@@ -217,6 +242,7 @@ export const en = {
   "review.rating.easy": "Easy",
   "review.error.load": "Could not load your next card. Please try again.",
   "review.error.grade": "Could not save your rating. Please try again.",
+  "review.error.invalid_schedule": "Invalid card schedule state.",
 
   "settings.title": "Settings",
   "settings.signed_in_as": "Signed in as",
@@ -243,4 +269,6 @@ export const en = {
   "account.danger_zone.dialog.data_fallback": "all sets and flashcards on your account",
   "account.danger_zone.dialog.confirm_aria": "Type {confirmToken} to confirm",
   "account.danger_zone.error.delete": "Could not delete your account. Please try again.",
+  "account.error.admin_not_configured":
+    "Account deletion is not available. The server is missing required configuration.",
 } as const;

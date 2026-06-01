@@ -188,7 +188,7 @@ Guest language toggle, localized landing hero, full auth flow copy, and stable a
 
 **Intent**: Localize headings, footer links, and confirm-email content branches.
 
-**Contract**: Map `Astro.url.searchParams.get("error")` through auth error key → `t()` before passing to forms; confirm-email `content` object uses translation keys instead of inline English.
+**Contract**: Map `Astro.url.searchParams.get("error")` through auth error key → `t()` before passing to forms; confirm-email `content` object uses translation keys instead of inline English. Note: `confirm-email.astro` is a success-only terminal page with no form and no error display surface; the `?error=` guard requirement does not apply to it in practice.
 
 #### 4. Auth error mapper
 
@@ -458,24 +458,24 @@ Localize server-side error templates and API inline messages; grep audit for mis
 
 #### Automated
 
-- [x] 3.1 `npm run lint` passes
-- [x] 3.2 `npm run build` passes
+- [x] 3.1 `npm run lint` passes — da48dae
+- [x] 3.2 `npm run build` passes — da48dae
 
 #### Manual
 
-- [ ] 3.3 Full PL user journey smoke (landing through settings)
-- [ ] 3.4 Full EN user journey smoke (parity with pre-i18n)
-- [ ] 3.5 PL pluralization and review labels verified
+- [x] 3.3 Full PL user journey smoke (landing through settings)
+- [x] 3.4 Full EN user journey smoke (parity with pre-i18n)
+- [x] 3.5 PL pluralization and review labels verified
 
 ### Phase 4: Server error mappers and string audit
 
 #### Automated
 
-- [ ] 4.1 `npm run lint` passes
-- [ ] 4.2 `npm run build` passes
-- [ ] 4.3 String audit grep documented with exceptions
+- [x] 4.1 `npm run lint` passes
+- [x] 4.2 `npm run build` passes
+- [x] 4.3 String audit grep documented with exceptions
 
 #### Manual
 
-- [ ] 4.4 Common API errors localized in PL and EN
-- [ ] 4.5 Bilingual regression checklist completed in `change.md`
+- [x] 4.4 Common API errors localized in PL and EN
+- [x] 4.5 Bilingual regression checklist completed in `change.md`

@@ -1,10 +1,14 @@
 import type { APIRoute } from "astro";
 import { jsonResponse } from "@/lib/api-json";
 import {
+  flashcardSetCreateErrorMessage,
+  flashcardSetErrorMessage,
+  supabaseNotConfiguredMessage,
   toFlashcardSetCreateErrorKey,
-  toFlashcardSetValidationErrorKey,
   type FlashcardSetErrorKey,
 } from "@/lib/flashcard-set-errors";
+import { t } from "@/lib/i18n";
+import { getLocaleFromContext } from "@/lib/locale";
 import { validateFlashcardSetName } from "@/lib/flashcard-set-name";
 
 export const prerender = false;
@@ -19,14 +23,15 @@ function dashboardErrorRedirect(context: Parameters<APIRoute>[0], errorKey: Flas
 }
 
 export const POST: APIRoute = async (context) => {
+  const locale = getLocaleFromContext(context);
   const asJson = wantsJsonResponse(context.request);
   const form = await context.request.formData();
   const validation = validateFlashcardSetName(form.get("name"));
 
   if (!validation.ok) {
-    const errorKey = toFlashcardSetValidationErrorKey(validation.error);
+    const errorKey = validation.key;
     if (asJson) {
-      return jsonResponse({ ok: false, errorKey }, 400);
+      return jsonResponse({ ok: false, message: flashcardSetErrorMessage(locale, errorKey) }, 400);
     }
     return dashboardErrorRedirect(context, errorKey);
   }
@@ -35,7 +40,7 @@ export const POST: APIRoute = async (context) => {
   if (!supabase) {
     const errorKey = "supabase_unconfigured" satisfies FlashcardSetErrorKey;
     if (asJson) {
-      return jsonResponse({ ok: false, errorKey }, 503);
+      return jsonResponse({ ok: false, message: supabaseNotConfiguredMessage(locale) }, 503);
     }
     return dashboardErrorRedirect(context, errorKey);
   }
@@ -47,7 +52,7 @@ export const POST: APIRoute = async (context) => {
 
   if (authError || !user) {
     if (asJson) {
-      return jsonResponse({ ok: false, errorKey: "set_create_failed" }, 401);
+      return jsonResponse({ ok: false, message: t(locale, "api.error.unauthorized") }, 401);
     }
     return context.redirect("/auth/signin");
   }
@@ -64,7 +69,7 @@ export const POST: APIRoute = async (context) => {
     }
     const errorKey = toFlashcardSetCreateErrorKey(error);
     if (asJson) {
-      return jsonResponse({ ok: false, errorKey }, 400);
+      return jsonResponse({ ok: false, message: flashcardSetCreateErrorMessage(locale, error) }, 400);
     }
     return dashboardErrorRedirect(context, errorKey);
   }

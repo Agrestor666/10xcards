@@ -1,7 +1,10 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import { jsonResponse } from "@/lib/api-json";
-import { SUPABASE_NOT_CONFIGURED_MESSAGE } from "@/lib/flashcard-set-errors";
+import { supabaseNotConfiguredMessage } from "@/lib/flashcard-set-errors";
+import { t } from "@/lib/i18n";
+import { getLocaleFromContext } from "@/lib/locale";
+
 export const prerender = false;
 
 interface DueCard {
@@ -29,9 +32,10 @@ const querySchema = z.object({
 });
 
 export const GET: APIRoute = async (context) => {
+  const locale = getLocaleFromContext(context);
   const supabase = context.locals.supabase;
   if (!supabase) {
-    return jsonResponse({ ok: false, message: SUPABASE_NOT_CONFIGURED_MESSAGE }, 503);
+    return jsonResponse({ ok: false, message: supabaseNotConfiguredMessage(locale) }, 503);
   }
 
   const {
@@ -40,14 +44,14 @@ export const GET: APIRoute = async (context) => {
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    return jsonResponse({ ok: false, message: "Please sign in to continue." }, 401);
+    return jsonResponse({ ok: false, message: t(locale, "api.error.unauthorized") }, 401);
   }
 
   const url = new URL(context.request.url);
   const rawSetId = url.searchParams.get("setId");
   const parsedQuery = querySchema.safeParse({ setId: rawSetId });
   if (!parsedQuery.success) {
-    return jsonResponse({ ok: false, message: "Invalid request." }, 400);
+    return jsonResponse({ ok: false, message: t(locale, "api.error.invalid_request") }, 400);
   }
 
   const nowIso = new Date().toISOString();
@@ -62,12 +66,12 @@ export const GET: APIRoute = async (context) => {
     .maybeSingle();
 
   if (dueResult.error) {
-    return jsonResponse({ ok: false, message: dueResult.error.message }, 403);
+    return jsonResponse({ ok: false, message: t(locale, "review.error.load") }, 403);
   }
 
   const dueCardParse = dueCardSchema.nullable().safeParse(dueResult.data);
   if (!dueCardParse.success) {
-    return jsonResponse({ ok: false, message: "Invalid response." }, 500);
+    return jsonResponse({ ok: false, message: t(locale, "api.error.invalid_response") }, 500);
   }
 
   const dueCard = dueCardParse.data;
@@ -84,12 +88,12 @@ export const GET: APIRoute = async (context) => {
     .maybeSingle();
 
   if (nextResult.error) {
-    return jsonResponse({ ok: false, message: nextResult.error.message }, 403);
+    return jsonResponse({ ok: false, message: t(locale, "review.error.load") }, 403);
   }
 
   const nextCardParse = nextDueSchema.nullable().safeParse(nextResult.data);
   if (!nextCardParse.success) {
-    return jsonResponse({ ok: false, message: "Invalid response." }, 500);
+    return jsonResponse({ ok: false, message: t(locale, "api.error.invalid_response") }, 500);
   }
 
   const nextCard = nextCardParse.data;

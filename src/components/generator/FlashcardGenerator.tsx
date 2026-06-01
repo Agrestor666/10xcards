@@ -4,6 +4,7 @@ import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { useLocale } from "@/components/i18n/useLocale";
 import { MAX_CARD_FIELD_CHARS, MAX_CARDS_PER_REQUEST, MAX_SOURCE_TEXT_CHARS } from "@/lib/ai-generation-limits";
 import { dispatchDashboardSetCardsAdded } from "@/lib/dashboard-set-sync";
+import type { MessageKey } from "@/lib/i18n";
 import type { AppLocale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -20,7 +21,9 @@ interface FlashcardDraft {
 
 type SaveStatus = "idle" | "saving" | "success" | "error";
 
-type GenerateResponse = { ok: true; cards: { question: string; answer: string }[] } | { ok: false; errorKey: string };
+type GenerateResponse =
+  | { ok: true; cards: { question: string; answer: string }[] }
+  | { ok: false; errorKey?: string; message?: string };
 
 type BulkCreateResponse = { ok: true; insertedCount: number } | { ok: false; message: string };
 
@@ -106,10 +109,13 @@ function FlashcardGeneratorInner({
       }
 
       if (!body.ok) {
-        const key = body.errorKey;
-        setErrorMessage(
-          key === "generator.error.timeout" ? t("generator.error.timeout") : t("generator.error.generate"),
-        );
+        if (body.message) {
+          setErrorMessage(body.message);
+        } else if (body.errorKey) {
+          setErrorMessage(t(body.errorKey as MessageKey));
+        } else {
+          setErrorMessage(t("generator.error.generate"));
+        }
         return;
       }
 

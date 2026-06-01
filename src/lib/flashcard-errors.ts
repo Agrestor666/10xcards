@@ -1,29 +1,44 @@
+import { t } from "@/lib/i18n";
+import type { AppLocale } from "@/lib/locale";
+
 const POSTGRES_PERMISSION_DENIED = "42501";
 
 /**
  * Maps Supabase/Postgres errors to user-safe strings for bulk flashcard insert.
  * Never forwards raw DB messages (policy names, SQL, internal codes).
  */
-export function flashcardBulkCreateErrorMessage(error: { code?: string }): string {
+export function flashcardBulkCreateErrorMessage(locale: AppLocale, error: { code?: string }): string {
   if (error.code === POSTGRES_PERMISSION_DENIED) {
-    return "Could not save cards. You do not have permission to add cards to this set.";
+    return t(locale, "flashcards.error.save_forbidden");
   }
 
-  return "Could not save cards. Please try again.";
+  return t(locale, "flashcards.error.save");
 }
 
-export function flashcardUpdateErrorMessage(error: { code?: string }): string {
+export function flashcardCreateErrorMessage(locale: AppLocale, error: { code?: string }): string {
   if (error.code === POSTGRES_PERMISSION_DENIED) {
-    return "Could not update this card. You do not have permission to edit it.";
+    return t(locale, "flashcards.error.add_forbidden");
   }
 
-  return "Could not update this card. Please try again.";
+  return t(locale, "flashcards.error.add");
 }
 
-export function flashcardDeleteErrorMessage(error: { code?: string }): string {
+export function flashcardUpdateErrorMessage(locale: AppLocale, error: { code?: string }): string {
   if (error.code === POSTGRES_PERMISSION_DENIED) {
-    return "Could not delete this card. You do not have permission to delete it.";
+    return t(locale, "flashcards.error.update_forbidden");
   }
 
-  return "Could not delete this card. Please try again.";
+  return t(locale, "flashcards.error.save");
+}
+
+export function flashcardDeleteErrorMessage(locale: AppLocale, error: { code?: string }): string {
+  if (error.code === POSTGRES_PERMISSION_DENIED) {
+    return t(locale, "flashcards.error.delete_forbidden");
+  }
+
+  return t(locale, "flashcards.error.delete");
+}
+
+export function flashcardNotFoundMessage(locale: AppLocale): string {
+  return t(locale, "flashcards.error.not_found");
 }

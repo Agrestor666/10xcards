@@ -80,6 +80,15 @@ export function tPlural(
   count: number,
   params?: Record<string, string | number>,
 ): string {
+  if (import.meta.env.DEV) {
+    const variants = ["_one", "_few", "_many", "_other"] as const;
+    for (const v of variants) {
+      if (!getMessage(runtimeMessages.en, `${keyPrefix}${v}`)) {
+        // eslint-disable-next-line no-console -- dev-only plural variant guard
+        console.warn(`tPlural: missing variant "${keyPrefix}${v}" in en.ts`);
+      }
+    }
+  }
   const form = getPluralForm(locale, count);
   const key = `${keyPrefix}_${form}` as MessageKey;
   return t(locale, key, { count, ...params });

@@ -20,7 +20,11 @@ export const POST: APIRoute = async (context) => {
   const cookieLocale = getLocaleFromCookies(context.cookies);
   const metaLocale: unknown = data.user.user_metadata.locale;
   if (cookieLocale && cookieLocale !== metaLocale) {
-    await supabase.auth.updateUser({ data: { locale: cookieLocale } });
+    try {
+      await supabase.auth.updateUser({ data: { locale: cookieLocale } });
+    } catch {
+      // best-effort locale sync — do not block sign-in on failure
+    }
   }
 
   return context.redirect("/dashboard");

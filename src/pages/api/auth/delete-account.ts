@@ -1,9 +1,12 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
-import { accountDeleteErrorMessage, SUPABASE_ADMIN_NOT_CONFIGURED_MESSAGE } from "@/lib/account-errors";
+import { accountDeleteErrorMessage, supabaseAdminNotConfiguredMessage } from "@/lib/account-errors";
 import { jsonResponse } from "@/lib/api-json";
-import { SUPABASE_NOT_CONFIGURED_MESSAGE } from "@/lib/flashcard-set-errors";
+import { supabaseNotConfiguredMessage } from "@/lib/flashcard-set-errors";
+import { t } from "@/lib/i18n";
+import { getLocaleFromContext } from "@/lib/locale";
 import { createAdminClient } from "@/lib/supabase-admin";
+
 export const prerender = false;
 
 const deleteAccountBodySchema = z.object({
@@ -11,9 +14,10 @@ const deleteAccountBodySchema = z.object({
 });
 
 export const POST: APIRoute = async (context) => {
+  const locale = getLocaleFromContext(context);
   const supabase = context.locals.supabase;
   if (!supabase) {
-    return jsonResponse({ ok: false, message: SUPABASE_NOT_CONFIGURED_MESSAGE }, 503);
+    return jsonResponse({ ok: false, message: supabaseNotConfiguredMessage(locale) }, 503);
   }
 
   const {
@@ -22,31 +26,31 @@ export const POST: APIRoute = async (context) => {
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    return jsonResponse({ ok: false, message: "Please sign in to delete your account." }, 401);
+    return jsonResponse({ ok: false, message: t(locale, "api.error.sign_in_delete_account") }, 401);
   }
 
   let body: unknown;
   try {
     body = await context.request.json();
   } catch {
-    return jsonResponse({ ok: false, message: "Invalid request body." }, 400);
+    return jsonResponse({ ok: false, message: t(locale, "api.error.invalid_body") }, 400);
   }
 
   const parsed = deleteAccountBodySchema.safeParse(body);
   if (!parsed.success) {
-    return jsonResponse({ ok: false, message: "Invalid request body." }, 400);
+    return jsonResponse({ ok: false, message: t(locale, "api.error.invalid_body") }, 400);
   }
 
   const admin = createAdminClient();
   if (!admin) {
-    return jsonResponse({ ok: false, message: SUPABASE_ADMIN_NOT_CONFIGURED_MESSAGE }, 503);
+    return jsonResponse({ ok: false, message: supabaseAdminNotConfiguredMessage(locale) }, 503);
   }
 
   const { error: deleteError } = await admin.auth.admin.deleteUser(user.id);
   if (deleteError) {
     // eslint-disable-next-line no-console -- delete failure must be observable in wrangler logs
     console.error("delete-account: auth.admin.deleteUser failed", deleteError);
-    return jsonResponse({ ok: false, message: accountDeleteErrorMessage(deleteError) }, 403);
+    return jsonResponse({ ok: false, message: accountDeleteErrorMessage(locale, deleteError) }, 403);
   }
 
   const { error: signOutError } = await supabase.auth.signOut();

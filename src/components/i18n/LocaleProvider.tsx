@@ -1,4 +1,4 @@
-import { createContext, type ReactNode } from "react";
+import { createContext, useMemo, type ReactNode } from "react";
 import type { AppLocale } from "@/lib/locale";
 import { t as translate, type MessageKey } from "@/lib/i18n";
 
@@ -15,10 +15,13 @@ interface LocaleProviderProps {
 }
 
 export function LocaleProvider({ locale, children }: LocaleProviderProps) {
-  const value: LocaleContextValue = {
-    locale,
-    t: (key, params) => translate(locale, key, params),
-  };
+  const value = useMemo<LocaleContextValue>(
+    () => ({
+      locale,
+      t: (key, params) => translate(locale, key, params),
+    }),
+    [locale],
+  );
 
   return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>;
 }

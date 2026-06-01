@@ -3,7 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import AppTopbar from "@/components/layout/AppTopbar.astro";
 import PaperShell from "@/components/layout/PaperShell.astro";
 import { AccountDangerZone } from "@/components/account/AccountDangerZone";
-import { SUPABASE_NOT_CONFIGURED_MESSAGE } from "@/lib/flashcard-set-errors";
+import { supabaseNotConfiguredMessage } from "@/lib/flashcard-set-errors";
 import { t } from "@/lib/i18n";
 
 const { user, locale } = Astro.locals;
@@ -15,7 +15,7 @@ let cardCount = 0;
 let statsLoadError: string | null = null;
 
 if (!supabase) {
-  statsLoadError = SUPABASE_NOT_CONFIGURED_MESSAGE;
+  statsLoadError = supabaseNotConfiguredMessage(locale);
 } else {
   const [setsResult, cardsResult] = await Promise.all([
     supabase.from("flashcard_sets").select("id", { count: "exact", head: true }),

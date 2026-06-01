@@ -1,11 +1,14 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
-import { jsonResponse } from "@/lib/api-json";
 import { MAX_CARD_FIELD_CHARS } from "@/lib/ai-generation-limits";
-import { flashcardBulkCreateErrorMessage } from "@/lib/flashcard-errors";
-import { SUPABASE_NOT_CONFIGURED_MESSAGE } from "@/lib/flashcard-set-errors";
-import { validateFlashcardDraft } from "@/lib/flashcard-draft-validation";
+import { jsonResponse } from "@/lib/api-json";
+import { flashcardCreateErrorMessage } from "@/lib/flashcard-errors";
+import { flashcardDraftValidationMessage, validateFlashcardDraft } from "@/lib/flashcard-draft-validation";
 import { touchFlashcardSetUpdatedAt } from "@/lib/flashcard-set-touch";
+import { supabaseNotConfiguredMessage } from "@/lib/flashcard-set-errors";
+import { t } from "@/lib/i18n";
+import { getLocaleFromContext } from "@/lib/locale";
+
 export const prerender = false;
 
 const createBodySchema = z.object({
@@ -15,9 +18,10 @@ const createBodySchema = z.object({
 });
 
 export const POST: APIRoute = async (context) => {
+  const locale = getLocaleFromContext(context);
   const supabase = context.locals.supabase;
   if (!supabase) {
-    return jsonResponse({ ok: false, message: SUPABASE_NOT_CONFIGURED_MESSAGE }, 503);
+    return jsonResponse({ ok: false, message: supabaseNotConfiguredMessage(locale) }, 503);
   }
 
   const {
@@ -26,19 +30,19 @@ export const POST: APIRoute = async (context) => {
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    return jsonResponse({ ok: false, message: "Please sign in to add a flashcard." }, 401);
+    return jsonResponse({ ok: false, message: t(locale, "api.error.sign_in_add_flashcard") }, 401);
   }
 
   let body: unknown;
   try {
     body = await context.request.json();
   } catch {
-    return jsonResponse({ ok: false, message: "Invalid request body." }, 400);
+    return jsonResponse({ ok: false, message: t(locale, "api.error.invalid_body") }, 400);
   }
 
   const parsed = createBodySchema.safeParse(body);
   if (!parsed.success) {
-    return jsonResponse({ ok: false, message: "Invalid request body." }, 400);
+    return jsonResponse({ ok: false, message: t(locale, "api.error.invalid_body") }, 400);
   }
 
   const validated = validateFlashcardDraft({
@@ -46,7 +50,13 @@ export const POST: APIRoute = async (context) => {
     answer: parsed.data.answer,
   });
   if (!validated.ok) {
-    return jsonResponse({ ok: false, message: validated.error }, 400);
+    return jsonResponse(
+      {
+        ok: false,
+        message: flashcardDraftValidationMessage(locale, validated.key, { max: MAX_CARD_FIELD_CHARS }),
+      },
+      400,
+    );
   }
 
   const { data, error } = await supabase
@@ -60,7 +70,7 @@ export const POST: APIRoute = async (context) => {
     .single();
 
   if (error) {
-    return jsonResponse({ ok: false, message: flashcardBulkCreateErrorMessage(error) }, 403);
+    return jsonResponse({ ok: false, message: flashcardCreateErrorMessage(locale, error) }, 403);
   }
 
   await touchFlashcardSetUpdatedAt(supabase, parsed.data.setId);
