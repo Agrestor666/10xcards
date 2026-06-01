@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { createClient } from "@/lib/supabase";
+import { resolveLocale } from "@/lib/locale";
 
 export const POST: APIRoute = async (context) => {
   const form = await context.request.formData();
@@ -10,7 +11,19 @@ export const POST: APIRoute = async (context) => {
   if (!supabase) {
     return context.redirect(`/auth/signup?error=${encodeURIComponent("Supabase is not configured")}`);
   }
-  const { error } = await supabase.auth.signUp({ email, password });
+  const locale = resolveLocale({
+    user: context.locals.user,
+    cookies: context.cookies,
+    acceptLanguage: context.request.headers.get("Accept-Language"),
+  });
+
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { locale },
+    },
+  });
 
   if (error) {
     return context.redirect(`/auth/signup?error=${encodeURIComponent(error.message)}`);

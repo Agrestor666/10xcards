@@ -8,10 +8,11 @@ interface Props {
 }
 
 const { title = "10xCards" } = Astro.props;
+const locale = Astro.locals.locale;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={locale}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />

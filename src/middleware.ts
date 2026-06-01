@@ -1,5 +1,6 @@
 import { defineMiddleware } from "astro:middleware";
 import { createClient } from "@/lib/supabase";
+import { getLocaleFromCookies, resolveLocale, setLocaleCookie } from "@/lib/locale";
 
 const PROTECTED_ROUTES = ["/dashboard", "/sets", "/settings"];
 
@@ -27,6 +28,18 @@ export const onRequest = defineMiddleware(async (context, next) => {
       return context.redirect("/dashboard");
     }
   }
+
+  const locale = resolveLocale({
+    user: context.locals.user,
+    cookies: context.cookies,
+    acceptLanguage: context.request.headers.get("Accept-Language"),
+  });
+
+  if (!getLocaleFromCookies(context.cookies)) {
+    setLocaleCookie(context.cookies, locale);
+  }
+
+  context.locals.locale = locale;
 
   return next();
 });
