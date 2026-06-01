@@ -282,7 +282,7 @@ Remove obsolete cosmic topbar, verify no user route references cosmic shell, fin
 
 - `npm run lint` passes
 - `npm run build` passes
-- `rg "Topbar\\.astro" src/` returns no matches
+- `rg '@/components/Topbar\.astro' src/` returns no matches (legacy topbar only; `AppTopbar.astro` is expected)
 - `rg "bg-cosmic" src/pages` returns no matches
 
 #### Manual Verification:
@@ -376,7 +376,7 @@ Remove obsolete cosmic topbar, verify no user route references cosmic shell, fin
 
 - [x] 4.1 `npm run lint` passes — eed4c4a
 - [x] 4.2 `npm run build` passes — eed4c4a
-- [x] 4.3 No `Topbar.astro` imports under `src/` — eed4c4a
+- [x] 4.3 No legacy `@/components/Topbar.astro` imports under `src/` — eed4c4a
 - [x] 4.4 No `bg-cosmic` under `src/pages/` — eed4c4a
 
 #### Manual

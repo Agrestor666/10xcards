@@ -1,7 +1,7 @@
 ---
 change_id: unified-paper-ui
 title: Unified paper UI: review, settings, auth + full route audit
-status: implemented
+status: impl_reviewed
 created: 2026-05-30
 updated: 2026-05-30
 archived_at: null
@@ -47,38 +47,38 @@ Run end-to-end before archive or release. Tick when verified.
 
 **Paper continuity**
 
-- [ ] Logged out `/`: paper shell, variant A headline, **Get started** → signup, **Sign in** → signin
-- [ ] Full loop: `/` → sign up/in → dashboard → set → review → settings → sign out → `/` (no cosmic flash)
-- [ ] Mobile-width: auth card and review grade grid do not overflow
+- [x] Logged out `/`: paper shell, variant A headline, **Get started** → signup, **Sign in** → signin
+- [x] Full loop: `/` → sign up/in → dashboard → set → review → settings → sign out → `/` (no cosmic flash)
+- [x] Mobile-width: auth card and review grade grid do not overflow
 
 **Auth**
 
-- [ ] `/auth/signin` and `/auth/signup`: readable fields, validation errors, successful sign-in redirect
-- [ ] `/auth/confirm-email` renders (DEV and prod copy modes smoke)
-- [ ] Footer cross-links (sign up ↔ sign in) use paper link styling
+- [x] `/auth/signin` and `/auth/signup`: readable fields, validation errors, successful sign-in redirect
+- [x] `/auth/confirm-email` renders (DEV and prod copy modes smoke)
+- [x] Footer cross-links (sign up ↔ sign in) use paper link styling
 
 **Settings / account**
 
-- [ ] `/settings`: email, stats, danger zone on paper; `AppTopbar` Settings / Sets / Sign out work
-- [ ] Delete-account dialog: opens, confirm field readable, cancel works (do not complete deletion unless testing account-deletion change)
+- [x] `/settings`: email, stats, danger zone on paper; `AppTopbar` Settings / Sets / Sign out work
+- [x] Delete-account dialog: opens, confirm field readable, cancel works (do not complete deletion unless testing account-deletion change)
 
 **Review SRS**
 
-- [ ] Dashboard **Study** → review: paper shell, show answer, grade **Again/Good**, card advances
-- [ ] Return dashboard: due counts decrease (dashboard-set-sync)
-- [ ] Empty due state: message + back link to set
-- [ ] Set detail **Start review**: same paper session; no console errors on fetch/grade failures (retry works)
+- [x] Dashboard **Study** → review: paper shell, show answer, grade **Again/Good**, card advances
+- [x] Return dashboard: due counts decrease (dashboard-set-sync)
+- [x] Empty due state: message + back link to set
+- [x] Set detail **Start review**: same paper session; no console errors on fetch/grade failures (retry works)
 
 **S-07 dashboard regression**
 
-- [ ] Due hero total matches sum of per-tile due counts (or both zero)
-- [ ] **Study** on tile opens review with expected due cards
-- [ ] **+ New set** dialog creates set; **⋯** rename/delete behave as S-05
-- [ ] AI generate + bulk save updates tile counts without full reload
-- [ ] Generator `<details>` collapsed by default; expands on paper background
+- [x] Due hero total matches sum of per-tile due counts (or both zero)
+- [x] **Study** on tile opens review with expected due cards
+- [x] **+ New set** dialog creates set; **⋯** rename/delete behave as S-05
+- [x] AI generate + bulk save updates tile counts without full reload
+- [x] Generator `<details>` collapsed by default; expands on paper background
 
 **Out of scope / preserved APIs**
 
-- [ ] SRS algorithm, `/api/srs/due`, `/api/srs/grade` unchanged (behavior-only smoke via review flow)
-- [ ] Auth API and middleware unchanged (sign-in/out smoke)
-- [ ] No database or RLS changes this slice
+- [x] SRS algorithm, `/api/srs/due`, `/api/srs/grade` unchanged (behavior-only smoke via review flow)
+- [x] Auth API and middleware unchanged (sign-in/out smoke)
+- [x] No database or RLS changes this slice
