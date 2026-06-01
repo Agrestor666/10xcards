@@ -3,7 +3,7 @@ project: "10xCards"
 version: 1
 status: draft
 created: 2026-05-25
-updated: 2026-05-30
+updated: 2026-06-01
 prd_version: 1
 prd_v2_slice: S-05
 shape_notes_slice: S-07
@@ -42,7 +42,7 @@ Ręczne tworzenie fiszek edukacyjnych jest skrajnie czasochłonne — ta bariera
 | S-06 | account-deletion      | trwale usunąć swoje konto wraz ze wszystkimi zestawami i fiszkami (po potwierdzeniu)                                   | F-01          | NFR prywatność, Access Control               | planned  |
 | S-07 | study-hub-ui          | study hub na `/dashboard` + landing `/` + paper theme na `/sets/<id>`; due dziś, **Study**, kafelki zestawów | F-01, S-01, S-02, S-04, S-05 | prd-v3, US-01–US-04, landing-copy.md | proposed |
 | S-08 | unified-paper-ui      | cała aplikacja w jednym stylu paper (review, settings, auth); brak skoków cosmic ↔ paper między ekranami | S-07 | study-hub-ui plan, paper tokens | proposed |
-| S-09 | bilingual-ui          | cała aplikacja po polsku lub po angielsku; wybór języka na landingu (domyślnie z przeglądarki); po zalogowaniu bez zmiany | S-07, S-08 | shape-notes (ex-i18n non-goal), landing-copy.md | proposed |
+| S-09 | bilingual-ui          | cała aplikacja po polsku lub po angielsku; wybór języka na landingu (domyślnie z przeglądarki); po zalogowaniu bez zmiany | S-07, S-08 | shape-notes (ex-i18n non-goal), landing-copy.md | done |
 
 ## Streams
 
@@ -226,7 +226,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
   - Wejście na `/auth/signin` bez wizyty na landingu — domyślny język z `Accept-Language`, bez późniejszej zmiany po zalogowaniu — Owner: implementer. Block: no.
   - Zakres tłumaczeń komunikatów API (JSON errors) vs. tylko UI — Owner: user. Block: no (MVP: UI + najczęstsze błędy formularzy).
 - **Risk:** Średni — dotyka wszystkich tras i islandów React; ryzyko pominiętych stringów (regresja EN-only). Warto fazować: (1) infrastruktura locale + landing selector + cookie/metadata, (2) auth + landing, (3) dashboard + set + review + settings, (4) audyt stringów + smoke obu języków.
-- **Status:** proposed
+- **Status:** done
 
 > **Scope:** selektor PL | EN na landingu; auto-detect `Accept-Language` (mapowanie `pl*` → PL, inaczej EN); propagacja locale do SSR i React; tłumaczenie istniejącego copy (dashboard, generator, SRS, auth, account deletion UI). **Non-goals:** więcej niż 2 języki; przełącznik języka po zalogowaniu; tłumaczenie treści fiszek generowanych przez AI (język fiszek = język źródłowego tekstu użytkownika); pełna lokalizacja dat/liczb poza `toLocaleString` tam gdzie już jest.
 
@@ -259,5 +259,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Observability na poziomie aplikacji (Sentry, OTel, itp.)** — Why parked: brak NFR wymagającego tego przy launchie; Cloudflare Workers observability wystarczy na MVP.
 
 ## Done
+
+- **S-09: Dwujęzyczny interfejs (PL / EN)** — Archived 2026-06-01 → `context/archive/2026-05-30-bilingual-ui/`. Lesson: —.
 
 (Empty on first generation. `/10x-archive` appends an entry here — and flips that item's `Status` to `done` — when a change whose `Change ID` matches the item is archived.)
