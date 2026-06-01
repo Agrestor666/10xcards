@@ -471,9 +471,9 @@ Localize server-side error templates and API inline messages; grep audit for mis
 
 #### Automated
 
-- [x] 4.1 `npm run lint` passes
-- [x] 4.2 `npm run build` passes
-- [x] 4.3 String audit grep documented with exceptions
+- [x] 4.1 `npm run lint` passes — 8a95292
+- [x] 4.2 `npm run build` passes — 8a95292
+- [x] 4.3 String audit grep documented with exceptions — 8a95292
 
 #### Manual
 

@@ -1,7 +1,7 @@
 ---
 change_id: bilingual-ui
 title: Bilingual ui
-status: impl_reviewed
+status: implemented
 created: 2026-05-30
 updated: 2026-06-01
 archived_at: null
