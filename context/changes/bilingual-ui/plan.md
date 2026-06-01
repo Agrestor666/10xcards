@@ -433,26 +433,26 @@ Localize server-side error templates and API inline messages; grep audit for mis
 
 #### Automated
 
-- [x] 1.1 `npm run lint` passes
-- [x] 1.2 `npm run build` passes
+- [x] 1.1 `npm run lint` passes — cf20433
+- [x] 1.2 `npm run build` passes — cf20433
 
 #### Manual
 
-- [x] 1.3 Accept-Language and `/api/locale` cookie behavior verified
-- [x] 1.4 Signup stores `user_metadata.locale`
+- [x] 1.3 Accept-Language and `/api/locale` cookie behavior verified — cf20433
+- [x] 1.4 Signup stores `user_metadata.locale` — cf20433
 
 ### Phase 2: Landing selector and auth
 
 #### Automated
 
-- [ ] 2.1 `npm run lint` passes
-- [ ] 2.2 `npm run build` passes
+- [x] 2.1 `npm run lint` passes
+- [x] 2.2 `npm run build` passes
 
 #### Manual
 
-- [ ] 2.3 Landing PL/EN toggle and auth flow localized
-- [ ] 2.4 Auth errors show mapped localized messages (no raw Supabase text)
-- [ ] 2.5 Authenticated topbar has no language toggle
+- [x] 2.3 Landing PL/EN toggle and auth flow localized
+- [x] 2.4 Auth errors show mapped localized messages (no raw Supabase text)
+- [x] 2.5 Authenticated topbar has no language toggle
 
 ### Phase 3: Dashboard, sets, review, and settings
 

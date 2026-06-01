@@ -4,8 +4,12 @@ import { FormField } from "@/components/auth/FormField";
 import { PasswordToggle } from "@/components/auth/PasswordToggle";
 import { SubmitButton } from "@/components/auth/SubmitButton";
 import { ServerError } from "@/components/auth/ServerError";
+import { LocaleProvider } from "@/components/i18n/LocaleProvider";
+import { useLocale } from "@/components/i18n/useLocale";
+import type { AppLocale } from "@/lib/locale";
 
 interface Props {
+  locale: AppLocale;
   serverError?: string | null;
 }
 
@@ -14,7 +18,8 @@ function formValue(formData: FormData, key: string): string {
   return typeof value === "string" ? value : "";
 }
 
-export default function SignInForm({ serverError }: Props) {
+function SignInFormInner({ serverError }: Pick<Props, "serverError">) {
+  const { t } = useLocale();
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
@@ -25,12 +30,12 @@ export default function SignInForm({ serverError }: Props) {
 
     const next: typeof errors = {};
     if (!email) {
-      next.email = "Email is required";
+      next.email = t("auth.validation.email_required");
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      next.email = "Enter a valid email address";
+      next.email = t("auth.validation.email_invalid");
     }
     if (!password) {
-      next.password = "Password is required";
+      next.password = t("auth.validation.password_required");
     }
     return next;
   }
@@ -52,27 +57,27 @@ export default function SignInForm({ serverError }: Props) {
       <FormField
         id="email"
         type="email"
-        label="Email"
+        label={t("auth.field.email")}
         theme="paper"
         uncontrolled
         onInput={() => {
           clearError("email");
         }}
-        placeholder="you@example.com"
+        placeholder={t("auth.placeholder.email")}
         error={errors.email}
         icon={<Mail className="size-4" />}
       />
 
       <FormField
         id="password"
-        label="Password"
+        label={t("auth.field.password")}
         theme="paper"
         uncontrolled
         passwordVisible={showPassword}
         onInput={() => {
           clearError("password");
         }}
-        placeholder="Your password"
+        placeholder={t("auth.placeholder.password")}
         error={errors.password}
         icon={<Lock className="size-4" />}
         endContent={
@@ -88,9 +93,17 @@ export default function SignInForm({ serverError }: Props) {
 
       <ServerError message={serverError} theme="paper" />
 
-      <SubmitButton pendingText="Signing in..." icon={<LogIn className="size-4" />}>
-        Sign in
+      <SubmitButton pendingText={t("auth.button.sign_in_pending")} icon={<LogIn className="size-4" />}>
+        {t("auth.button.sign_in")}
       </SubmitButton>
     </form>
+  );
+}
+
+export default function SignInForm({ locale, serverError }: Props) {
+  return (
+    <LocaleProvider locale={locale}>
+      <SignInFormInner serverError={serverError} />
+    </LocaleProvider>
   );
 }

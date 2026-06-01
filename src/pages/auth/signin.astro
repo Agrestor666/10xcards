@@ -2,17 +2,24 @@
 import Layout from "@/layouts/Layout.astro";
 import PaperShell from "@/components/layout/PaperShell.astro";
 import SignInForm from "@/components/auth/SignInForm";
+import { resolveAuthErrorMessage } from "@/lib/auth-errors";
+import { t } from "@/lib/i18n";
 
-const error = Astro.url.searchParams.get("error");
+const locale = Astro.locals.locale;
+const errorParam = Astro.url.searchParams.get("error");
+const serverError = resolveAuthErrorMessage(locale, errorParam);
 ---
 
-<Layout title="Sign in">
+<Layout title={t(locale, "pages.signin.title")}>
   <PaperShell class="flex min-h-screen items-center justify-center py-12">
     <div class="border-border bg-card w-full max-w-sm rounded-2xl border p-8 shadow-sm">
-      <h1 class="font-display mb-6 text-center text-2xl tracking-tight">Sign in</h1>
-      <SignInForm serverError={error} client:load />
+      <h1 class="font-display mb-6 text-center text-2xl tracking-tight">{t(locale, "auth.signin.heading")}</h1>
+      <SignInForm locale={locale} serverError={serverError} client:load />
       <p class="text-muted-foreground mt-4 text-center text-sm">
-        Don't have an account? <a href="/auth/signup" class="text-primary font-medium hover:underline">Sign up</a>
+        {t(locale, "auth.signin.footer")}{" "}
+        <a href="/auth/signup" class="text-primary font-medium hover:underline">
+          {t(locale, "auth.signin.footer_link")}
+        </a>
       </p>
     </div>
   </PaperShell>

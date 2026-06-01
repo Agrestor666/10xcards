@@ -1,23 +1,25 @@
 ---
 import AppTopbar from "@/components/layout/AppTopbar.astro";
 import PaperShell from "@/components/layout/PaperShell.astro";
+import { t } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+
+const locale = Astro.locals.locale;
 
 const featureCards = [
   {
-    title: "AI from your text",
-    description: "Paste a chapter, article, or notes. Get flashcards you can edit before they land in a set.",
+    titleKey: "landing.feature.ai.title" as const,
+    descriptionKey: "landing.feature.ai.description" as const,
     icon: "book",
   },
   {
-    title: "Reviews on a schedule",
-    description:
-      "Start with what's due today. After each answer, the app plans the next review—no spreadsheet required.",
+    titleKey: "landing.feature.reviews.title" as const,
+    descriptionKey: "landing.feature.reviews.description" as const,
     icon: "calendar",
   },
   {
-    title: "One place to learn",
-    description: "Generate, organize sets, and study from your dashboard. Your library stays private to your account.",
+    titleKey: "landing.feature.hub.title" as const,
+    descriptionKey: "landing.feature.hub.description" as const,
     icon: "stack",
   },
 ] as const;
@@ -31,23 +33,23 @@ const iconClass = cn("text-primary mb-4 size-6");
 
   <section class="flex flex-col items-center px-2 py-16 text-center sm:py-24">
     <h1 class="font-display max-w-3xl text-4xl leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-      Flashcards from your text. Reviews on autopilot.
+      {t(locale, "landing.hero.headline")}
     </h1>
     <p class="text-muted-foreground mt-6 max-w-2xl text-lg sm:text-xl">
-      10xCards combines AI generation with spaced repetition—so you spend time learning, not formatting cards.
+      {t(locale, "landing.hero.subhead")}
     </p>
     <div class="mt-10 flex flex-col gap-3 sm:flex-row sm:gap-4">
       <a
         href="/auth/signup"
         class="bg-primary text-primary-foreground inline-flex items-center justify-center rounded-lg px-6 py-3 text-base font-medium shadow-xs transition-colors hover:opacity-90"
       >
-        Get started
+        {t(locale, "landing.cta.get_started")}
       </a>
       <a
         href="/auth/signin"
         class="border-border bg-background text-foreground hover:bg-accent inline-flex items-center justify-center rounded-lg border px-6 py-3 text-base font-medium shadow-xs transition-colors"
       >
-        Sign in
+        {t(locale, "landing.cta.sign_in")}
       </a>
     </div>
   </section>
@@ -111,8 +113,8 @@ const iconClass = cn("text-primary mb-4 size-6");
               <path d="m2 12 10 5 10-5" />
             </svg>
           )}
-          <h3 class="text-lg font-semibold">{card.title}</h3>
-          <p class="text-muted-foreground mt-2 text-sm leading-relaxed">{card.description}</p>
+          <h3 class="text-lg font-semibold">{t(locale, card.titleKey)}</h3>
+          <p class="text-muted-foreground mt-2 text-sm leading-relaxed">{t(locale, card.descriptionKey)}</p>
         </div>
       ))
     }
