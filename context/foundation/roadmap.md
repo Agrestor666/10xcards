@@ -3,7 +3,7 @@ project: "10xCards"
 version: 1
 status: draft
 created: 2026-05-25
-updated: 2026-06-01
+updated: 2026-06-05
 prd_version: 1
 prd_v2_slice: S-05
 shape_notes_slice: S-07
@@ -36,7 +36,7 @@ Ręczne tworzenie fiszek edukacyjnych jest skrajnie czasochłonne — ta bariera
 | F-02 | deploy-pipeline       | (foundation) pipeline CI/CD do Cloudflare Workers; merge do master = automatyczny release                              | —             | —                                            | ready    |
 | S-01 | flashcard-sets-ui     | tworzyć i przeglądać własne zestawy fiszek po zalogowaniu                                                              | F-01          | FR-001, FR-002, FR-003, FR-007               | proposed |
 | S-05 | set-dashboard-lifecycle | zmienić nazwę zestawu i usunąć zestaw (pusty lub z fiszkami) z listy na dashboardzie                                 | F-01, S-01    | prd-v2 Scope [new], US-01                    | proposed |
-| S-02 | ai-generation-save    | wkleić tekst, zobaczyć fiszki AI, zaakceptować / edytować / usunąć i zapisać do zestawu                                | F-01, S-01    | FR-004, FR-005, US-01                        | proposed |
+| S-02 | ai-generation-save    | wkleić tekst, zobaczyć fiszki AI, zaakceptować / edytować / usunąć i zapisać do zestawu                                | F-01, S-01    | FR-004, FR-005, US-01                        | done |
 | S-03 | manual-flashcard-crud | ręcznie dodać, edytować i usunąć fiszkę w zestawie                                                                     | F-01, S-01    | FR-006, FR-008, FR-009, US-02                | proposed |
 | S-04 | srs-review-session    | rozpocząć sesję powtórkową SRS i zobaczyć, że system automatycznie planuje kolejną datę przeglądu po każdej odpowiedzi | F-01, S-01    | FR-010, FR-011, US-01                        | done |
 | S-06 | account-deletion      | trwale usunąć swoje konto wraz ze wszystkimi zestawami i fiszkami (po potwierdzeniu)                                   | F-01          | NFR prywatność, Access Control               | planned  |
@@ -139,7 +139,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Projekt promptu dla OpenRouter: model, format odpowiedzi JSON, obsługa wielojęzyczności — Owner: user. Block: no (decyzja implementacyjna; sensowny default wystarczy do startu, można iterować).
 - **Risk:** Latencja AI i limity CPU Cloudflare Workers to dwa niezależne wektory ryzyka — NFR <10s może nie zmieścić się na darmowym planie Workers; warto przetestować na docelowym planie rozliczeniowym przed releasem.
-- **Status:** proposed
+- **Status:** done
 
 ### S-03: Ręczne tworzenie i CRUD fiszek
 
@@ -260,6 +260,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Done
 
+- **S-02: Generowanie AI + zapis** — Archived 2026-06-05 → `context/archive/2026-05-27-ai-generation-save/`. Lesson: —.
 - **S-04: Sesja powtórkowa SRS** — Archived 2026-06-01 → `context/archive/2026-05-27-srs-review-session/`. Lesson: —.
 - **S-07: Study hub — redesign dashboardu** — Archived 2026-06-01 → `context/archive/2026-05-29-study-hub-ui/`. Lesson: —.
 - **S-08: Unified paper UI — pełna spójność wizualna** — Archived 2026-06-01 → `context/archive/2026-05-30-unified-paper-ui/`. Lesson: —.
