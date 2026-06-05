@@ -1,10 +1,10 @@
 ---
 change_id: data-schema-rls
 title: Supabase schema and RLS for flashcard_sets and flashcards (F-01)
-status: impl_reviewed
+status: archived
 created: 2026-05-26
-updated: 2026-05-27
-archived_at: null
+updated: 2026-06-05
+archived_at: 2026-06-05T18:36:09Z
 ---
 
 ## Notes

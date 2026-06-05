@@ -32,7 +32,7 @@ Ręczne tworzenie fiszek edukacyjnych jest skrajnie czasochłonne — ta bariera
 
 | ID   | Change ID             | Outcome (user can …)                                                                                                   | Prerequisites | PRD refs                                     | Status   |
 | ---- | --------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------- | -------------------------------------------- | -------- |
-| F-01 | data-schema-rls       | (foundation) tabele aplikacji i polityki RLS lądują w Supabase; każda warstwa odczytu i zapisu ma bezpieczną bazę      | —             | NFR trwałość, NFR prywatność, Access Control | ready    |
+| F-01 | data-schema-rls       | (foundation) tabele aplikacji i polityki RLS lądują w Supabase; każda warstwa odczytu i zapisu ma bezpieczną bazę      | —             | NFR trwałość, NFR prywatność, Access Control | done     |
 | F-02 | deploy-pipeline       | (foundation) pipeline CI/CD do Cloudflare Workers; merge do master = automatyczny release                              | —             | —                                            | ready    |
 | S-01 | flashcard-sets-ui     | tworzyć i przeglądać własne zestawy fiszek po zalogowaniu                                                              | F-01          | FR-001, FR-002, FR-003, FR-007               | proposed |
 | S-05 | set-dashboard-lifecycle | zmienić nazwę zestawu i usunąć zestaw (pusty lub z fiszkami) z listy na dashboardzie                                 | F-01, S-01    | prd-v2 Scope [new], US-01                    | proposed |
@@ -85,7 +85,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Jedyna zmiana infra blokująca wszystkie slice'y; błąd w projekcie schematu (np. brak pola dla harmonogramu SRS) wymusi późniejszą migrację modyfikującą kolumny — warto zaprojektować pola SRS (`interval`, `ease_factor`, `due_date`) razem z resztą schematu.
-- **Status:** ready
+- **Status:** done
 
 ### F-02: Deploy pipeline
 
@@ -260,6 +260,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Done
 
+- **F-01: (foundation) tabele aplikacji (`flashcard_sets`, `flashcards` z polami SRS) zamigrowane w Supabase; polityki RLS gwarantują, że każdy użytkownik widzi wyłącznie własne zestawy — schemat gotowy do odczytu i zapisu przez wszystkie slice'y.** — Archived 2026-06-05 → `context/archive/2026-05-26-data-schema-rls/`. Lesson: —.
 - **S-02: Generowanie AI + zapis** — Archived 2026-06-05 → `context/archive/2026-05-27-ai-generation-save/`. Lesson: —.
 - **S-04: Sesja powtórkowa SRS** — Archived 2026-06-01 → `context/archive/2026-05-27-srs-review-session/`. Lesson: —.
 - **S-07: Study hub — redesign dashboardu** — Archived 2026-06-01 → `context/archive/2026-05-29-study-hub-ui/`. Lesson: —.
