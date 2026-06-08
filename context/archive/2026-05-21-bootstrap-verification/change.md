@@ -1,10 +1,10 @@
 ---
 change_id: bootstrap-verification
 title: Bootstrap verification
-status: implemented
+status: archived
 created: 2026-05-21
-updated: 2026-05-21
-archived_at: null
+updated: 2026-06-08
+archived_at: 2026-06-08T14:11:38Z
 ---
 
 ## Notes
