@@ -258,7 +258,7 @@ No data migration. First auto-deploy ships the same artifact as manual deploy wo
 
 #### Automated
 
-- [x] 2.1 Workflow YAML remains valid after smoke step addition
+- [x] 2.1 Workflow YAML remains valid after smoke step addition — f43b078
 
 #### Manual
 
