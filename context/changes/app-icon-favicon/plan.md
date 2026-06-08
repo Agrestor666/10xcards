@@ -187,23 +187,23 @@ No data migration. First deploy after merge replaces missing/broken favicon with
 
 #### Automated
 
-- [x] 1.1 Files exist: `public/favicon.png`, `public/favicon.ico`, `public/apple-touch-icon.png`
-- [x] 1.2 Build passes: `npm run build`
-- [x] 1.3 Lint passes: `npm run lint`
+- [x] 1.1 Files exist: `public/favicon.png`, `public/favicon.ico`, `public/apple-touch-icon.png` — fe56f0c
+- [x] 1.2 Build passes: `npm run build` — fe56f0c
+- [x] 1.3 Lint passes: `npm run lint` — fe56f0c
 
 #### Manual
 
-- [x] 1.4 32×32 favicon is recognizable; 180×180 touch icon is crisp; palette matches paper theme
+- [x] 1.4 32×32 favicon is recognizable; 180×180 touch icon is crisp; palette matches paper theme — fe56f0c
 
 ### Phase 2: Wire head metadata & manifest
 
 #### Automated
 
-- [ ] 2.1 Build passes: `npm run build`
-- [ ] 2.2 Lint passes: `npm run lint`
+- [x] 2.1 Build passes: `npm run build`
+- [x] 2.2 Lint passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.3 Favicon visible in browser tab on `/` and `/dashboard`
-- [ ] 2.4 DevTools Manifest valid; theme_color and icons load
-- [ ] 2.5 Add-to-homescreen / touch icon preview acceptable
+- [x] 2.3 Favicon visible in browser tab on `/` and `/dashboard`
+- [x] 2.4 DevTools Manifest valid; theme_color and icons load
+- [x] 2.5 Add-to-homescreen / touch icon preview acceptable

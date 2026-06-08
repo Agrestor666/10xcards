@@ -1,0 +1,20 @@
+{
+  "name": "10xCards",
+  "short_name": "10xCards",
+  "theme_color": "#3d6b52",
+  "background_color": "#faf8f4",
+  "display": "standalone",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/favicon.png?v=2",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png?v=2",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

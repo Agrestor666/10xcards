@@ -10,6 +10,9 @@ interface Props {
 
 const { title = "10xCards" } = Astro.props;
 const locale = Astro.locals.locale;
+/** Bump when favicon assets change — browsers cache favicons aggressively. */
+const faviconVersion = "2";
+const icon = (path: string) => `${path}?v=${faviconVersion}`;
 ---
 
 <!doctype html>
@@ -17,7 +20,12 @@ const locale = Astro.locals.locale;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="theme-color" content="#3d6b52" />
+    <link rel="icon" type="image/png" href={icon("/favicon.png")} sizes="32x32" />
+    <link rel="icon" type="image/x-icon" href={icon("/favicon.ico")} sizes="any" />
+    <link rel="shortcut icon" type="image/x-icon" href={icon("/favicon.ico")} />
+    <link rel="apple-touch-icon" href={icon("/apple-touch-icon.png")} />
+    <link rel="manifest" href={icon("/site.webmanifest")} />
     <title>{title}</title>
   </head>
   <body>
