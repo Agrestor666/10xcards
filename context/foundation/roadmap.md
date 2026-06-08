@@ -43,7 +43,7 @@ Ręczne tworzenie fiszek edukacyjnych jest skrajnie czasochłonne — ta bariera
 | S-07 | study-hub-ui          | study hub na `/dashboard` + landing `/` + paper theme na `/sets/<id>`; due dziś, **Study**, kafelki zestawów | F-01, S-01, S-02, S-04, S-05 | prd-v3, US-01–US-04, landing-copy.md | done |
 | S-08 | unified-paper-ui      | cała aplikacja w jednym stylu paper (review, settings, auth); brak skoków cosmic ↔ paper między ekranami | S-07 | study-hub-ui plan, paper tokens | done |
 | S-09 | bilingual-ui          | cała aplikacja po polsku lub po angielsku; wybór języka na landingu (domyślnie z przeglądarki); po zalogowaniu bez zmiany | S-07, S-08 | shape-notes (ex-i18n non-goal), landing-copy.md | done |
-| S-10 | app-icon-favicon      | widzieć spójną ikonę 10xCards w zakładce przeglądarki (favicon) i przy dodawaniu aplikacji do ekranu głównego | S-08 | NFR użyteczność, paper theme | proposed |
+| S-10 | app-icon-favicon      | widzieć spójną ikonę 10xCards w zakładce przeglądarki (favicon) i przy dodawaniu aplikacji do ekranu głównego | S-08 | NFR użyteczność, paper theme | done |
 
 ## Streams
 
@@ -244,7 +244,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
   - Dokładny prompt i warianty rozmiarów (16×16, 32×32, 180×180 apple-touch) — Owner: implementer przy `/10x-plan`. Block: no.
   - Czy dodać `site.webmanifest` z `theme_color` — Owner: implementer. Block: no (MVP: favicon + apple-touch-icon w `public/` + `<link>` w `Layout.astro`).
 - **Risk:** Niski — zmiana wyłącznie assetów statycznych i meta w layoucie; ryzyko niskiej czytelności ikony w 16×16 — warto wygenerować kilka wariantów i wybrać najczytelniejszy.
-- **Status:** proposed
+- **Status:** done
 
 > **Scope:** wygenerowanie ikony przez agenta (Cursor image generation lub równoważne); pliki w `public/` (`favicon.png`, opcjonalnie `favicon.ico`, `apple-touch-icon.png`); aktualizacja `<head>` w `src/layouts/Layout.astro` (`rel="icon"`, `rel="apple-touch-icon"`). **Non-goals:** pełny zestaw PWA (service worker, manifest z ikonami 192/512); redesign logo w topbarze; animowane favicon.
 
@@ -286,5 +286,6 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **S-08: Unified paper UI — pełna spójność wizualna** — Archived 2026-06-01 → `context/archive/2026-05-30-unified-paper-ui/`. Lesson: —.
 - **S-09: Dwujęzyczny interfejs (PL / EN)** — Archived 2026-06-01 → `context/archive/2026-05-30-bilingual-ui/`. Lesson: —.
 - **F-02: (foundation) zadanie deploy w GitHub Actions uruchamia `wrangler deploy` po każdym merge do master; każdy slice może trafić na produkcję bez ręcznych kroków.** — Archived 2026-06-08 → `context/archive/2026-06-08-deploy-pipeline/`. Lesson: —.
+- **S-10: użytkownik widzi spójną ikonę 10xCards w zakładce przeglądarki (favicon) oraz przy dodawaniu aplikacji do ekranu głównego (apple-touch-icon); ikona jest wygenerowana przez agenta AI i dopasowana do paper theme (Instrument Serif / DM Sans, paleta primary, motyw fiszek / nauki).** — Archived 2026-06-08 → `context/archive/2026-06-08-app-icon-favicon/`. Lesson: —.
 
 (Empty on first generation. `/10x-archive` appends an entry here — and flips that item's `Status` to `done` — when a change whose `Change ID` matches the item is archived.)

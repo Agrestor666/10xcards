@@ -1,11 +1,10 @@
 ---
 change_id: app-icon-favicon
 title: App icon favicon
-status: implemented
+status: archived
 created: 2026-06-08
 updated: 2026-06-08
-
-archived_at: null
+archived_at: 2026-06-08T12:00:00Z
 ---
 
 ## Notes
