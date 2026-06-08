@@ -18,7 +18,7 @@ Roadmap F-02: auto-deploy to Cloudflare Workers on merge to `master`.
 | Name | Type | Purpose |
 | ---- | ---- | ------- |
 | `CLOUDFLARE_API_TOKEN` | Secret | Wrangler deploy from CI (Workers Scripts → Edit) |
-| `PRODUCTION_URL` | Variable | Smoke check origin, no trailing slash (e.g. `https://10xcards.<subdomain>.workers.dev`) |
+| `PRODUCTION_URL` | Variable | Smoke check origin, no trailing slash (e.g. `https://10xcards.<subdomain>.workers.dev`). Must match the live Worker URL (`vars.PRODUCTION_URL` in CI). |
 | `SUPABASE_URL` | Secret | CI build (already configured) |
 | `SUPABASE_KEY` | Secret | CI build (already configured) |
 
