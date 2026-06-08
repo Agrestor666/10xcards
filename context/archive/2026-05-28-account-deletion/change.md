@@ -1,10 +1,10 @@
 ---
 change_id: account-deletion
 title: Account deletion (S-06)
-status: impl_reviewed
+status: archived
 created: 2026-05-28
-updated: 2026-05-29
-archived_at: null
+updated: 2026-06-08
+archived_at: 2026-06-08T14:09:33Z
 ---
 
 ## Notes
