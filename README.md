@@ -186,25 +186,42 @@ Route protection is handled in `src/middleware.ts`. Add paths to the `PROTECTED_
 
 ## Deployment
 
-This project deploys to [Cloudflare Workers](https://workers.cloudflare.com/).
+This project deploys to [Cloudflare Workers](https://workers.cloudflare.com/) as the `10xcards` Worker.
 
-1. Build the project:
+### Automatic deploy (default)
+
+Every push to `master` triggers GitHub Actions: lint + build, then `wrangler deploy`, then an HTTP smoke check against `PRODUCTION_URL`. Pull requests run lint + build only (no deploy).
+
+### One-time production setup
+
+Before the first auto-deploy, configure GitHub secrets/variables and Wrangler runtime secrets. Full checklist:
+
+**[context/changes/deploy-pipeline/change.md](context/changes/deploy-pipeline/change.md)** → Operator setup
+
+Summary:
+
+| Location | Name | Type |
+| -------- | ---- | ---- |
+| GitHub | `CLOUDFLARE_API_TOKEN` | Secret |
+| GitHub | `PRODUCTION_URL` | Repository variable (not Environment) |
+| GitHub | `SUPABASE_URL`, `SUPABASE_KEY` | Secrets (CI build) |
+| Cloudflare Worker | `SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENROUTER_API_KEY` | `npx wrangler secret put` |
+
+### Manual deploy (emergency fallback)
 
 ```bash
 npm run build
-```
-
-2. Deploy with Wrangler:
-
-```bash
 npx wrangler deploy
 ```
 
-Set `SUPABASE_URL` and `SUPABASE_KEY` as secrets in your Cloudflare dashboard or via `npx wrangler secret put`.
+Use when CI is unavailable or you need an out-of-band deploy. Runtime secrets must already be set on the Worker via `npx wrangler secret put`.
 
 ## CI
 
-GitHub Actions runs lint + build on every push and PR to `master`. Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets in GitHub for the build step.
+GitHub Actions (`.github/workflows/ci.yml`):
+
+- **Pull requests and pushes to `master`:** `npm ci` → `astro sync` → lint → build (requires `SUPABASE_URL` and `SUPABASE_KEY` repository secrets).
+- **Push to `master` only:** after CI passes, a `deploy` job rebuilds, runs `wrangler deploy`, and curls `PRODUCTION_URL/` (requires `CLOUDFLARE_API_TOKEN` secret and `PRODUCTION_URL` repository variable).
 
 ## License
 

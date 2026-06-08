@@ -264,17 +264,17 @@ No data migration. First auto-deploy ships the same artifact as manual deploy wo
 
 - [x] 2.2 `PRODUCTION_URL` repository variable set in GitHub — 2411cb7
 - [x] 2.3 Deploy job smoke step passes on successful merge to `master` — 2411cb7
-- [ ] 2.4 Wrong `PRODUCTION_URL` fails smoke step (verified once, then corrected)
+- [x] 2.4 Wrong `PRODUCTION_URL` fails smoke step (verified once, then corrected)
 
 ### Phase 3: Operator runbook and documentation
 
 #### Automated
 
-- [ ] 3.1 Lint passes: `npm run lint`
-- [ ] 3.2 Build passes: `npm run build`
+- [x] 3.1 Lint passes: `npm run lint`
+- [x] 3.2 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 3.3 Operator runbook in `change.md` covers GitHub secrets/vars and Wrangler secrets
-- [ ] 3.4 README and CLAUDE.md describe auto-deploy on `master`
-- [ ] 3.5 Production smoke check passes after doc-only merge
+- [x] 3.3 Operator runbook in `change.md` covers GitHub secrets/vars and Wrangler secrets
+- [x] 3.4 README and CLAUDE.md describe auto-deploy on `master`
+- [x] 3.5 Production smoke check passes after doc-only merge

@@ -47,8 +47,9 @@ Full server-side rendering (`output: "server"` in astro.config.mjs). All pages a
 - Env vars: `SUPABASE_URL`, `SUPABASE_KEY` (copy `.env.example` to `.env` for Node, or `.dev.vars` for Cloudflare local dev); `SUPABASE_SERVICE_ROLE_KEY` is server-only and used exclusively for account deletion (`src/lib/supabase-admin.ts`, `POST /api/auth/delete-account`)
 - Local Supabase: `npx supabase start` (requires Docker)
 - Cloudflare local dev: secrets go in `.dev.vars` (gitignored)
-- Deploy: `npx wrangler deploy` (requires Cloudflare account + `wrangler` auth)
+- **Deploy:** auto-deploy via GitHub Actions on push to `master` (`.github/workflows/ci.yml` → `deploy` job → `wrangler deploy` + smoke check). One-time setup: `context/changes/deploy-pipeline/change.md`. Emergency manual path: `npm run build && npx wrangler deploy`.
+- **Runtime secrets** (production Worker only, not CI): `SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENROUTER_API_KEY` via `npx wrangler secret put <NAME>`.
 
 ## CI
 
-GitHub Actions workflow (`.github/workflows/ci.yml`) runs lint + build on every push and PR to master. Requires `SUPABASE_URL` and `SUPABASE_KEY` repository secrets for the build step.
+GitHub Actions (`.github/workflows/ci.yml`): lint + build on every push and PR to `master`; **auto-deploy on push to `master`** after CI passes. GitHub secrets: `SUPABASE_URL`, `SUPABASE_KEY` (build), `CLOUDFLARE_API_TOKEN` (deploy). Repository variable: `PRODUCTION_URL` (post-deploy smoke check). See `context/changes/deploy-pipeline/change.md` for operator setup.
