@@ -250,9 +250,9 @@ No data migration. First auto-deploy ships the same artifact as manual deploy wo
 
 #### Manual
 
-- [ ] 1.4 `CLOUDFLARE_API_TOKEN` secret configured with Workers Scripts Edit permission
-- [ ] 1.5 After merging to `master`, deploy job completes successfully
-- [ ] 1.6 Cloudflare dashboard shows new deployment for `10xcards`
+- [x] 1.4 `CLOUDFLARE_API_TOKEN` secret configured with Workers Scripts Edit permission
+- [x] 1.5 After merging to `master`, deploy job completes successfully
+- [x] 1.6 Cloudflare dashboard shows new deployment for `10xcards`
 
 ### Phase 2: Post-deploy HTTP smoke check
 
