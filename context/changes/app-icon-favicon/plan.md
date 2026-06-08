@@ -199,11 +199,11 @@ No data migration. First deploy after merge replaces missing/broken favicon with
 
 #### Automated
 
-- [x] 2.1 Build passes: `npm run build`
-- [x] 2.2 Lint passes: `npm run lint`
+- [x] 2.1 Build passes: `npm run build` — edf6638
+- [x] 2.2 Lint passes: `npm run lint` — edf6638
 
 #### Manual
 
-- [x] 2.3 Favicon visible in browser tab on `/` and `/dashboard`
-- [x] 2.4 DevTools Manifest valid; theme_color and icons load
-- [x] 2.5 Add-to-homescreen / touch icon preview acceptable
+- [x] 2.3 Favicon visible in browser tab on `/` and `/dashboard` — edf6638
+- [x] 2.4 DevTools Manifest valid; theme_color and icons load — edf6638
+- [x] 2.5 Add-to-homescreen / touch icon preview acceptable — edf6638
