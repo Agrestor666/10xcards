@@ -262,8 +262,8 @@ No data migration. First auto-deploy ships the same artifact as manual deploy wo
 
 #### Manual
 
-- [x] 2.2 `PRODUCTION_URL` repository variable set in GitHub
-- [x] 2.3 Deploy job smoke step passes on successful merge to `master`
+- [x] 2.2 `PRODUCTION_URL` repository variable set in GitHub — 2411cb7
+- [x] 2.3 Deploy job smoke step passes on successful merge to `master` — 2411cb7
 - [ ] 2.4 Wrong `PRODUCTION_URL` fails smoke step (verified once, then corrected)
 
 ### Phase 3: Operator runbook and documentation
