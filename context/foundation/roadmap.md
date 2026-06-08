@@ -3,7 +3,7 @@ project: "10xCards"
 version: 1
 status: draft
 created: 2026-05-25
-updated: 2026-06-05
+updated: 2026-06-08
 prd_version: 1
 prd_v2_slice: S-05
 shape_notes_slice: S-07
@@ -33,7 +33,7 @@ Ręczne tworzenie fiszek edukacyjnych jest skrajnie czasochłonne — ta bariera
 | ID   | Change ID             | Outcome (user can …)                                                                                                   | Prerequisites | PRD refs                                     | Status   |
 | ---- | --------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------- | -------------------------------------------- | -------- |
 | F-01 | data-schema-rls       | (foundation) tabele aplikacji i polityki RLS lądują w Supabase; każda warstwa odczytu i zapisu ma bezpieczną bazę      | —             | NFR trwałość, NFR prywatność, Access Control | done     |
-| F-02 | deploy-pipeline       | (foundation) pipeline CI/CD do Cloudflare Workers; merge do master = automatyczny release                              | —             | —                                            | ready    |
+| F-02 | deploy-pipeline       | (foundation) pipeline CI/CD do Cloudflare Workers; merge do master = automatyczny release                              | —             | —                                            | done     |
 | S-01 | flashcard-sets-ui     | tworzyć i przeglądać własne zestawy fiszek po zalogowaniu                                                              | F-01          | FR-001, FR-002, FR-003, FR-007               | proposed |
 | S-05 | set-dashboard-lifecycle | zmienić nazwę zestawu i usunąć zestaw (pusty lub z fiszkami) z listy na dashboardzie                                 | F-01, S-01    | prd-v2 Scope [new], US-01                    | proposed |
 | S-02 | ai-generation-save    | wkleić tekst, zobaczyć fiszki AI, zaakceptować / edytować / usunąć i zapisać do zestawu                                | F-01, S-01    | FR-004, FR-005, US-01                        | done |
@@ -43,6 +43,7 @@ Ręczne tworzenie fiszek edukacyjnych jest skrajnie czasochłonne — ta bariera
 | S-07 | study-hub-ui          | study hub na `/dashboard` + landing `/` + paper theme na `/sets/<id>`; due dziś, **Study**, kafelki zestawów | F-01, S-01, S-02, S-04, S-05 | prd-v3, US-01–US-04, landing-copy.md | done |
 | S-08 | unified-paper-ui      | cała aplikacja w jednym stylu paper (review, settings, auth); brak skoków cosmic ↔ paper między ekranami | S-07 | study-hub-ui plan, paper tokens | done |
 | S-09 | bilingual-ui          | cała aplikacja po polsku lub po angielsku; wybór języka na landingu (domyślnie z przeglądarki); po zalogowaniu bez zmiany | S-07, S-08 | shape-notes (ex-i18n non-goal), landing-copy.md | done |
+| S-10 | app-icon-favicon      | widzieć spójną ikonę 10xCards w zakładce przeglądarki (favicon) i przy dodawaniu aplikacji do ekranu głównego | S-08 | NFR użyteczność, paper theme | proposed |
 
 ## Streams
 
@@ -59,6 +60,7 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 | F      | Dashboard / study hub | `S-07`                  | Paper theme: `/dashboard`, `/`, `/sets/<id>`; due today, kafelki; review UI poza slice; bez migracji DB. |
 | G      | Spójność UI           | `S-08`                  | Pełny rollout paper theme na review, settings, auth; deprecacja cosmic `Topbar`; jeden styl na wszystkich trasach. |
 | H      | Dwujęzyczność UI      | `S-09`                  | PL + EN; wybór na landingu; domyślny język z `Accept-Language`; po zalogowaniu locale zablokowany — bez przełącznika w ustawieniach. |
+| I      | Branding / ikona      | `S-10`                  | Ikona wygenerowana przez agenta AI; favicon + apple-touch-icon dopasowane do paper theme; widoczna w pasku adresu i „Dodaj do ekranu głównego”. |
 
 ## Baseline
 
@@ -98,7 +100,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Przy celu `speed` ręczny deploy to stały koszt tarcia; lepiej wdrożyć raz wcześnie niż wracać do tego w środku pracy nad slice'ami.
-- **Status:** ready
+- **Status:** done
 
 ## Slices
 
@@ -230,6 +232,22 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 > **Scope:** selektor PL | EN na landingu; auto-detect `Accept-Language` (mapowanie `pl*` → PL, inaczej EN); propagacja locale do SSR i React; tłumaczenie istniejącego copy (dashboard, generator, SRS, auth, account deletion UI). **Non-goals:** więcej niż 2 języki; przełącznik języka po zalogowaniu; tłumaczenie treści fiszek generowanych przez AI (język fiszek = język źródłowego tekstu użytkownika); pełna lokalizacja dat/liczb poza `toLocaleString` tam gdzie już jest.
 
+### S-10: Ikona aplikacji i favicon
+
+- **Outcome:** użytkownik widzi spójną ikonę 10xCards w zakładce przeglądarki (favicon) oraz przy dodawaniu aplikacji do ekranu głównego (apple-touch-icon); ikona jest wygenerowana przez agenta AI i dopasowana do paper theme (Instrument Serif / DM Sans, paleta primary, motyw fiszek / nauki).
+- **Change ID:** app-icon-favicon
+- **PRD refs:** NFR użyteczność; spójność produktu 10xCards (`prd-v3`, paper tokens z S-07/S-08)
+- **Prerequisites:** S-08 (finalna identyfikacja wizualna paper theme — ikona musi być spójna z resztą UI)
+- **Parallel with:** S-06, F-02
+- **Blockers:** —
+- **Unknowns:**
+  - Dokładny prompt i warianty rozmiarów (16×16, 32×32, 180×180 apple-touch) — Owner: implementer przy `/10x-plan`. Block: no.
+  - Czy dodać `site.webmanifest` z `theme_color` — Owner: implementer. Block: no (MVP: favicon + apple-touch-icon w `public/` + `<link>` w `Layout.astro`).
+- **Risk:** Niski — zmiana wyłącznie assetów statycznych i meta w layoucie; ryzyko niskiej czytelności ikony w 16×16 — warto wygenerować kilka wariantów i wybrać najczytelniejszy.
+- **Status:** proposed
+
+> **Scope:** wygenerowanie ikony przez agenta (Cursor image generation lub równoważne); pliki w `public/` (`favicon.png`, opcjonalnie `favicon.ico`, `apple-touch-icon.png`); aktualizacja `<head>` w `src/layouts/Layout.astro` (`rel="icon"`, `rel="apple-touch-icon"`). **Non-goals:** pełny zestaw PWA (service worker, manifest z ikonami 192/512); redesign logo w topbarze; animowane favicon.
+
 ## Backlog Handoff
 
 | Roadmap ID | Change ID             | Suggested issue title                                                    | Ready for `/10x-plan` | Notes                                                         |
@@ -245,6 +263,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | S-07       | study-hub-ui            | Study hub + landing + set detail paper theme (review UI later)               | yes                   | Run `/10x-plan study-hub-ui`; PRD `prd-v3.md`; copy `landing-copy.md` |
 | S-08       | unified-paper-ui        | Unified paper UI: review, settings, auth + full route audit                  | no                    | Requires S-07 done first; run `/10x-plan unified-paper-ui` after S-07 archive |
 | S-09       | bilingual-ui            | Bilingual UI (PL/EN): landing selector, browser default, locked after login  | no                    | Requires S-07 + S-08; run `/10x-plan bilingual-ui` after S-08 archive         |
+| S-10       | app-icon-favicon        | App icon + favicon: agent-generated icon for browser tab and home screen       | yes                   | Requires S-08 done; run `/10x-plan app-icon-favicon`; assets in `public/`     |
 
 ## Open Roadmap Questions
 
@@ -266,5 +285,6 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **S-07: Study hub — redesign dashboardu** — Archived 2026-06-01 → `context/archive/2026-05-29-study-hub-ui/`. Lesson: —.
 - **S-08: Unified paper UI — pełna spójność wizualna** — Archived 2026-06-01 → `context/archive/2026-05-30-unified-paper-ui/`. Lesson: —.
 - **S-09: Dwujęzyczny interfejs (PL / EN)** — Archived 2026-06-01 → `context/archive/2026-05-30-bilingual-ui/`. Lesson: —.
+- **F-02: (foundation) zadanie deploy w GitHub Actions uruchamia `wrangler deploy` po każdym merge do master; każdy slice może trafić na produkcję bez ręcznych kroków.** — Archived 2026-06-08 → `context/archive/2026-06-08-deploy-pipeline/`. Lesson: —.
 
 (Empty on first generation. `/10x-archive` appends an entry here — and flips that item's `Status` to `done` — when a change whose `Change ID` matches the item is archived.)
