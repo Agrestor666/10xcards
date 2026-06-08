@@ -1,7 +1,7 @@
 ---
 project: "10xCards"
 version: 1
-status: draft
+status: active
 created: 2026-05-25
 updated: 2026-06-08
 prd_version: 1
@@ -9,7 +9,7 @@ prd_v2_slice: S-05
 shape_notes_slice: S-07
 prd_v3_slice: S-07
 main_goal: speed
-top_blocker: capacity
+top_blocker: test coverage
 ---
 
 # Roadmap: 10xCards
@@ -34,12 +34,12 @@ Ręczne tworzenie fiszek edukacyjnych jest skrajnie czasochłonne — ta bariera
 | ---- | --------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------- | -------------------------------------------- | -------- |
 | F-01 | data-schema-rls       | (foundation) tabele aplikacji i polityki RLS lądują w Supabase; każda warstwa odczytu i zapisu ma bezpieczną bazę      | —             | NFR trwałość, NFR prywatność, Access Control | done     |
 | F-02 | deploy-pipeline       | (foundation) pipeline CI/CD do Cloudflare Workers; merge do master = automatyczny release                              | —             | —                                            | done     |
-| S-01 | flashcard-sets-ui     | tworzyć i przeglądać własne zestawy fiszek po zalogowaniu                                                              | F-01          | FR-001, FR-002, FR-003, FR-007               | proposed |
-| S-05 | set-dashboard-lifecycle | zmienić nazwę zestawu i usunąć zestaw (pusty lub z fiszkami) z listy na dashboardzie                                 | F-01, S-01    | prd-v2 Scope [new], US-01                    | proposed |
+| S-01 | flashcard-sets-ui     | tworzyć i przeglądać własne zestawy fiszek po zalogowaniu                                                              | F-01          | FR-001, FR-002, FR-003, FR-007               | done     |
+| S-05 | set-dashboard-lifecycle | zmienić nazwę zestawu i usunąć zestaw (pusty lub z fiszkami) z listy na dashboardzie                                 | F-01, S-01    | prd-v2 Scope [new], US-01                    | done     |
 | S-02 | ai-generation-save    | wkleić tekst, zobaczyć fiszki AI, zaakceptować / edytować / usunąć i zapisać do zestawu                                | F-01, S-01    | FR-004, FR-005, US-01                        | done |
-| S-03 | manual-flashcard-crud | ręcznie dodać, edytować i usunąć fiszkę w zestawie                                                                     | F-01, S-01    | FR-006, FR-008, FR-009, US-02                | proposed |
+| S-03 | manual-flashcard-crud | ręcznie dodać, edytować i usunąć fiszkę w zestawie                                                                     | F-01, S-01    | FR-006, FR-008, FR-009, US-02                | done     |
 | S-04 | srs-review-session    | rozpocząć sesję powtórkową SRS i zobaczyć, że system automatycznie planuje kolejną datę przeglądu po każdej odpowiedzi | F-01, S-01    | FR-010, FR-011, US-01                        | done |
-| S-06 | account-deletion      | trwale usunąć swoje konto wraz ze wszystkimi zestawami i fiszkami (po potwierdzeniu)                                   | F-01          | NFR prywatność, Access Control               | planned  |
+| S-06 | account-deletion      | trwale usunąć swoje konto wraz ze wszystkimi zestawami i fiszkami (po potwierdzeniu)                                   | F-01          | NFR prywatność, Access Control               | done     |
 | S-07 | study-hub-ui          | study hub na `/dashboard` + landing `/` + paper theme na `/sets/<id>`; due dziś, **Study**, kafelki zestawów | F-01, S-01, S-02, S-04, S-05 | prd-v3, US-01–US-04, landing-copy.md | done |
 | S-08 | unified-paper-ui      | cała aplikacja w jednym stylu paper (review, settings, auth); brak skoków cosmic ↔ paper między ekranami | S-07 | study-hub-ui plan, paper tokens | done |
 | S-09 | bilingual-ui          | cała aplikacja po polsku lub po angielsku; wybór języka na landingu (domyślnie z przeglądarki); po zalogowaniu bez zmiany | S-07, S-08 | shape-notes (ex-i18n non-goal), landing-copy.md | done |
@@ -51,28 +51,30 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 
 | Stream | Theme                | Chain                    | Note                                                                           |
 | ------ | -------------------- | ------------------------ | ------------------------------------------------------------------------------ |
-| A      | Krytyczna ścieżka AI | `F-01` → `S-01` → `S-02` | Gwiazda przewodnia; cel `speed` każe dotrzeć tu jak najszybciej.               |
-| A′     | Lifecycle zestawów   | `S-05`                   | Rozszerza `S-01` na dashboardzie (rename/delete); `prd-v2`; równoległy z S-02–S-04. |
-| B      | Ręczne CRUD fiszek   | `S-03`                   | Dołącza do Streamu A przy `S-01`; równoległy z S-02, S-04 i S-05.              |
-| C      | Sesja SRS            | `S-04`                   | Dołącza do Streamu A przy `S-01`; równoległy z S-02, S-03 i S-05.               |
-| D      | Pipeline deploymentu | `F-02`                   | Niezależna; nie blokuje żadnego slice'a, ale umożliwia release każdego z nich. |
-| E      | Konto / compliance   | `S-06`                   | Usunięcie konta i danych użytkownika; zależy tylko od `F-01`; równoległy z S-01–S-05. |
-| F      | Dashboard / study hub | `S-07`                  | Paper theme: `/dashboard`, `/`, `/sets/<id>`; due today, kafelki; review UI poza slice; bez migracji DB. |
-| G      | Spójność UI           | `S-08`                  | Pełny rollout paper theme na review, settings, auth; deprecacja cosmic `Topbar`; jeden styl na wszystkich trasach. |
-| H      | Dwujęzyczność UI      | `S-09`                  | PL + EN; wybór na landingu; domyślny język z `Accept-Language`; po zalogowaniu locale zablokowany — bez przełącznika w ustawieniach. |
-| I      | Branding / ikona      | `S-10`                  | Ikona wygenerowana przez agenta AI; favicon + apple-touch-icon dopasowane do paper theme; widoczna w pasku adresu i „Dodaj do ekranu głównego”. |
+| A      | Krytyczna ścieżka AI | `F-01` → `S-01` → `S-02` ✓ | Zakończony — north star S-02 wdrożony i zarchiwizowany.                         |
+| A′     | Lifecycle zestawów   | `S-05` ✓                 | Zakończony — rename/delete na dashboardzie (`SetDashboardGrid`).                |
+| B      | Ręczne CRUD fiszek   | `S-03` ✓                 | Zakończony — `SetFlashcardsManager` + API CRUD na `/sets/<id>`.                   |
+| C      | Sesja SRS            | `S-04` ✓                 | Zakończony — `ts-fsrs`, `/sets/<id>/review`, grade API.                         |
+| D      | Pipeline deploymentu | `F-02` ✓                 | Zakończony — auto-deploy na merge do `master` (archiwum 2026-06-08). |
+| E      | Konto / compliance   | `S-06` ✓                 | Zakończony — `AccountDangerZone`, `POST /api/auth/delete-account`, service role. |
+| F      | Dashboard / study hub | `S-07` ✓                | Zakończony — study hub, landing, set detail paper theme.                          |
+| G      | Spójność UI           | `S-08` ✓                | Zakończony — paper theme na review, settings, auth.                               |
+| H      | Dwujęzyczność UI      | `S-09` ✓                | Zakończony — PL/EN, locale cookie, locked after login.                            |
+| I      | Branding / ikona      | `S-10` ✓                | Zakończony — favicon, apple-touch-icon, `site.webmanifest` (archiwum 2026-06-08). |
 
 ## Baseline
 
-What's already in place in the codebase as of `2026-05-25` (auto-researched + user-confirmed).
+What's already in place in the codebase as of `2026-06-08` (auto-researched + archived slices).
 Foundations below assume these are present and do NOT re-scaffold them.
 
-- **Frontend:** present — Astro 6 + React 19 + shadcn/ui + Tailwind CSS 4; komponenty wyrenderowane w stronach (`src/pages/index.astro`, `src/pages/auth/signin.astro`)
-- **Backend / API:** present — trasy API Astro wdrożone (`src/pages/api/auth/signin.ts`, `signup.ts`, `signout.ts`)
-- **Data:** partial — klient Supabase JS wdrożony (`src/lib/supabase.ts`); brak migracji schematu (`supabase/migrations/` nieobecny)
-- **Auth:** present — Supabase SSR auth w pełni wdrożony: trasy API logowania/rejestracji/wylogowania, sesje cookie, middleware chroniący trasy
-- **Deploy / infra:** partial — cel Cloudflare Workers ustawiony (`wrangler.jsonc`), pipeline CI lint+build (`.github/workflows/ci.yml`); brak zadania deploy
-- **Observability:** partial — platforma Cloudflare observability włączona (`wrangler.jsonc`); brak logowania i śledzenia błędów na poziomie aplikacji
+- **Frontend:** present — Astro 6 + React 19 + shadcn/ui + Tailwind CSS 4; paper theme (`PaperShell`, `AppTopbar`) na wszystkich trasach użytkownika; i18n PL/EN (`src/lib/i18n/`)
+- **Backend / API:** present — auth, flashcard sets CRUD, flashcards CRUD, AI generation (`/api/ai/generate`), SRS (`/api/srs/due`, `/api/srs/grade`), account deletion (`/api/auth/delete-account`)
+- **Data:** present — migracje Supabase (`supabase/migrations/20260526211944_flashcard_schema.sql`); tabele `flashcard_sets`, `flashcards` z polami SRS; RLS per użytkownik
+- **Auth:** present — Supabase SSR, sesje cookie, middleware (`PROTECTED_ROUTES`), service role tylko do usuwania konta
+- **Deploy / infra:** present — Cloudflare Workers (`wrangler.jsonc`); CI lint+build+deploy na `master` (`.github/workflows/ci.yml`); smoke check na `PRODUCTION_URL`
+- **Branding:** present — `public/favicon.png`, `favicon.ico`, `apple-touch-icon.png`, `site.webmanifest`; linki w `Layout.astro`
+- **Observability:** partial — Cloudflare Workers observability włączona; brak Sentry/OTel na poziomie aplikacji (parked)
+- **Tests:** none — brak Vitest/Playwright; strategia w `context/foundation/test-plan.md` (status: active)
 
 ## Foundations
 
@@ -113,8 +115,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Parallel with:** —
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** Fundament nawigacyjny pod każdy kolejny slice; błąd w routingu lub w warstwach danych zestawów będzie multiplikował się we wszystkich następnych historyjkach.
-- **Status:** proposed
+- **Risk:** Fundament nawigacyjny — zrealizowany w `SetDashboardGrid` + `NewSetDialog` + API create/list.
+- **Status:** done
 
 ### S-05: Lifecycle zestawów na dashboardzie
 
@@ -125,8 +127,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Parallel with:** S-02, S-03, S-04
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** Niski — RLS i kaskada usuwania fiszek już w schemacie; ryzyko regresji na CRUD kart, AI i SRS przy testach ręcznych (brak Vitest w projekcie — patrz `health-check.md`).
-- **Status:** proposed
+- **Risk:** Niski — RLS i kaskada usuwania fiszek już w schemacie; ryzyko regresji na CRUD kart, AI i SRS przy testach ręcznych (brak Vitest w projekcie — patrz `test-plan.md`).
+- **Status:** done
 
 > Uzupełnia S-01 o brakujące operacje na poziomie zestawu. Non-goals: rename/delete na `/sets/<id>`, kosz, bulk delete (`prd-v2` §Non-Goals).
 
@@ -138,9 +140,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Prerequisites:** F-01, S-01
 - **Parallel with:** S-03, S-04
 - **Blockers:** —
-- **Unknowns:**
-  - Projekt promptu dla OpenRouter: model, format odpowiedzi JSON, obsługa wielojęzyczności — Owner: user. Block: no (decyzja implementacyjna; sensowny default wystarczy do startu, można iterować).
-- **Risk:** Latencja AI i limity CPU Cloudflare Workers to dwa niezależne wektory ryzyka — NFR <10s może nie zmieścić się na darmowym planie Workers; warto przetestować na docelowym planie rozliczeniowym przed releasem.
+- **Unknowns:** —
+- **Risk:** Latencja AI i limity CPU Cloudflare Workers — monitorować na produkcji; limity generacji w `ai-generation-limits`.
 - **Status:** done
 
 ### S-03: Ręczne tworzenie i CRUD fiszek
@@ -153,7 +154,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Klasyczne CRUD na istniejącym schemacie — małe ryzyko. Uwaga: edycja inline w S-02 i edycja post-save w S-03 używają podobnego UI; warto wydzielić wspólny komponent, żeby nie duplikować logiki.
-- **Status:** proposed
+- **Status:** done
 
 ### S-04: Sesja powtórkowa SRS
 
@@ -163,9 +164,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Prerequisites:** F-01, S-01
 - **Parallel with:** S-02, S-03
 - **Blockers:** —
-- **Unknowns:**
-  - Wybór biblioteki SRS (SM-2, FSRS / ts-fsrs lub inna) — Owner: user. Block: no (PRD dopuszcza "pre-existing SRS library"; wybór jest implementacyjny i nie blokuje planowania roadmapy, ale warto zdecydować przed `/10x-plan srs-review-session`).
-- **Risk:** Pola harmonogramu SRS (`interval`, `ease_factor`, `due_date`) muszą pasować do wybranej biblioteki — najlepiej potwierdzić wybór biblioteki podczas planowania F-01 (schema), aby nie migrować kolumn po fakcie.
+- **Unknowns:** —
+- **Risk:** Pola harmonogramu SRS muszą pasować do biblioteki — rozstrzygnięte: `ts-fsrs` + `due_at` w schemacie.
 - **Status:** done
 
 ### S-06: Usunięcie konta
@@ -176,10 +176,9 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Prerequisites:** F-01
 - **Parallel with:** S-01, S-02, S-03, S-04, S-05
 - **Blockers:** —
-- **Unknowns:**
-  - Czy wymagane ponowne wpisanie hasła lub fraza potwierdzająca przed usunięciem — Owner: user. Block: no (domyślnie modal z potwierdzeniem wystarczy do MVP).
+- **Unknowns:** —
 - **Risk:** Usunięcie konta w Supabase Auth vs. kaskada danych aplikacji — trzeba zapewnić atomowość lub jasną kolejność (najpierw dane aplikacji, potem `auth.users`), żeby nie zostawić osieroconych wierszy; wymóg compliance (RODO) sugeruje brak soft-delete w MVP.
-- **Status:** planned
+- **Status:** done
 
 ### S-07: Study hub — redesign dashboardu
 
@@ -189,10 +188,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Prerequisites:** F-01, S-01, S-02, S-04, S-05 (SRS `due_at`, generator na dashboardzie, lifecycle zestawów)
 - **Parallel with:** S-06
 - **Blockers:** —
-- **Unknowns:**
-  - Dokładny kształt zapytania SSR `due_count` per zestaw (PostgREST aggregate vs. osobne query) — Owner: implementer przy `/10x-plan`. Block: no.
-  - Fonty paper theme (np. Instrument Serif + DM Sans) — Owner: user/plan. Block: no.
-  - Copy hero: `context/changes/study-hub-ui/landing-copy.md` (domyślne EN).
+- **Unknowns:** —
 - **Risk:** Wyższy — paper theme na dashboard + landing + set detail; review/settings/auth celowo poza slice → **S-08**; brak testów auto. ~3 tyg. after-hours raczej ciasno — fazowanie: (1) tokeny + dashboard, (2) landing + set detail.
 - **Status:** done
 
@@ -206,9 +202,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Prerequisites:** S-07 (paper tokens, `PaperShell`, `AppTopbar`, dashboard + landing + set detail ukończone)
 - **Parallel with:** S-06
 - **Blockers:** —
-- **Unknowns:**
-  - Czy zachować `bg-cosmic` jako utility dla ewentualnych marketingowych one-offów — Owner: implementer przy `/10x-plan`. Block: no (domyślnie: usunąć z tras użytkownika, zostawić w CSS tylko jeśli potrzebne).
-  - Zakres re-skinu komponentów React (review card, grade buttons, auth forms) vs. same strony Astro — Owner: implementer. Block: no.
+- **Unknowns:** —
 - **Risk:** Średni — dotyka wielu plików i islandów React; sesja SRS wymaga ostrożności (nie zmieniać logiki grading). Warto fazować: (1) impl-review wszystkich tras + inventory cosmic classes, (2) auth + settings, (3) review UI, (4) cleanup `Topbar.astro` / dev preview / martwe style.
 - **Status:** done
 
@@ -222,11 +216,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Prerequisites:** S-07 (landing + dashboard + copy), S-08 (wszystkie trasy użytkownika w finalnym UI — tłumaczenie raz, na spójnym paper theme)
 - **Parallel with:** S-06
 - **Blockers:** —
-- **Unknowns:**
-  - Mechanizm i18n (Astro + React islands): np. prosty słownik + helper `t()`, vs. biblioteka (`paraglide`, `i18next`) — Owner: implementer przy `/10x-plan`. Block: no.
-  - Persystencja locale: wyłącznie cookie vs. zapis w profilu użytkownika (Supabase `user_metadata`) przy rejestracji — Owner: user/plan. Block: no (wymóg: brak zmiany po logowaniu; oba modele spełniają, jeśli snapshot przy signup).
-  - Wejście na `/auth/signin` bez wizyty na landingu — domyślny język z `Accept-Language`, bez późniejszej zmiany po zalogowaniu — Owner: implementer. Block: no.
-  - Zakres tłumaczeń komunikatów API (JSON errors) vs. tylko UI — Owner: user. Block: no (MVP: UI + najczęstsze błędy formularzy).
+- **Unknowns:** —
 - **Risk:** Średni — dotyka wszystkich tras i islandów React; ryzyko pominiętych stringów (regresja EN-only). Warto fazować: (1) infrastruktura locale + landing selector + cookie/metadata, (2) auth + landing, (3) dashboard + set + review + settings, (4) audyt stringów + smoke obu języków.
 - **Status:** done
 
@@ -240,30 +230,28 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Prerequisites:** S-08 (finalna identyfikacja wizualna paper theme — ikona musi być spójna z resztą UI)
 - **Parallel with:** S-06, F-02
 - **Blockers:** —
-- **Unknowns:**
-  - Dokładny prompt i warianty rozmiarów (16×16, 32×32, 180×180 apple-touch) — Owner: implementer przy `/10x-plan`. Block: no.
-  - Czy dodać `site.webmanifest` z `theme_color` — Owner: implementer. Block: no (MVP: favicon + apple-touch-icon w `public/` + `<link>` w `Layout.astro`).
+- **Unknowns:** —
 - **Risk:** Niski — zmiana wyłącznie assetów statycznych i meta w layoucie; ryzyko niskiej czytelności ikony w 16×16 — warto wygenerować kilka wariantów i wybrać najczytelniejszy.
 - **Status:** done
 
-> **Scope:** wygenerowanie ikony przez agenta (Cursor image generation lub równoważne); pliki w `public/` (`favicon.png`, opcjonalnie `favicon.ico`, `apple-touch-icon.png`); aktualizacja `<head>` w `src/layouts/Layout.astro` (`rel="icon"`, `rel="apple-touch-icon"`). **Non-goals:** pełny zestaw PWA (service worker, manifest z ikonami 192/512); redesign logo w topbarze; animowane favicon.
+> **Scope:** wygenerowanie ikony przez agenta; pliki w `public/` (`favicon.png`, `favicon.ico`, `apple-touch-icon.png`); `site.webmanifest` z `theme_color`; aktualizacja `<head>` w `Layout.astro` z cache-bust `?v=2`. **Non-goals:** pełny zestaw PWA (service worker, manifest 192/512); redesign logo w topbarze; animowane favicon.
 
 ## Backlog Handoff
 
 | Roadmap ID | Change ID             | Suggested issue title                                                    | Ready for `/10x-plan` | Notes                                                         |
 | ---------- | --------------------- | ------------------------------------------------------------------------ | --------------------- | ------------------------------------------------------------- |
-| F-01       | data-schema-rls       | Design and apply Supabase schema + RLS for flashcard_sets and flashcards | yes                   | Run `/10x-plan data-schema-rls`                               |
-| F-02       | deploy-pipeline       | Wire GitHub Actions deploy job for Cloudflare Workers                    | yes                   | Run `/10x-plan deploy-pipeline`; parallel with F-01           |
-| S-01       | flashcard-sets-ui       | Flashcard set management: create and browse sets                         | no                    | Requires F-01 done first                                      |
-| S-05       | set-dashboard-lifecycle | Dashboard: rename set + delete set (empty or with cards)                 | yes                   | Run `/10x-plan set-dashboard-lifecycle`; requires S-01; `prd-v2` |
-| S-02       | ai-generation-save      | AI generation: paste text → preview cards → save to set                    | no                    | Requires F-01 + S-01 done; north star slice                   |
-| S-03       | manual-flashcard-crud   | Manual flashcard CRUD: add, edit, delete cards in a set                    | no                    | Requires F-01 + S-01 done; parallel with S-02                 |
-| S-04       | srs-review-session      | SRS review session: start session + auto-schedule next review              | no                    | Requires F-01 + S-01 done; decide SRS library before planning |
-| S-06       | account-deletion        | Account deletion: confirm and purge user data + auth account               | no                    | Requires F-01 done first; parallel with feature slices        |
-| S-07       | study-hub-ui            | Study hub + landing + set detail paper theme (review UI later)               | yes                   | Run `/10x-plan study-hub-ui`; PRD `prd-v3.md`; copy `landing-copy.md` |
-| S-08       | unified-paper-ui        | Unified paper UI: review, settings, auth + full route audit                  | no                    | Requires S-07 done first; run `/10x-plan unified-paper-ui` after S-07 archive |
-| S-09       | bilingual-ui            | Bilingual UI (PL/EN): landing selector, browser default, locked after login  | no                    | Requires S-07 + S-08; run `/10x-plan bilingual-ui` after S-08 archive         |
-| S-10       | app-icon-favicon        | App icon + favicon: agent-generated icon for browser tab and home screen       | yes                   | Requires S-08 done; run `/10x-plan app-icon-favicon`; assets in `public/`     |
+| F-01       | data-schema-rls       | Design and apply Supabase schema + RLS for flashcard_sets and flashcards | —                     | **done** — archived `context/archive/2026-05-26-data-schema-rls/` |
+| F-02       | deploy-pipeline       | Wire GitHub Actions deploy job for Cloudflare Workers                    | —                     | **done** — archived `context/archive/2026-06-08-deploy-pipeline/` |
+| S-01       | flashcard-sets-ui       | Flashcard set management: create and browse sets                         | —                     | **done** — archived `context/archive/2026-05-26-flashcard-sets-ui/` |
+| S-05       | set-dashboard-lifecycle | Dashboard: rename set + delete set (empty or with cards)                 | —                     | **done** — archived `context/archive/2026-05-28-set-dashboard-lifecycle/` |
+| S-02       | ai-generation-save      | AI generation: paste text → preview cards → save to set                    | —                     | **done** — archived `context/archive/2026-05-27-ai-generation-save/` |
+| S-03       | manual-flashcard-crud   | Manual flashcard CRUD: add, edit, delete cards in a set                    | —                     | **done** — archived `context/archive/2026-05-27-manual-flashcard-crud/` |
+| S-04       | srs-review-session      | SRS review session: start session + auto-schedule next review              | —                     | **done** — archived `context/archive/2026-05-27-srs-review-session/` |
+| S-06       | account-deletion        | Account deletion: confirm and purge user data + auth account               | —                     | **done** — archived `context/archive/2026-05-28-account-deletion/` |
+| S-07       | study-hub-ui            | Study hub + landing + set detail paper theme (review UI later)               | —                     | **done** — archived `context/archive/2026-05-29-study-hub-ui/` |
+| S-08       | unified-paper-ui        | Unified paper UI: review, settings, auth + full route audit                  | —                     | **done** — archived `context/archive/2026-05-30-unified-paper-ui/` |
+| S-09       | bilingual-ui            | Bilingual UI (PL/EN): landing selector, browser default, locked after login  | —                     | **done** — archived `context/archive/2026-05-30-bilingual-ui/` |
+| S-10       | app-icon-favicon        | App icon + favicon: agent-generated icon for browser tab and home screen       | —                     | **done** — archived `context/archive/2026-06-08-app-icon-favicon/` |
 
 ## Open Roadmap Questions
 
@@ -287,5 +275,9 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **S-09: Dwujęzyczny interfejs (PL / EN)** — Archived 2026-06-01 → `context/archive/2026-05-30-bilingual-ui/`. Lesson: —.
 - **F-02: (foundation) zadanie deploy w GitHub Actions uruchamia `wrangler deploy` po każdym merge do master; każdy slice może trafić na produkcję bez ręcznych kroków.** — Archived 2026-06-08 → `context/archive/2026-06-08-deploy-pipeline/`. Lesson: —.
 - **S-10: użytkownik widzi spójną ikonę 10xCards w zakładce przeglądarki (favicon) oraz przy dodawaniu aplikacji do ekranu głównego (apple-touch-icon); ikona jest wygenerowana przez agenta AI i dopasowana do paper theme (Instrument Serif / DM Sans, paleta primary, motyw fiszek / nauki).** — Archived 2026-06-08 → `context/archive/2026-06-08-app-icon-favicon/`. Lesson: —.
+- **S-01: użytkownik może tworzyć nowy nazwany zestaw fiszek i przeglądać listę wszystkich swoich zestawów po zalogowaniu.** — Archived 2026-06-08 → `context/archive/2026-05-26-flashcard-sets-ui/`. Lesson: —.
+- **S-03: użytkownik może ręcznie dodać nową fiszkę do zestawu, edytować pytanie lub odpowiedź istniejącej fiszki i usunąć fiszkę ze zbioru.** — Archived 2026-06-08 → `context/archive/2026-05-27-manual-flashcard-crud/`. Lesson: —.
+- **S-05: użytkownik może z listy zestawów na `/dashboard` zmienić nazwę zestawu oraz usunąć zestaw — pusty jednym kliknięciem, z fiszkami po potwierdzeniu.** — Archived 2026-06-08 → `context/archive/2026-05-28-set-dashboard-lifecycle/`. Lesson: —.
+- **S-06: użytkownik może z poziomu ustawień konta trwale usunąć konto po potwierdzeniu; system usuwa konto w Supabase Auth oraz wszystkie powiązane zestawy i fiszki.** — Archived 2026-06-08 → `context/archive/2026-05-28-account-deletion/`. Lesson: —.
 
-(Empty on first generation. `/10x-archive` appends an entry here — and flips that item's `Status` to `done` — when a change whose `Change ID` matches the item is archived.)
+**Next up:** brak otwartych slice'ów MVP w roadmapie. Kolejny krok jakościowy: `context/foundation/test-plan.md` (rollout testów).
