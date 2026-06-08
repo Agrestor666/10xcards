@@ -244,15 +244,15 @@ No data migration. First auto-deploy ships the same artifact as manual deploy wo
 
 #### Automated
 
-- [x] 1.1 Workflow YAML is valid (no syntax errors; GitHub Actions schema accepts the file)
-- [x] 1.2 Lint passes locally: `npm run lint`
-- [x] 1.3 Build passes locally: `npm run build` (with env vars set)
+- [x] 1.1 Workflow YAML is valid (no syntax errors; GitHub Actions schema accepts the file) — f6fad29
+- [x] 1.2 Lint passes locally: `npm run lint` — f6fad29
+- [x] 1.3 Build passes locally: `npm run build` (with env vars set) — f6fad29
 
 #### Manual
 
-- [x] 1.4 `CLOUDFLARE_API_TOKEN` secret configured with Workers Scripts Edit permission
-- [x] 1.5 After merging to `master`, deploy job completes successfully
-- [x] 1.6 Cloudflare dashboard shows new deployment for `10xcards`
+- [x] 1.4 `CLOUDFLARE_API_TOKEN` secret configured with Workers Scripts Edit permission — f6fad29
+- [x] 1.5 After merging to `master`, deploy job completes successfully — f6fad29
+- [x] 1.6 Cloudflare dashboard shows new deployment for `10xcards` — f6fad29
 
 ### Phase 2: Post-deploy HTTP smoke check
 
