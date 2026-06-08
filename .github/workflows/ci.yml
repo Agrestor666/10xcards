@@ -26,6 +26,9 @@ jobs:
   deploy:
     needs: ci
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -43,5 +46,19 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: deploy
+      - name: Verify PRODUCTION_URL is set
+        env:
+          PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}
+        run: |
+          if [ -z "$PRODUCTION_URL" ]; then
+            echo "::error::PRODUCTION_URL repository variable is not set (Settings → Secrets and variables → Actions → Variables)"
+            exit 1
+          fi
       - name: Smoke check production
-        run: curl --fail --retry 3 --retry-delay 5 "${{ vars.PRODUCTION_URL }}/"
+        env:
+          PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}
+        run: |
+          for path in / /auth/signin; do
+            echo "Smoke check: $PRODUCTION_URL$path"
+            curl --fail --retry 3 --retry-delay 5 --connect-timeout 10 --max-time 30 "$PRODUCTION_URL$path"
+          done

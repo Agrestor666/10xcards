@@ -38,8 +38,8 @@ Copy @.env.example to `.env` (Node) and `.dev.vars` (Cloudflare local dev). Loca
 
 ## CI Gate
 
-GitHub Actions runs `lint` + `build` on push/PR to `master`. Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets. Build fails if lint errors or TypeScript strict checks fail.
+GitHub Actions (`.github/workflows/ci.yml`): `lint` + `build` on push/PR to `master` (requires `SUPABASE_URL` and `SUPABASE_KEY` repository secrets). **Push to `master` only:** after CI passes, a `deploy` job runs `wrangler deploy` and curls `PRODUCTION_URL/` (requires `CLOUDFLARE_API_TOKEN` secret and `PRODUCTION_URL` repository variable).
 
 ## Deployment
 
-`npx wrangler deploy` to Cloudflare Workers. Set secrets via `npx wrangler secret put` or Cloudflare dashboard.
+Auto-deploy via GitHub Actions on push to `master`. One-time setup: `context/changes/deploy-pipeline/change.md`. Runtime secrets on the Worker (`SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENROUTER_API_KEY`) via `npx wrangler secret put`. Emergency manual path: `npm run build && npx wrangler deploy`.
