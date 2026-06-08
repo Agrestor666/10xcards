@@ -1,10 +1,10 @@
 ---
 change_id: manual-flashcard-crud
 title: Manual flashcard CRUD — add, edit, and delete cards in a set
-status: impl_reviewed
+status: archived
 created: 2026-05-27
-updated: 2026-05-27
-archived_at: null
+updated: 2026-06-08
+archived_at: 2026-06-08T14:14:21Z
 ---
 
 ## Notes
