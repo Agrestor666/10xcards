@@ -354,22 +354,22 @@ Use the same fixed `NOW` anchor across scenarios.
 
 #### Automated
 
-- [x] 3.1 Unit tests pass: `npm test`
-- [x] 3.2 Lint passes: `npm run lint`
-- [x] 3.3 Build passes: `npm run build`
+- [x] 3.1 Unit tests pass: `npm test` — 795456f
+- [x] 3.2 Lint passes: `npm run lint` — 795456f
+- [x] 3.3 Build passes: `npm run build` — 795456f
 
 #### Manual
 
-- [x] 3.4 None required — pure lib tests with no production behavior change in this phase
+- [x] 3.4 None required — pure lib tests with no production behavior change in this phase — 795456f
 
 ### Phase 4: Grade → Due Flow Tests
 
 #### Automated
 
-- [ ] 4.1 Unit tests pass: `npm test`
-- [ ] 4.2 Lint passes: `npm run lint`
-- [ ] 4.3 Build passes: `npm run build`
+- [x] 4.1 Unit tests pass: `npm test`
+- [x] 4.2 Lint passes: `npm run lint`
+- [x] 4.3 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 4.4 Confirm test output scenario names map to Risk #1 acceptance criteria
+- [x] 4.4 Confirm test output scenario names map to Risk #1 acceptance criteria

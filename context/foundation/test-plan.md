@@ -66,7 +66,7 @@ Status vocabulary (orchestrator literals): `not started` → `change opened` →
 
 | # | Phase | Goal | Risks | Test types | Status | Change folder |
 |---|-------|------|-------|------------|--------|---------------|
-| 1 | Bootstrap + SRS scheduling | Wire Vitest; prove grade → schedule update → due retrieval so silent SRS failure cannot ship undetected | 1 | Runner setup, unit/integration on SRS core | change opened | testing-bootstrap-srs-scheduling |
+| 1 | Bootstrap + SRS scheduling | Wire Vitest; prove grade → schedule update → due retrieval so silent SRS failure cannot ship undetected | 1 | Runner setup, unit/integration on SRS core | implementing | testing-bootstrap-srs-scheduling |
 | 2 | Auth + ownership boundaries | Protected routes reject unauthenticated callers; cross-user CRUD blocked | 2, 5 | API integration | not started | — |
 | 3 | AI generation contract + privacy | Valid/malformed AI responses handled; no source-text persistence | 3, 4 | Unit/integration with fixture responses | not started | — |
 | 4 | i18n critical-path smoke | Key flows render correct locale without full snapshot suite | 6 | Component or narrow integration tests | not started | — |
@@ -80,7 +80,7 @@ Status vocabulary (orchestrator literals): `not started` → `change opened` →
 | Data / auth | Supabase (cookie SSR sessions, RLS) |
 | Validation | Zod 4 at API boundaries |
 | SRS library | ts-fsrs |
-| Test runner | **none yet** — Phase 1 bootstraps Vitest |
+| Test runner | Vitest (`npm test`, `src/**/*.test.ts`) |
 | CI | GitHub Actions: lint + build only (no test job) |
 | Test-base profile | `none` — 0 test files, no runner config |
 
@@ -107,7 +107,7 @@ Patterns land as rollout phases complete. Placeholders name the failure mode, no
 
 | Area | Pattern | Status |
 |------|---------|--------|
-| SRS scheduling | TBD — see §3 Phase 1: grade updates schedule; due query returns card when due | pending Phase 1 |
+| SRS scheduling | Lib-layer grade + `isFlashcardDue` flow tests — `gradeCard()` → `isFlashcardDue()` proves schedule update and due-queue semantics without HTTP/DB; see `src/lib/srs/is-due.test.ts`, `fsrs-mapper.test.ts`, `grade-card.test.ts`, `grade-due-flow.test.ts` | active |
 | Auth + ownership | TBD — see §3 Phase 2: unauthenticated denial + cross-user CRUD block | pending Phase 2 |
 | AI generation | TBD — see §3 Phase 3: valid/malformed AI response + no source-text persistence | pending Phase 3 |
 | i18n | TBD — see §3 Phase 4: locale toggle and frozen post-login locale on critical flows | pending Phase 4 |
