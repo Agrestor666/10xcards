@@ -17,6 +17,7 @@ Run these via npm:
 - `npm run build` — Production SSR build (requires Supabase env vars)
 - `npm run lint` — ESLint with type-checked rules
 - `npm run lint:fix` — Auto-fix ESLint issues
+- `npm test` — Vitest unit tests (`vitest run`)
 - `npm run format` — Prettier with astro + tailwind plugins
 
 Pre-commit hooks (husky + lint-staged) auto-run `eslint --fix` on `*.{ts,tsx,astro}` and `prettier --write` on `*.{json,css,md}`.
@@ -38,7 +39,7 @@ Copy @.env.example to `.env` (Node) and `.dev.vars` (Cloudflare local dev). Loca
 
 ## CI Gate
 
-GitHub Actions (`.github/workflows/ci.yml`): `lint` + `build` on push/PR to `master` (requires `SUPABASE_URL` and `SUPABASE_KEY` repository secrets). **Push to `master` only:** after CI passes, a `deploy` job runs `wrangler deploy` and curls `PRODUCTION_URL/` (requires `CLOUDFLARE_API_TOKEN` secret and `PRODUCTION_URL` repository variable).
+GitHub Actions (`.github/workflows/ci.yml`): `lint` + `test` + `build` on push/PR to `master` (`npm test` runs Vitest via `vitest run`; build requires `SUPABASE_URL` and `SUPABASE_KEY` repository secrets). **Push to `master` only:** after CI passes, a `deploy` job runs `wrangler deploy` and curls `PRODUCTION_URL/` (requires `CLOUDFLARE_API_TOKEN` secret and `PRODUCTION_URL` repository variable).
 
 ## Deployment
 
