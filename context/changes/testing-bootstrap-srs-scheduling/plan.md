@@ -342,25 +342,25 @@ Use the same fixed `NOW` anchor across scenarios.
 
 #### Automated
 
-- [x] 2.1 Unit tests pass: `npm test`
-- [x] 2.2 Lint passes: `npm run lint`
-- [x] 2.3 Build passes: `npm run build`
+- [x] 2.1 Unit tests pass: `npm test` — 4aaf147
+- [x] 2.2 Lint passes: `npm run lint` — 4aaf147
+- [x] 2.3 Build passes: `npm run build` — 4aaf147
 
 #### Manual
 
-- [x] 2.4 Review session still loads due cards; dashboard due counts unchanged after refactor
+- [x] 2.4 Review session still loads due cards; dashboard due counts unchanged after refactor — 4aaf147
 
 ### Phase 3: Mapper and Grade Service Tests
 
 #### Automated
 
-- [ ] 3.1 Unit tests pass: `npm test`
-- [ ] 3.2 Lint passes: `npm run lint`
-- [ ] 3.3 Build passes: `npm run build`
+- [x] 3.1 Unit tests pass: `npm test`
+- [x] 3.2 Lint passes: `npm run lint`
+- [x] 3.3 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 3.4 None required — pure lib tests with no production behavior change in this phase
+- [x] 3.4 None required — pure lib tests with no production behavior change in this phase
 
 ### Phase 4: Grade → Due Flow Tests
 
