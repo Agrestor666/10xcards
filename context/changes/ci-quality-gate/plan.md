@@ -194,9 +194,9 @@ No data migration. Rollback: remove the `- run: npm test` line from `ci.yml` and
 
 #### Automated
 
-- [x] 2.1 Lint passes: `npm run lint`
+- [x] 2.1 Lint passes: `npm run lint` — 04a12fc
 
 #### Manual
 
-- [x] 2.2 `AGENTS.md` and `CLAUDE.md` CI descriptions match `.github/workflows/ci.yml` step order
-- [x] 2.3 Test-plan Phase 5 row references `ci-quality-gate`
+- [x] 2.2 `AGENTS.md` and `CLAUDE.md` CI descriptions match `.github/workflows/ci.yml` step order — 04a12fc
+- [x] 2.3 Test-plan Phase 5 row references `ci-quality-gate` — 04a12fc
