@@ -17,6 +17,7 @@ Run these via npm:
 - `npm run build` — Production SSR build (requires Supabase env vars)
 - `npm run lint` — ESLint with type-checked rules
 - `npm run lint:fix` — Auto-fix ESLint issues
+- `npm test` — Vitest unit tests (`vitest run`)
 - `npm run format` — Prettier with astro + tailwind plugins
 
 Pre-commit hooks (husky + lint-staged) auto-run `eslint --fix` on `*.{ts,tsx,astro}` and `prettier --write` on `*.{json,css,md}`.

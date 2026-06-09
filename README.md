@@ -62,6 +62,8 @@ npm run dev
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint with type-checked rules
 - `npm run lint:fix` - Auto-fix ESLint issues
+- `npm test` - Run Vitest unit tests (`vitest run`)
+- `npm run test:watch` - Run Vitest in watch mode
 - `npm run format` - Run Prettier
 
 ## Project Structure
@@ -190,7 +192,7 @@ This project deploys to [Cloudflare Workers](https://workers.cloudflare.com/) as
 
 ### Automatic deploy (default)
 
-Every push to `master` triggers GitHub Actions: lint + build, then `wrangler deploy`, then an HTTP smoke check against `PRODUCTION_URL`. Pull requests run lint + build only (no deploy).
+Every push to `master` triggers GitHub Actions: lint + test + build, then `wrangler deploy`, then an HTTP smoke check against `PRODUCTION_URL`. Pull requests run lint + test + build only (no deploy).
 
 ### One-time production setup
 
@@ -220,7 +222,7 @@ Use when CI is unavailable or you need an out-of-band deploy. Runtime secrets mu
 
 GitHub Actions (`.github/workflows/ci.yml`):
 
-- **Pull requests and pushes to `master`:** `npm ci` → `astro sync` → lint → build (requires `SUPABASE_URL` and `SUPABASE_KEY` repository secrets).
+- **Pull requests and pushes to `master`:** `npm ci` → `astro sync` → lint → test → build (requires `SUPABASE_URL` and `SUPABASE_KEY` repository secrets).
 - **Push to `master` only:** after CI passes, a `deploy` job rebuilds, runs `wrangler deploy`, and curls `PRODUCTION_URL/` (requires `CLOUDFLARE_API_TOKEN` secret and `PRODUCTION_URL` repository variable).
 
 ## License
