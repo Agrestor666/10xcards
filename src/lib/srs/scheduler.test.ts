@@ -7,4 +7,3 @@ describe("scheduler", () => {
     expect(scheduler).toBeDefined();
   });
 });
-

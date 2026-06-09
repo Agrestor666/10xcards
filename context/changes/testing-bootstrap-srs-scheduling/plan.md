@@ -329,26 +329,26 @@ Use the same fixed `NOW` anchor across scenarios.
 
 #### Automated
 
-- [x] 1.1 Dependencies install: `npm install`
-- [x] 1.2 Tests run: `npm test` (passes with ≥1 test)
-- [x] 1.3 Lint passes: `npm run lint`
-- [x] 1.4 Build passes: `npm run build`
+- [x] 1.1 Dependencies install: `npm install` — 154a165
+- [x] 1.2 Tests run: `npm test` (passes with ≥1 test) — 154a165
+- [x] 1.3 Lint passes: `npm run lint` — 154a165
+- [x] 1.4 Build passes: `npm run build` — 154a165
 
 #### Manual
 
-- [x] 1.5 `npm run test:watch` discovers tests on file save (if watch script added)
+- [x] 1.5 `npm run test:watch` discovers tests on file save (if watch script added) — 154a165
 
 ### Phase 2: Due Predicate Extraction
 
 #### Automated
 
-- [ ] 2.1 Unit tests pass: `npm test`
-- [ ] 2.2 Lint passes: `npm run lint`
-- [ ] 2.3 Build passes: `npm run build`
+- [x] 2.1 Unit tests pass: `npm test`
+- [x] 2.2 Lint passes: `npm run lint`
+- [x] 2.3 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 2.4 Review session still loads due cards; dashboard due counts unchanged after refactor
+- [x] 2.4 Review session still loads due cards; dashboard due counts unchanged after refactor
 
 ### Phase 3: Mapper and Grade Service Tests
 

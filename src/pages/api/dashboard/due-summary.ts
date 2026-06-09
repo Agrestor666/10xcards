@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { aggregateDueCountsBySetId } from "@/lib/aggregate-due-counts";
 import { t } from "@/lib/i18n";
 import { getLocaleFromContext } from "@/lib/locale";
+import { dueAsOfIso } from "@/lib/srs/is-due";
 
 export const prerender = false;
 
@@ -32,8 +33,11 @@ export const GET: APIRoute = async (context) => {
     return jsonResponse({ ok: false, message: t(locale, "api.error.unauthorized") }, 401);
   }
 
-  const nowIso = new Date().toISOString();
-  const { data: dueRows, error: dueError } = await supabase.from("flashcards").select("set_id").lte("due_at", nowIso);
+  const now = new Date();
+  const { data: dueRows, error: dueError } = await supabase
+    .from("flashcards")
+    .select("set_id")
+    .lte("due_at", dueAsOfIso(now));
 
   if (dueError) {
     return jsonResponse({ ok: false, message: t(locale, "api.error.load_due_counts") }, 500);

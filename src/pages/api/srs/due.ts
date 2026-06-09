@@ -4,6 +4,7 @@ import { jsonResponse } from "@/lib/api-json";
 import { supabaseNotConfiguredMessage } from "@/lib/flashcard-set-errors";
 import { t } from "@/lib/i18n";
 import { getLocaleFromContext } from "@/lib/locale";
+import { dueAsOfIso } from "@/lib/srs/is-due";
 
 export const prerender = false;
 
@@ -54,13 +55,12 @@ export const GET: APIRoute = async (context) => {
     return jsonResponse({ ok: false, message: t(locale, "api.error.invalid_request") }, 400);
   }
 
-  const nowIso = new Date().toISOString();
-
+  const now = new Date();
   const dueResult = await supabase
     .from("flashcards")
     .select("id, question, answer")
     .eq("set_id", parsedQuery.data.setId)
-    .lte("due_at", nowIso)
+    .lte("due_at", dueAsOfIso(now))
     .order("due_at", { ascending: true })
     .limit(1)
     .maybeSingle();

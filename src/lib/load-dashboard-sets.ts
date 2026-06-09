@@ -1,5 +1,6 @@
 import { aggregateDueCountsBySetId } from "@/lib/aggregate-due-counts";
 import type { MessageKey } from "@/lib/i18n";
+import { dueAsOfIso } from "@/lib/srs/is-due";
 import type { AppSupabaseClient } from "@/lib/supabase";
 import type { DashboardSetRow, FlashcardSet } from "@/types";
 
@@ -41,8 +42,11 @@ export async function loadDashboardSets(supabase: AppSupabaseClient | null): Pro
       due_count: 0,
     }));
 
-  const nowIso = new Date().toISOString();
-  const { data: dueRows, error: dueError } = await supabase.from("flashcards").select("set_id").lte("due_at", nowIso);
+  const now = new Date();
+  const { data: dueRows, error: dueError } = await supabase
+    .from("flashcards")
+    .select("set_id")
+    .lte("due_at", dueAsOfIso(now));
 
   if (dueError) {
     return {
