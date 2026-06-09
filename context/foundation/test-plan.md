@@ -82,7 +82,7 @@ Status vocabulary (orchestrator literals): `not started` → `change opened` →
 | SRS library | ts-fsrs |
 | Test runner | Vitest (`npm test`, `src/**/*.test.ts`) |
 | CI | GitHub Actions: lint + build only (no test job) |
-| Test-base profile | `none` — 0 test files, no runner config |
+| Test-base profile | `vitest` — 21 tests in `src/lib/srs/*.test.ts` |
 
 **Stack grounding tools (current session):**
 

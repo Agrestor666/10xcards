@@ -45,6 +45,7 @@ describe("gradeCard", () => {
     const lapses = againResult.srs_state.lapses as number;
     expect(reps > 0 || lapses > 0).toBe(true);
 
+    // "Again" may schedule slightly after NOW but always sooner than "good".
     const againDueSooner = isFlashcardDue(againResult.due_at, NOW) || againResult.due_at <= goodResult.due_at;
     expect(againDueSooner).toBe(true);
   });
