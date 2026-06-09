@@ -1,10 +1,10 @@
 ---
 change_id: ci-quality-gate
 title: Add CI quality gate so npm test blocks merge
-status: impl_reviewed
+status: archived
 created: 2026-06-08
 updated: 2026-06-09
-archived_at: null
+archived_at: 2026-06-09T09:16:19Z
 ---
 
 ## Notes
