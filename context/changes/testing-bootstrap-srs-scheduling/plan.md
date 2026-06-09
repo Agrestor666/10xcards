@@ -366,10 +366,10 @@ Use the same fixed `NOW` anchor across scenarios.
 
 #### Automated
 
-- [x] 4.1 Unit tests pass: `npm test`
-- [x] 4.2 Lint passes: `npm run lint`
-- [x] 4.3 Build passes: `npm run build`
+- [x] 4.1 Unit tests pass: `npm test` — 57a76ba
+- [x] 4.2 Lint passes: `npm run lint` — 57a76ba
+- [x] 4.3 Build passes: `npm run build` — 57a76ba
 
 #### Manual
 
-- [x] 4.4 Confirm test output scenario names map to Risk #1 acceptance criteria
+- [x] 4.4 Confirm test output scenario names map to Risk #1 acceptance criteria — 57a76ba
