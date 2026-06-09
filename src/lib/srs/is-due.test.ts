@@ -29,10 +29,5 @@ describe("isFlashcardDue", () => {
     expect(isFlashcardDue("2026-06-08T12:00:00.000Z", now)).toBe(true);
     expect(isFlashcardDue("2026-06-08T11:59:59.999Z", now)).toBe(true);
     expect(isFlashcardDue("2026-06-08T12:00:00.001Z", now)).toBe(false);
-  });
-  describe("CI gate check — usuń po teście", () => {
-    it("celowo pada", () => {
-      expect(true).toBe(false);
-    });
-  });
+  });  
 });
