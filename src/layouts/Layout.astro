@@ -11,7 +11,7 @@ interface Props {
 const { title = "10xCards" } = Astro.props;
 const locale = Astro.locals.locale;
 /** Bump when favicon assets change — browsers cache favicons aggressively. */
-const faviconVersion = "2";
+const faviconVersion = "3";
 const icon = (path: string) => `${path}?v=${faviconVersion}`;
 ---
 
