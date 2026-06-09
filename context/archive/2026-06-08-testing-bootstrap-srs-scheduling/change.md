@@ -1,10 +1,10 @@
 ---
 change_id: testing-bootstrap-srs-scheduling
 title: Bootstrap + SRS scheduling
-status: impl_reviewed
+status: archived
 created: 2026-06-08
 updated: 2026-06-09
-archived_at: null
+archived_at: 2026-06-09T10:30:00Z
 ---
 
 ## Notes
