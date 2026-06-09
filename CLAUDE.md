@@ -9,6 +9,7 @@ This file provides guidance to AI Agent when working with code in this repositor
 - `npm run preview` — preview production build
 - `npm run lint` — ESLint with type-checked rules
 - `npm run lint:fix` — auto-fix lint issues
+- `npm test` — Vitest unit tests (`vitest run`)
 - `npm run format` — Prettier (includes prettier-plugin-astro + prettier-plugin-tailwindcss)
 
 Pre-commit hooks: husky + lint-staged runs `eslint --fix` on `*.{ts,tsx,astro}` and `prettier --write` on `*.{json,css,md}`.
@@ -52,4 +53,4 @@ Full server-side rendering (`output: "server"` in astro.config.mjs). All pages a
 
 ## CI
 
-GitHub Actions (`.github/workflows/ci.yml`): lint + build on every push and PR to `master`; **auto-deploy on push to `master`** after CI passes. GitHub secrets: `SUPABASE_URL`, `SUPABASE_KEY` (build), `CLOUDFLARE_API_TOKEN` (deploy). Repository variable: `PRODUCTION_URL` (post-deploy smoke check). See `context/changes/deploy-pipeline/change.md` for operator setup.
+GitHub Actions (`.github/workflows/ci.yml`): lint + test + build on every push and PR to `master` (`npm test` runs Vitest via `vitest run`); **auto-deploy on push to `master`** after CI passes. GitHub secrets: `SUPABASE_URL`, `SUPABASE_KEY` (build), `CLOUDFLARE_API_TOKEN` (deploy). Repository variable: `PRODUCTION_URL` (post-deploy smoke check). See `context/changes/deploy-pipeline/change.md` for operator setup.

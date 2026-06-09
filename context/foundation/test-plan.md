@@ -70,7 +70,7 @@ Status vocabulary (orchestrator literals): `not started` → `change opened` →
 | 2 | Auth + ownership boundaries | Protected routes reject unauthenticated callers; cross-user CRUD blocked | 2, 5 | API integration | not started | — |
 | 3 | AI generation contract + privacy | Valid/malformed AI responses handled; no source-text persistence | 3, 4 | Unit/integration with fixture responses | not started | — |
 | 4 | i18n critical-path smoke | Key flows render correct locale without full snapshot suite | 6 | Component or narrow integration tests | not started | — |
-| 5 | CI quality gate | `npm test` blocks merge alongside lint + build | All | CI workflow | not started | — |
+| 5 | CI quality gate | `npm test` blocks merge alongside lint + build | All | CI workflow | complete | ci-quality-gate |
 
 ## §4 Stack
 
@@ -81,7 +81,7 @@ Status vocabulary (orchestrator literals): `not started` → `change opened` →
 | Validation | Zod 4 at API boundaries |
 | SRS library | ts-fsrs |
 | Test runner | Vitest (`npm test`, `src/**/*.test.ts`) |
-| CI | GitHub Actions: lint + build only (no test job) |
+| CI | GitHub Actions: lint + test + build (`npm test` in `ci` job) |
 | Test-base profile | `vitest` — 21 tests in `src/lib/srs/*.test.ts` |
 
 **Stack grounding tools (current session):**
@@ -111,7 +111,7 @@ Patterns land as rollout phases complete. Placeholders name the failure mode, no
 | Auth + ownership | TBD — see §3 Phase 2: unauthenticated denial + cross-user CRUD block | pending Phase 2 |
 | AI generation | TBD — see §3 Phase 3: valid/malformed AI response + no source-text persistence | pending Phase 3 |
 | i18n | TBD — see §3 Phase 4: locale toggle and frozen post-login locale on critical flows | pending Phase 4 |
-| CI gate | TBD — see §3 Phase 5: test job in GitHub Actions | pending Phase 5 |
+| CI gate | `npm test` in GitHub Actions `ci` job — lint → test → build blocks merge and deploy | active |
 
 ## §7 Negative Space
 

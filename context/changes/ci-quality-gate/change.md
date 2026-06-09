@@ -10,3 +10,5 @@ archived_at: null
 ## Notes
 
 quality gate from @context/foundation/test-plan.md
+
+**Merge order:** `testing-bootstrap-srs-scheduling` (Vitest + `npm test` script) must merge before this change — otherwise CI fails with "Missing script: test". CI step order: `lint` → `test` → `build`.

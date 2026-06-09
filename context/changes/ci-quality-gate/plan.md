@@ -179,24 +179,24 @@ No data migration. Rollback: remove the `- run: npm test` line from `ci.yml` and
 
 #### Automated
 
-- [x] 1.1 Workflow YAML is valid (no syntax errors)
-- [x] 1.2 Lint passes locally: `npm run lint`
-- [x] 1.3 Tests pass locally: `npm test` (requires Phase 1 prerequisite)
-- [x] 1.4 Build passes locally: `npm run build` (with Supabase env vars set)
+- [x] 1.1 Workflow YAML is valid (no syntax errors) — 6d12801
+- [x] 1.2 Lint passes locally: `npm run lint` — 6d12801
+- [x] 1.3 Tests pass locally: `npm test` (requires Phase 1 prerequisite) — 6d12801
+- [x] 1.4 Build passes locally: `npm run build` (with Supabase env vars set) — 6d12801
 
 #### Manual
 
-- [x] 1.5 Open a PR with a deliberately failing test — `ci` job fails on the test step
-- [x] 1.6 Confirm `deploy` job is skipped when `ci` fails on a push to `master`
-- [x] 1.7 Revert the failing test — full `ci` job passes (lint → test → build)
+- [x] 1.5 Open a PR with a deliberately failing test — `ci` job fails on the test step — 6d12801
+- [x] 1.6 Confirm `deploy` job is skipped when `ci` fails on a push to `master` — 6d12801
+- [x] 1.7 Revert the failing test — full `ci` job passes (lint → test → build) — 6d12801
 
 ### Phase 2: Sync docs and test-plan status
 
 #### Automated
 
-- [ ] 2.1 Lint passes: `npm run lint`
+- [x] 2.1 Lint passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.2 `AGENTS.md` and `CLAUDE.md` CI descriptions match `.github/workflows/ci.yml` step order
-- [ ] 2.3 Test-plan Phase 5 row references `ci-quality-gate`
+- [x] 2.2 `AGENTS.md` and `CLAUDE.md` CI descriptions match `.github/workflows/ci.yml` step order
+- [x] 2.3 Test-plan Phase 5 row references `ci-quality-gate`
