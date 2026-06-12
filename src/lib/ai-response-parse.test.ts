@@ -42,4 +42,13 @@ describe("parseCardsFromLlmPayload (Risk #4)", () => {
   it("returns null for wrapped empty cards array", () => {
     expect(parseCardsFromLlmPayload({ cards: [] })).toBeNull();
   });
+
+  it("returns cards array for empty-string pairs (trim/drop deferred to validateFlashcardDrafts)", () => {
+    // cardDraftSchema intentionally accepts empty strings at this layer;
+    // empty pairs are dropped by validateFlashcardDrafts, not by the parser.
+    // This test guards against adding .min(1) here which would silently
+    // change the Risk #4 errorKey from no_valid_drafts → generate.
+    const result = parseCardsFromLlmPayload([{ question: "", answer: "" }]);
+    expect(result).not.toBeNull();
+  });
 });

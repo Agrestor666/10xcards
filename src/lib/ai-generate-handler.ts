@@ -17,6 +17,7 @@ export interface AiGenerateHandlerSupabase {
       error: { message: string } | null;
     }>;
   };
+  /** Present so tests can assert this is never called during generate (Risk #3). */
   from: (table: string) => unknown;
 }
 

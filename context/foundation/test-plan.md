@@ -68,7 +68,7 @@ Status vocabulary (orchestrator literals): `not started` → `change opened` →
 |---|-------|------|-------|------------|--------|---------------|
 | 1 | Bootstrap + SRS scheduling | Wire Vitest; prove grade → schedule update → due retrieval so silent SRS failure cannot ship undetected | 1 | Runner setup, unit/integration on SRS core | complete | testing-bootstrap-srs-scheduling |
 | 2 | Auth + ownership boundaries | Protected routes reject unauthenticated callers; cross-user CRUD blocked; 1 E2E auth redirect smoke | 2, 5 | API integration, E2E smoke (Playwright) | change opened | testing-auth-ownership-boundaries |
-| 3 | AI generation contract + privacy | Valid/malformed AI responses handled; no source-text persistence | 3, 4 | Unit/integration with fixture responses | not started | — |
+| 3 | AI generation contract + privacy | Valid/malformed AI responses handled; no source-text persistence | 3, 4 | Unit/integration with fixture responses | complete | ai-generation-contract-privacy |
 | 4 | i18n critical-path smoke | Key flows render correct locale without full snapshot suite | 6 | Component or narrow integration tests | not started | — |
 | 5 | CI quality gate | `npm test` blocks merge alongside lint + build | All | CI workflow | complete | ci-quality-gate |
 

@@ -38,6 +38,7 @@ test("failed AI generate shows error banner and no draft cards (Risk #4)", async
   await expect(page.getByText(/Could not generate flashcards|Nie udało się wygenerować fiszek/i)).toBeVisible();
 
   // No draft card rows — empty state and 0/N count remain
+  // 50 = MAX_CARDS_PER_REQUEST — keep in sync with src/lib/ai-generation-limits.ts
   await expect(page.getByText(/Generate to see cards here|Wygeneruj fiszki, aby zobaczyć/i)).toBeVisible();
   await expect(page.getByText(/^0\/50$/)).toBeVisible();
   await expect(page.getByRole("button", { name: /Remove|Usuń/i })).not.toBeVisible();
