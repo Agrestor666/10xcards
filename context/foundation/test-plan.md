@@ -67,7 +67,7 @@ Status vocabulary (orchestrator literals): `not started` → `change opened` →
 | # | Phase | Goal | Risks | Test types | Status | Change folder |
 |---|-------|------|-------|------------|--------|---------------|
 | 1 | Bootstrap + SRS scheduling | Wire Vitest; prove grade → schedule update → due retrieval so silent SRS failure cannot ship undetected | 1 | Runner setup, unit/integration on SRS core | complete | testing-bootstrap-srs-scheduling |
-| 2 | Auth + ownership boundaries | Protected routes reject unauthenticated callers; cross-user CRUD blocked | 2, 5 | API integration | not started | — |
+| 2 | Auth + ownership boundaries | Protected routes reject unauthenticated callers; cross-user CRUD blocked; 1 E2E auth redirect smoke | 2, 5 | API integration, E2E smoke (Playwright) | change opened | testing-auth-ownership-boundaries |
 | 3 | AI generation contract + privacy | Valid/malformed AI responses handled; no source-text persistence | 3, 4 | Unit/integration with fixture responses | not started | — |
 | 4 | i18n critical-path smoke | Key flows render correct locale without full snapshot suite | 6 | Component or narrow integration tests | not started | — |
 | 5 | CI quality gate | `npm test` blocks merge alongside lint + build | All | CI workflow | complete | ci-quality-gate |
@@ -109,7 +109,7 @@ Patterns land as rollout phases complete. Placeholders name the failure mode, no
 |------|---------|--------|
 | SRS scheduling | Lib-layer grade + `isFlashcardDue` flow tests — `gradeCard()` → `isFlashcardDue()` proves schedule update and due-queue semantics without HTTP/DB; see `src/lib/srs/is-due.test.ts`, `fsrs-mapper.test.ts`, `grade-card.test.ts`, `grade-due-flow.test.ts` | active |
 | Auth + ownership | TBD — see §3 Phase 2: unauthenticated denial + cross-user CRUD block | pending Phase 2 |
-| AI generation | TBD — see §3 Phase 3: valid/malformed AI response + no source-text persistence | pending Phase 3 |
+| AI generation | Vitest fixture matrix (`openrouter-generate.test.ts`) + parsing/validation unit tests; handler privacy spy (`ai-generate-handler.test.ts`); Playwright API input/auth (`e2e/ai-generate-api-contract.spec.ts`) + UI error branch (`e2e/ai-generate-error-ui.spec.ts`) — Risks #3, #4, #5 | active |
 | i18n | TBD — see §3 Phase 4: locale toggle and frozen post-login locale on critical flows | pending Phase 4 |
 | CI gate | `npm test` in GitHub Actions `ci` job — lint → test → build blocks merge and deploy | active |
 

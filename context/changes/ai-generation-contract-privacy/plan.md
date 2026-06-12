@@ -303,13 +303,13 @@ Provenance header links to test-plan Risk #5 input gates and Risk #3 response sh
 
 #### Automated
 
-- [ ] 3.1 Handler tests pass: `npm test -- src/lib/ai-generate-handler.test.ts`
-- [ ] 3.2 Full Vitest suite passes: `npm test`
-- [x] 3.3 Playwright specs pass: `npx playwright test e2e/ai-generate-api-contract.spec.ts e2e/ai-generate-error-ui.spec.ts`
-- [ ] 3.4 Lint passes: `npm run lint`
+- [x] 3.1 Handler tests pass: `npm test -- src/lib/ai-generate-handler.test.ts`
+- [x] 3.2 Full Vitest suite passes: `npm test`
+- [x] 3.3 Playwright specs pass: `npx playwright test e2e/ai-generate-api-contract.spec.ts e2e/ai-generate-error-ui.spec.ts` — 75d7357
+- [x] 3.4 Lint passes: `npm run lint`
 
 #### Manual
 
-- [x] 3.5 Happy-path generate on `/dashboard` still works after handler extraction
-- [x] 3.6 E2E deliberate break: `{ ok: true, cards: [] }` mock — UI spec goes red, then revert
-- [x] 3.7 Network tab spot check: no raw pasted text in generate response
+- [x] 3.5 Happy-path generate on `/dashboard` still works after handler extraction — 75d7357
+- [x] 3.6 E2E deliberate break: `{ ok: true, cards: [] }` mock — UI spec goes red, then revert — 75d7357
+- [x] 3.7 Network tab spot check: no raw pasted text in generate response — 75d7357
