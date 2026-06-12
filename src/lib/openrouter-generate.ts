@@ -1,23 +1,12 @@
 import { z } from "zod";
 import { OPENROUTER_API_KEY } from "astro:env/server";
+import { extractJsonPayload, parseCardsFromLlmPayload } from "@/lib/ai-response-parse";
 import {
-  MAX_CARDS_PER_REQUEST,
   OPENROUTER_DEFAULT_BASE_URL,
   OPENROUTER_DEFAULT_MODEL,
   OPENROUTER_REQUEST_TIMEOUT_MS,
 } from "@/lib/ai-generation-limits";
 import { type FlashcardDraft, validateFlashcardDrafts } from "@/lib/flashcard-draft-validation";
-
-const cardDraftSchema = z.object({
-  question: z.string(),
-  answer: z.string(),
-});
-
-const cardsArraySchema = z.array(cardDraftSchema).min(1).max(MAX_CARDS_PER_REQUEST);
-
-const wrappedCardsSchema = z.object({
-  cards: cardsArraySchema,
-});
 
 const openRouterChatResponseSchema = z.object({
   choices: z
@@ -39,29 +28,6 @@ Respond with ONLY valid JSON in this exact shape (no markdown, no commentary):
 {"cards":[{"question":"...","answer":"..."}]}
 
 Create multiple cards when the text supports it. Keep questions and answers clear and self-contained.`;
-
-function extractJsonPayload(content: string): unknown {
-  const trimmed = content.trim();
-
-  const fenced = /^```(?:json)?\s*([\s\S]*?)\s*```$/i.exec(trimmed);
-  const candidate = fenced ? fenced[1].trim() : trimmed;
-
-  return JSON.parse(candidate) as unknown;
-}
-
-function parseCardsFromLlmPayload(payload: unknown): FlashcardDraft[] | null {
-  const asArray = cardsArraySchema.safeParse(payload);
-  if (asArray.success) {
-    return asArray.data;
-  }
-
-  const asWrapped = wrappedCardsSchema.safeParse(payload);
-  if (asWrapped.success) {
-    return asWrapped.data.cards;
-  }
-
-  return null;
-}
 
 export async function generateFlashcardsFromText(text: string): Promise<GenerateFlashcardsResult> {
   if (!OPENROUTER_API_KEY) {
