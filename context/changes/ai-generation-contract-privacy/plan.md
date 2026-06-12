@@ -279,25 +279,25 @@ Provenance header links to test-plan Risk #5 input gates and Risk #3 response sh
 
 #### Automated
 
-- [x] 1.1 Unit tests pass: `npm test -- src/lib/flashcard-draft-validation.test.ts src/lib/ai-response-parse.test.ts`
-- [x] 1.2 Full suite passes: `npm test`
-- [x] 1.3 Lint passes: `npm run lint`
+- [x] 1.1 Unit tests pass: `npm test -- src/lib/flashcard-draft-validation.test.ts src/lib/ai-response-parse.test.ts` — 3cdb075
+- [x] 1.2 Full suite passes: `npm test` — 3cdb075
+- [x] 1.3 Lint passes: `npm run lint` — 3cdb075
 
 #### Manual
 
-- [x] 1.4 No production behavior change visible in dashboard generate flow (refactor-only extraction)
+- [x] 1.4 No production behavior change visible in dashboard generate flow (refactor-only extraction) — 3cdb075
 
 ### Phase 2: OpenRouter Service Contract (Fixture Matrix)
 
 #### Automated
 
-- [ ] 2.1 Service tests pass: `npm test -- src/lib/openrouter-generate.test.ts`
-- [ ] 2.2 Full suite passes: `npm test`
-- [ ] 2.3 Lint passes: `npm run lint`
+- [x] 2.1 Service tests pass: `npm test -- src/lib/openrouter-generate.test.ts`
+- [x] 2.2 Full suite passes: `npm test`
+- [x] 2.3 Lint passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.4 Deliberate break: empty cards success path — service test goes red, then revert
+- [x] 2.4 Deliberate break: empty cards success path — service test goes red, then revert
 
 ### Phase 3: Handler Privacy + Playwright API & E2E
 
