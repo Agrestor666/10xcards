@@ -291,13 +291,13 @@ Provenance header links to test-plan Risk #5 input gates and Risk #3 response sh
 
 #### Automated
 
-- [x] 2.1 Service tests pass: `npm test -- src/lib/openrouter-generate.test.ts`
-- [x] 2.2 Full suite passes: `npm test`
-- [x] 2.3 Lint passes: `npm run lint`
+- [x] 2.1 Service tests pass: `npm test -- src/lib/openrouter-generate.test.ts` — 5e7deeb
+- [x] 2.2 Full suite passes: `npm test` — 5e7deeb
+- [x] 2.3 Lint passes: `npm run lint` — 5e7deeb
 
 #### Manual
 
-- [x] 2.4 Deliberate break: empty cards success path — service test goes red, then revert
+- [x] 2.4 Deliberate break: empty cards success path — service test goes red, then revert — 5e7deeb
 
 ### Phase 3: Handler Privacy + Playwright API & E2E
 
@@ -305,11 +305,11 @@ Provenance header links to test-plan Risk #5 input gates and Risk #3 response sh
 
 - [ ] 3.1 Handler tests pass: `npm test -- src/lib/ai-generate-handler.test.ts`
 - [ ] 3.2 Full Vitest suite passes: `npm test`
-- [ ] 3.3 Playwright specs pass: `npx playwright test e2e/ai-generate-api-contract.spec.ts e2e/ai-generate-error-ui.spec.ts`
+- [x] 3.3 Playwright specs pass: `npx playwright test e2e/ai-generate-api-contract.spec.ts e2e/ai-generate-error-ui.spec.ts`
 - [ ] 3.4 Lint passes: `npm run lint`
 
 #### Manual
 
-- [ ] 3.5 Happy-path generate on `/dashboard` still works after handler extraction
-- [ ] 3.6 E2E deliberate break: `{ ok: true, cards: [] }` mock — UI spec goes red, then revert
-- [ ] 3.7 Network tab spot check: no raw pasted text in generate response
+- [x] 3.5 Happy-path generate on `/dashboard` still works after handler extraction
+- [x] 3.6 E2E deliberate break: `{ ok: true, cards: [] }` mock — UI spec goes red, then revert
+- [x] 3.7 Network tab spot check: no raw pasted text in generate response
