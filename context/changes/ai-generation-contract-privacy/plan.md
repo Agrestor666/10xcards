@@ -303,10 +303,10 @@ Provenance header links to test-plan Risk #5 input gates and Risk #3 response sh
 
 #### Automated
 
-- [x] 3.1 Handler tests pass: `npm test -- src/lib/ai-generate-handler.test.ts`
-- [x] 3.2 Full Vitest suite passes: `npm test`
+- [x] 3.1 Handler tests pass: `npm test -- src/lib/ai-generate-handler.test.ts` — f9e2db1
+- [x] 3.2 Full Vitest suite passes: `npm test` — f9e2db1
 - [x] 3.3 Playwright specs pass: `npx playwright test e2e/ai-generate-api-contract.spec.ts e2e/ai-generate-error-ui.spec.ts` — 75d7357
-- [x] 3.4 Lint passes: `npm run lint`
+- [x] 3.4 Lint passes: `npm run lint` — f9e2db1
 
 #### Manual
 
