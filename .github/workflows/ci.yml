@@ -54,8 +54,10 @@ jobs:
             echo "OPENROUTER_API_KEY=local-e2e-placeholder"
             echo "E2E_USER_EMAIL=e2e@example.test"
             echo "E2E_USER_PASSWORD=LocalE2E-Only-2026!"
+            echo "E2E_USER_B_EMAIL=e2e-b@example.test"
+            echo "E2E_USER_B_PASSWORD=LocalE2E-B-Only-2026!"
           } >> "$GITHUB_ENV"
-      - name: Create local E2E user
+      - name: Create local E2E users
         shell: bash
         run: |
           curl --silent --show-error --fail \
@@ -64,6 +66,13 @@ jobs:
             --header "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
             --header "Content-Type: application/json" \
             --data '{"email":"e2e@example.test","password":"LocalE2E-Only-2026!","email_confirm":true}' \
+            --output /dev/null
+          curl --silent --show-error --fail \
+            --request POST "$SUPABASE_URL/auth/v1/admin/users" \
+            --header "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
+            --header "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            --header "Content-Type: application/json" \
+            --data '{"email":"e2e-b@example.test","password":"LocalE2E-B-Only-2026!","email_confirm":true}' \
             --output /dev/null
       - name: Test database policies
         run: npm run test:db

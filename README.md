@@ -102,6 +102,8 @@ Local email confirmation is disabled in `supabase/config.toml`. Emails produced 
 | `OPENROUTER_API_KEY`        | For AI generation           | Server-only OpenRouter API key                       |
 | `E2E_USER_EMAIL`            | For authenticated E2E tests | Test account email                                   |
 | `E2E_USER_PASSWORD`         | For authenticated E2E tests | Test account password                                |
+| `E2E_USER_B_EMAIL`          | For cross-user RLS E2E      | Second test account email                            |
+| `E2E_USER_B_PASSWORD`       | For cross-user RLS E2E      | Second test account password                         |
 | `PLAYWRIGHT_BASE_URL`       | No                          | Overrides the Playwright base URL                    |
 
 The application secrets are declared as server-only fields in `astro.config.mjs`. Never expose the service-role or OpenRouter keys to client-side code.
@@ -202,13 +204,13 @@ With the local Supabase stack running, test database policies:
 npm run test:db
 ```
 
-For authenticated browser tests, set `E2E_USER_EMAIL` and `E2E_USER_PASSWORD` in `.env`, then run:
+For authenticated browser tests, set both test accounts (`E2E_USER_*` and `E2E_USER_B_*`) in `.env`, then run:
 
 ```bash
 npm run test:e2e
 ```
 
-Playwright starts the development server automatically unless one is already running. Tests use `http://localhost:4321` by default.
+Playwright starts the development server automatically unless one is already running. Tests use `http://localhost:4321` by default. The second account verifies that one authenticated user cannot read or mutate another user's sets and cards through application APIs.
 
 ## Deployment
 

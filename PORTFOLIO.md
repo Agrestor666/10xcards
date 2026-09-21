@@ -323,10 +323,12 @@ The setup project signs in through the real UI with:
 
 - `E2E_USER_EMAIL`
 - `E2E_USER_PASSWORD`
+- `E2E_USER_B_EMAIL`
+- `E2E_USER_B_PASSWORD`
 
-It then stores the authenticated session in `playwright/.auth/user.json`.
+It stores independent authenticated sessions for the owner and attacker accounts.
 
-Eight Playwright scenarios are currently defined:
+Nine Playwright scenarios are currently defined:
 
 1. A guest visiting `/dashboard` is redirected to sign-in without protected dashboard content being exposed.
 2. A guest posting to `/api/ai/generate` receives HTTP 401.
@@ -336,6 +338,7 @@ Eight Playwright scenarios are currently defined:
 6. A mocked AI provider failure produces an error banner, no draft rows, and an idle generate button.
 7. A newly created flashcard set remains available after a full page reload and is cleaned up after the test.
 8. The public health endpoint reports readiness without exposing configuration values.
+9. A second authenticated user cannot read, create, update, or delete the first user's sets and cards through application APIs.
 
 The E2E suite deliberately mixes real and mocked dependencies:
 
@@ -393,7 +396,7 @@ This means the automated merge/deployment gate includes:
 - all 52 Vitest tests;
 - a production SSR build.
 
-A separate security-integration job starts an ephemeral local Supabase stack, runs transactional pgTAP tests against the RLS policies, creates a local-only test user, and runs the complete Playwright suite. It does not require production credentials and is safe to execute for pull requests from forks.
+A separate security-integration job starts an ephemeral local Supabase stack, runs transactional pgTAP tests against the RLS policies, creates two local-only test users, and runs the complete Playwright suite. It does not require production credentials and is safe to execute for pull requests from forks.
 
 ### Deployment verification
 
@@ -423,7 +426,6 @@ The current suite does not claim:
 
 - code-coverage percentage reporting;
 - live OpenRouter generation in automated tests;
-- cross-user ownership E2E tests with two accounts;
 - complete bilingual critical-path E2E coverage.
 
 These are appropriate next steps for a larger production rollout.
@@ -523,12 +525,11 @@ Tests focus first on scheduling correctness, authorization, privacy, malformed A
 The most valuable production-hardening steps are:
 
 1. add per-user or per-account AI generation rate limits;
-2. add a two-account browser suite in addition to the transactional RLS policy tests;
-3. add complete English and Polish critical-path smoke tests;
-4. configure coverage reporting and meaningful thresholds;
-5. make the OpenRouter model configurable through a server-only environment variable;
-6. add provider usage and latency observability without logging source text;
-7. document provider data handling in a public privacy policy.
+2. add complete English and Polish critical-path smoke tests;
+3. configure coverage reporting and meaningful thresholds;
+4. make the OpenRouter model configurable through a server-only environment variable;
+5. add provider usage and latency observability without logging source text;
+6. document provider data handling in a public privacy policy.
 
 ## Key Technologies Demonstrated
 
@@ -589,7 +590,7 @@ supabase/tests/        Transactional pgTAP security tests
 
 ## Short Portfolio Description
 
-10xCards is an AI-assisted flashcard application built with Astro, React, TypeScript, Supabase, and Cloudflare Workers. It converts pasted study material into editable question-and-answer cards through OpenRouter, then schedules reviews with FSRS. The project includes database-level Row Level Security, bilingual UI, server-only secret handling, 52 Vitest tests, eight Playwright scenarios, automated CI builds, and post-deployment smoke checks.
+10xCards is an AI-assisted flashcard application built with Astro, React, TypeScript, Supabase, and Cloudflare Workers. It converts pasted study material into editable question-and-answer cards through OpenRouter, then schedules reviews with FSRS. The project includes database-level Row Level Security, bilingual UI, server-only secret handling, 52 Vitest tests, nine Playwright scenarios, automated CI builds, and post-deployment smoke checks.
 
 ## Resume-Ready Bullet Points
 
@@ -597,7 +598,7 @@ supabase/tests/        Transactional pgTAP security tests
 - Integrated OpenRouter and Gemini to transform pasted educational content into editable flashcard drafts with layered Zod validation and privacy-conscious error handling.
 - Implemented FSRS-based spaced repetition with versioned scheduler state, indexed due dates, and tests against the real scheduling library.
 - Secured user data with Supabase cookie authentication and PostgreSQL Row Level Security policies for set and card ownership.
-- Created a risk-driven quality strategy with 52 passing Vitest tests, transactional pgTAP RLS tests, and eight Playwright browser/API scenarios covering AI contracts, privacy, authentication, persistence, health, and error states.
+- Created a risk-driven quality strategy with 52 passing Vitest tests, transactional pgTAP RLS tests, and nine Playwright browser/API scenarios covering AI contracts, privacy, authentication, cross-user isolation, persistence, health, and error states.
 - Automated linting, testing, production builds, Cloudflare deployment, and post-deployment smoke checks with GitHub Actions.
 
 ## Interview Talking Points
