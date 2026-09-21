@@ -79,6 +79,8 @@ select throws_ok(
     insert into public.flashcard_sets (user_id, name)
     values ('11111111-1111-4111-8111-111111111111', 'Forged set')
   $$,
+  '42501',
+  'new row violates row-level security policy for table "flashcard_sets"',
   'User 2 cannot create a set owned by User 1'
 );
 
@@ -112,6 +114,8 @@ select throws_ok(
       'Forged answer'
     )
   $$,
+  '42501',
+  'new row violates row-level security policy for table "flashcards"',
   'User 2 cannot create a card in User 1 set'
 );
 
