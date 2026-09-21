@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-10xCards is a web app built with the 10x Astro Starter stack: Astro 6 SSR, React 19 islands, TypeScript, Tailwind CSS 4, Supabase auth, and Cloudflare Workers deployment. See @CLAUDE.md for stack conventions and auth flow details.
+10xCards is a web app built with the 10x Astro Starter stack: Astro 7 SSR, React 19 islands, TypeScript, Tailwind CSS 4, Supabase auth, and Cloudflare Workers deployment. See @CLAUDE.md for stack conventions and auth flow details.
 
 ## Hard Rules
 
