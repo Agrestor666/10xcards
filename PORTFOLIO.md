@@ -387,7 +387,7 @@ npm test
 npm run build
 ```
 
-This means the automated merge/deployment gate includes:
+This means the automated merge gate includes:
 
 - dependency installation from the lockfile;
 - Astro type generation;
@@ -400,16 +400,14 @@ A separate security-integration job starts an ephemeral local Supabase stack, ru
 
 ### Deployment verification
 
-After the CI job succeeds on a push to `master`, the deployment job:
+Deployment is intentionally manual from a trusted Cursor terminal:
 
-1. installs dependencies;
-2. generates Astro types;
-3. creates a production build;
-4. deploys through Wrangler;
-5. verifies that `PRODUCTION_URL` is configured;
-6. performs HTTP smoke checks against `/`, `/auth/signin`, and `/api/health`.
+1. run the complete CI-equivalent checks;
+2. create a production build;
+3. deploy through Wrangler;
+4. smoke-check `/`, `/auth/signin`, and `/api/health`.
 
-These post-deployment checks verify basic availability but do not replace the Playwright suite.
+GitHub Actions does not hold Cloudflare deployment credentials.
 
 ### Local quality gates
 
@@ -441,8 +439,8 @@ Production characteristics include:
 - `nodejs_compat` for required Node APIs;
 - Cloudflare observability enabled;
 - secrets stored as Worker secrets rather than bundled client variables;
-- automatic deployment after linting, unit tests, and build succeed;
-- post-deployment smoke checks.
+- manual deployment through the authenticated Wrangler CLI;
+- manual post-deployment smoke checks.
 
 Runtime secrets:
 
@@ -455,8 +453,6 @@ Build-time GitHub configuration:
 
 - `SUPABASE_URL`
 - `SUPABASE_KEY`
-- `CLOUDFLARE_API_TOKEN`
-- `PRODUCTION_URL`
 
 ## Selected Engineering Decisions
 
@@ -585,7 +581,7 @@ src/
 e2e/                   Playwright setup and scenarios
 supabase/migrations/   PostgreSQL schema and RLS policies
 supabase/tests/        Transactional pgTAP security tests
-.github/workflows/     CI and automatic deployment
+.github/workflows/     CI quality and security gates
 ```
 
 ## Short Portfolio Description
@@ -599,7 +595,7 @@ supabase/tests/        Transactional pgTAP security tests
 - Implemented FSRS-based spaced repetition with versioned scheduler state, indexed due dates, and tests against the real scheduling library.
 - Secured user data with Supabase cookie authentication and PostgreSQL Row Level Security policies for set and card ownership.
 - Created a risk-driven quality strategy with 52 passing Vitest tests, transactional pgTAP RLS tests, and nine Playwright browser/API scenarios covering AI contracts, privacy, authentication, cross-user isolation, persistence, health, and error states.
-- Automated linting, testing, production builds, Cloudflare deployment, and post-deployment smoke checks with GitHub Actions.
+- Automated linting, security audits, unit tests, integration tests, and production builds with GitHub Actions; deployed manually to Cloudflare with Wrangler.
 
 ## Interview Talking Points
 

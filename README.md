@@ -216,12 +216,9 @@ Playwright starts the development server automatically unless one is already run
 
 Pushes and pull requests to `master` run a production dependency audit, linting, unit tests, a production build, local pgTAP policy tests, and the full Playwright suite. CI creates an ephemeral local Supabase stack and test user, so integration tests do not use production credentials.
 
-After all required checks pass on a push to `master`, the workflow deploys the `10xcards` Worker and performs smoke checks against `/`, `/auth/signin`, and `/api/health` at `PRODUCTION_URL`.
-
 Required GitHub configuration:
 
-- Secrets: `SUPABASE_URL`, `SUPABASE_KEY`, `CLOUDFLARE_API_TOKEN`
-- Repository variable: `PRODUCTION_URL`
+- Secrets: `SUPABASE_URL`, `SUPABASE_KEY` (production build verification only)
 
 Production Worker secrets:
 
@@ -232,11 +229,11 @@ npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
 npx wrangler secret put OPENROUTER_API_KEY
 ```
 
-Manual deployment:
+Deployment is intentionally manual and runs from a trusted local Cursor terminal:
 
 ```bash
 npm run build
 npx wrangler deploy
 ```
 
-See [`context/changes/deploy-pipeline/change.md`](context/changes/deploy-pipeline/change.md) for the operator checklist.
+After deployment, verify `/`, `/auth/signin`, and `/api/health` on the production URL. GitHub Actions does not hold Cloudflare deployment credentials and does not deploy automatically.
