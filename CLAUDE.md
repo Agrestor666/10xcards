@@ -16,7 +16,7 @@ Pre-commit hooks: husky + lint-staged runs `eslint --fix` on `*.{ts,tsx,astro}` 
 
 ## Architecture
 
-**Astro 6 SSR app** with React 19 islands, Tailwind 4, Supabase auth, and shadcn/ui components. Deployed to Cloudflare Workers.
+**Astro 7 SSR app** with React 19 islands, Tailwind 4, Supabase auth, and shadcn/ui components. Deployed to Cloudflare Workers.
 
 ### Rendering mode
 
@@ -44,13 +44,13 @@ Full server-side rendering (`output: "server"` in astro.config.mjs). All pages a
 
 ### Environment
 
-- Node.js v22.14.0 (see `.nvmrc`)
+- Node.js v22.19.0 (see `.nvmrc`)
 - Env vars: `SUPABASE_URL`, `SUPABASE_KEY` (copy `.env.example` to `.env` for Node, or `.dev.vars` for Cloudflare local dev); `SUPABASE_SERVICE_ROLE_KEY` is server-only and used exclusively for account deletion (`src/lib/supabase-admin.ts`, `POST /api/auth/delete-account`)
 - Local Supabase: `npx supabase start` (requires Docker)
 - Cloudflare local dev: secrets go in `.dev.vars` (gitignored)
-- **Deploy:** auto-deploy via GitHub Actions on push to `master` (`.github/workflows/ci.yml` → `deploy` job → `wrangler deploy` + smoke check). One-time setup: `context/changes/deploy-pipeline/change.md`. Emergency manual path: `npm run build && npx wrangler deploy`.
+- **Deploy:** manual from a trusted local Cursor terminal: `npm run build && npx wrangler deploy`. GitHub Actions validates changes but does not hold Cloudflare deployment credentials.
 - **Runtime secrets** (production Worker only, not CI): `SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENROUTER_API_KEY` via `npx wrangler secret put <NAME>`.
 
 ## CI
 
-GitHub Actions (`.github/workflows/ci.yml`): lint + test + build on every push and PR to `master` (`npm test` runs Vitest via `vitest run`); **auto-deploy on push to `master`** after CI passes. GitHub secrets: `SUPABASE_URL`, `SUPABASE_KEY` (build), `CLOUDFLARE_API_TOKEN` (deploy). Repository variable: `PRODUCTION_URL` (post-deploy smoke check). See `context/changes/deploy-pipeline/change.md` for operator setup.
+GitHub Actions (`.github/workflows/ci.yml`): dependency audit, lint, Vitest, build, local pgTAP RLS tests, and Playwright on every push and PR to `master`. GitHub secrets `SUPABASE_URL` and `SUPABASE_KEY` are used only for build verification. Deployment remains manual.

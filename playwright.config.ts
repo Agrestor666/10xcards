@@ -39,21 +39,31 @@ export default defineConfig({
   },
   projects: [
     { name: "setup", testMatch: /auth\.setup\.ts/ },
+    { name: "setup-user-b", testMatch: /auth-user-b\.setup\.ts/ },
     {
       name: "guest",
-      testMatch: /guest-protected-route-redirect\.spec\.ts/,
+      testMatch: /(?:guest-protected-route-redirect|health)\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
       },
     },
     {
       name: "chromium",
-      testIgnore: /guest-protected-route-redirect\.spec\.ts/,
+      testIgnore: /(?:guest-protected-route-redirect|health|rls-cross-user-isolation)\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
         storageState: "playwright/.auth/user.json",
       },
       dependencies: ["setup"],
+    },
+    {
+      name: "rls-isolation",
+      testMatch: /rls-cross-user-isolation\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: "playwright/.auth/user-b.json",
+      },
+      dependencies: ["setup-user-b"],
     },
   ],
 });

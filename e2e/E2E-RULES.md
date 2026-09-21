@@ -11,3 +11,7 @@
   to avoid collisions in parallel runs. Clean up in afterEach.
 - Use storageState for authentication — never log in through UI
   in individual tests. Guest/unauthenticated flows use the `guest` Playwright project.
+- Cross-user authorization tests must use separate storage-state files and verify
+  the owner's data after every blocked attacker operation.
+- Seed and clean cross-user fixtures through an authenticated owner client. Never
+  use the service-role key for routine E2E CRUD.

@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-10xCards is a web app built with the 10x Astro Starter stack: Astro 6 SSR, React 19 islands, TypeScript, Tailwind CSS 4, Supabase auth, and Cloudflare Workers deployment. See @CLAUDE.md for stack conventions and auth flow details.
+10xCards is a web app built with the 10x Astro Starter stack: Astro 7 SSR, React 19 islands, TypeScript, Tailwind CSS 4, Supabase auth, and Cloudflare Workers deployment. See @CLAUDE.md for stack conventions and auth flow details.
 
 ## Hard Rules
 
@@ -39,8 +39,8 @@ Copy @.env.example to `.env` (Node) and `.dev.vars` (Cloudflare local dev). Loca
 
 ## CI Gate
 
-GitHub Actions (`.github/workflows/ci.yml`): `lint` + `test` + `build` on push/PR to `master` (`npm test` runs Vitest via `vitest run`; build requires `SUPABASE_URL` and `SUPABASE_KEY` repository secrets). **Push to `master` only:** after CI passes, a `deploy` job runs `wrangler deploy` and curls `PRODUCTION_URL/` (requires `CLOUDFLARE_API_TOKEN` secret and `PRODUCTION_URL` repository variable).
+GitHub Actions (`.github/workflows/ci.yml`): dependency audit + lint + Vitest + build plus local pgTAP RLS and Playwright integration tests on push/PR to `master`. Build verification requires `SUPABASE_URL` and `SUPABASE_KEY` repository secrets. CI does not deploy.
 
 ## Deployment
 
-Auto-deploy via GitHub Actions on push to `master`. One-time setup: `context/changes/deploy-pipeline/change.md`. Runtime secrets on the Worker (`SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENROUTER_API_KEY`) via `npx wrangler secret put`. Emergency manual path: `npm run build && npx wrangler deploy`.
+Deploy manually from a trusted local Cursor terminal with `npm run build && npx wrangler deploy`. Runtime secrets on the Worker (`SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENROUTER_API_KEY`) are managed with `npx wrangler secret put`.

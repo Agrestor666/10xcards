@@ -1,0 +1,2 @@
+-- Intentionally empty. Automated database tests create isolated fixtures in
+-- transactions and roll them back after each pgTAP test file.

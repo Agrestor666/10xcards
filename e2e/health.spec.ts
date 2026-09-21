@@ -1,0 +1,8 @@
+import { expect, test } from "@playwright/test";
+
+test("health endpoint reports readiness without exposing configuration", async ({ request }) => {
+  const response = await request.get("/api/health");
+
+  expect(response.status()).toBe(200);
+  expect(await response.json()).toEqual({ ok: true });
+});
