@@ -33,7 +33,12 @@ export const POST: APIRoute = async (context) => {
     if (signOutError) {
       return context.redirect(`${RESET_PASSWORD_PATH}?error=${toAuthErrorKey(signOutError)}`);
     }
-    context.cookies.delete(RECOVERY_COOKIE, { path: "/" });
+    context.cookies.delete(RECOVERY_COOKIE, {
+      path: "/",
+      httpOnly: true,
+      sameSite: "lax",
+      secure: import.meta.env.PROD,
+    });
   }
 
   return context.redirect(outcome.redirect);

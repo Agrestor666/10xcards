@@ -289,4 +289,4 @@ Brak migracji schematu i zmian RLS. Lokalna zmiana to `config.toml` plus plik sz
 - [x] 2.4 W Inbucket link z maila otwiera formularz, nowe hasło zapisuje się, logowanie pokazuje sukces, stare hasło jest odrzucane, nowe loguje na dashboard — 20f6df8
 - [x] 2.5 Link z przekręconym `token_hash` pokazuje stan nieważny i odnośnik do ponownej prośby, bez dashboardu — 20f6df8
 - [x] 2.6 Nowe ekrany mają polski i angielski copy zgodny z locale — 20f6df8
-- [x] 2.7 W panelu Supabase produkcji origin Workera jest na Redirect URLs, a szablon Reset password jest kopią `supabase/templates/recovery.html` — 20f6df8
+- [ ] 2.7 W panelu Supabase produkcji origin Workera jest na Redirect URLs, a szablon Reset password jest kopią `supabase/templates/recovery.html`
