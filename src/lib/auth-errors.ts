@@ -87,3 +87,13 @@ export function resolveAuthErrorMessage(locale: AppLocale, errorParam: string | 
 
   return authErrorMessage(locale, "generic");
 }
+
+export const PASSWORD_UPDATED_NOTICE = "password_updated";
+
+export function resolveAuthNoticeMessage(locale: AppLocale, noticeParam: string | null): string | null {
+  if (noticeParam !== PASSWORD_UPDATED_NOTICE) {
+    return null;
+  }
+
+  return t(locale, "auth.notice.password_updated");
+}

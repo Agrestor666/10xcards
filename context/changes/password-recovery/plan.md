@@ -267,26 +267,26 @@ Brak migracji schematu i zmian RLS. Lokalna zmiana to `config.toml` plus plik sz
 
 #### Automated
 
-- [x] 1.1 `npm test` przechodzi, a `src/lib/password-recovery.test.ts` obejmuje cztery cele redirectu prośby o reset
-- [x] 1.2 `npm run lint` przechodzi
+- [x] 1.1 `npm test` przechodzi, a `src/lib/password-recovery.test.ts` obejmuje cztery cele redirectu prośby o reset — 6b78b4e
+- [x] 1.2 `npm run lint` przechodzi — 6b78b4e
 
 #### Manual
 
-- [x] 1.3 Na logowaniu widać link, a wysłanie poprawnego e-maila (istniejącego i nieistniejącego) kończy się tą samą stroną „sprawdź skrzynkę”
-- [x] 1.4 Pusty albo źle zbudowany e-mail oraz limit częstotliwości zostają na formularzu z błędem
-- [x] 1.5 Wejście na `/auth/forgot-password` z aktywną sesją kończy się na `/dashboard`
+- [x] 1.3 Na logowaniu widać link, a wysłanie poprawnego e-maila (istniejącego i nieistniejącego) kończy się tą samą stroną „sprawdź skrzynkę” — 6b78b4e
+- [x] 1.4 Pusty albo źle zbudowany e-mail oraz limit częstotliwości zostają na formularzu z błędem — 6b78b4e
+- [x] 1.5 Wejście na `/auth/forgot-password` z aktywną sesją kończy się na `/dashboard` — 6b78b4e
 
 ### Phase 2: Nowe hasło z maila
 
 #### Automated
 
-- [ ] 2.1 `npm test` przechodzi, łącznie z gałęziami zapisu hasła w `src/lib/password-recovery.test.ts`
-- [ ] 2.2 `npm run lint` przechodzi
-- [ ] 2.3 `npx playwright test e2e/password-recovery.spec.ts e2e/password-recovery-signed-in.spec.ts` przechodzi
+- [x] 2.1 `npm test` przechodzi, łącznie z gałęziami zapisu hasła w `src/lib/password-recovery.test.ts`
+- [x] 2.2 `npm run lint` przechodzi
+- [x] 2.3 `npx playwright test e2e/password-recovery.spec.ts e2e/password-recovery-signed-in.spec.ts` przechodzi
 
 #### Manual
 
-- [ ] 2.4 W Inbucket link z maila otwiera formularz, nowe hasło zapisuje się, logowanie pokazuje sukces, stare hasło jest odrzucane, nowe loguje na dashboard
-- [ ] 2.5 Link z przekręconym `token_hash` pokazuje stan nieważny i odnośnik do ponownej prośby, bez dashboardu
-- [ ] 2.6 Nowe ekrany mają polski i angielski copy zgodny z locale
-- [ ] 2.7 W panelu Supabase produkcji origin Workera jest na Redirect URLs, a szablon Reset password jest kopią `supabase/templates/recovery.html`
+- [x] 2.4 W Inbucket link z maila otwiera formularz, nowe hasło zapisuje się, logowanie pokazuje sukces, stare hasło jest odrzucane, nowe loguje na dashboard
+- [x] 2.5 Link z przekręconym `token_hash` pokazuje stan nieważny i odnośnik do ponownej prośby, bez dashboardu
+- [x] 2.6 Nowe ekrany mają polski i angielski copy zgodny z locale
+- [x] 2.7 W panelu Supabase produkcji origin Workera jest na Redirect URLs, a szablon Reset password jest kopią `supabase/templates/recovery.html`
