@@ -4,6 +4,7 @@ import type { AppLocale } from "@/lib/locale";
 export type AuthErrorKey =
   | "invalid_credentials"
   | "email_taken"
+  | "email_invalid"
   | "weak_password"
   | "rate_limit"
   | "supabase_unconfigured"
@@ -12,6 +13,7 @@ export type AuthErrorKey =
 const AUTH_ERROR_KEYS = new Set<string>([
   "invalid_credentials",
   "email_taken",
+  "email_invalid",
   "weak_password",
   "rate_limit",
   "supabase_unconfigured",
@@ -21,6 +23,7 @@ const AUTH_ERROR_KEYS = new Set<string>([
 const AUTH_ERROR_MESSAGE_KEYS: Record<AuthErrorKey, MessageKey> = {
   invalid_credentials: "auth.error.invalid_credentials",
   email_taken: "auth.error.email_taken",
+  email_invalid: "auth.error.email_invalid",
   weak_password: "auth.error.weak_password",
   rate_limit: "auth.error.rate_limit",
   supabase_unconfigured: "auth.error.supabase_unconfigured",

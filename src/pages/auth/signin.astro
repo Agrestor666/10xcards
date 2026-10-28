@@ -15,7 +15,12 @@ const serverError = resolveAuthErrorMessage(locale, errorParam);
     <div class="border-border bg-card w-full max-w-sm rounded-2xl border p-8 shadow-sm">
       <h1 class="font-display mb-6 text-center text-2xl tracking-tight">{t(locale, "auth.signin.heading")}</h1>
       <SignInForm locale={locale} serverError={serverError} client:load />
-      <p class="text-muted-foreground mt-4 text-center text-sm">
+      <p class="mt-4 text-center text-sm">
+        <a href="/auth/forgot-password" class="text-primary font-medium hover:underline">
+          {t(locale, "auth.signin.forgot_link")}
+        </a>
+      </p>
+      <p class="text-muted-foreground mt-3 text-center text-sm">
         {t(locale, "auth.signin.footer")}{" "}
         <a href="/auth/signup" class="text-primary font-medium hover:underline">
           {t(locale, "auth.signin.footer_link")}
