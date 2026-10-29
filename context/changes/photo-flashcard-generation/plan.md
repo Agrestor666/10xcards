@@ -315,11 +315,11 @@ No schema change. Nothing to backfill. Rollback is removing the photo mode and t
 
 #### Automated
 
-- [x] 3.1 End-to-end tests pass: `npm run test:e2e`
-- [x] 3.2 Unit tests pass: `npm test`
+- [x] 3.1 End-to-end tests pass: `npm run test:e2e` — a9c0175
+- [x] 3.2 Unit tests pass: `npm test` — a9c0175
 
 #### Manual
 
-- [x] 3.3 On a phone browser, take a photo with the camera control and get an editable transcript.
-- [x] 3.4 A handwritten Polish note produces text the user can correct before cards appear. Poor handwriting is a quality risk, not a second pipeline.
-- [x] 3.5 In devtools, the transcribe response JSON has `text` and `skipped` only — no data URL.
+- [x] 3.3 On a phone browser, take a photo with the camera control and get an editable transcript. — a9c0175
+- [x] 3.4 A handwritten Polish note produces text the user can correct before cards appear. Poor handwriting is a quality risk, not a second pipeline. — a9c0175
+- [x] 3.5 In devtools, the transcribe response JSON has `text` and `skipped` only — no data URL. — a9c0175
