@@ -363,23 +363,23 @@ Extend the Playwright API contract suite and E2E UI suite to cover topic-mode ge
 
 #### Automated
 
-- [x] 2.1 Unit tests pass: `npm test`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 Production SSR build succeeds: `npm run build`
+- [x] 2.1 Unit tests pass: `npm test` — 6c09842
+- [x] 2.2 Linting passes: `npm run lint` — 6c09842
+- [x] 2.3 Production SSR build succeeds: `npm run build` — 6c09842
 
 #### Manual
 
-- [x] 2.4 Topic mode generation and inline new-set save work in browser on `/dashboard` in both PL and EN locales with live tile sync
+- [x] 2.4 Topic mode generation and inline new-set save work in browser on `/dashboard` in both PL and EN locales with live tile sync — 6c09842
 
 ### Phase 3: Playwright API Contract & E2E UI Verification
 
 #### Automated
 
-- [ ] 3.1 Unit tests pass: `npm test`
-- [ ] 3.2 Linting passes: `npm run lint`
-- [ ] 3.3 Production SSR build succeeds: `npm run build`
-- [ ] 3.4 Playwright E2E suite passes: `npm run test:e2e`
+- [x] 3.1 Unit tests pass: `npm test`
+- [x] 3.2 Linting passes: `npm run lint`
+- [x] 3.3 Production SSR build succeeds: `npm run build`
+- [x] 3.4 Playwright E2E suite passes: `npm run test:e2e`
 
 #### Manual
 
-- [ ] 3.5 Review Playwright test report and confirm all API contract and UI E2E tests pass cleanly
+- [x] 3.5 Review Playwright test report and confirm all API contract and UI E2E tests pass cleanly
