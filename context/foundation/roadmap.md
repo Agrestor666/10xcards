@@ -47,7 +47,7 @@ Ręczne tworzenie fiszek edukacyjnych jest skrajnie czasochłonne — ta bariera
 | S-11 | password-recovery     | odzyskać zapomniane hasło: podać e-mail, ustawić nowe hasło z linku i zalogować się | F-01, S-08, S-09 | FR-001, FR-002, Access Control | done |
 | S-12 | auth-turnstile        | zalogować się, założyć konto i poprosić o reset hasła dopiero po sprawdzeniu, że nie jest botem (Cloudflare Turnstile) | F-01, S-08, S-09, S-11 | FR-001, FR-002, Access Control | done |
 | S-13 | topic-flashcard-generation | podać temat, dostać fiszki oparte na wyszukanych informacjach, przejrzeć je i zapisać do zestawu | F-01, S-01, S-02, S-09 | FR-004, FR-005 (rozszerzenie: temat zamiast wklejonego tekstu) | done |
-| S-14 | photo-flashcard-generation | zrobić zdjęcie aparatem albo wgrać zdjęcie z tekstem, przejrzeć fiszki z odczytanego tekstu i zapisać je do zestawu | F-01, S-01, S-02, S-09 | FR-004, FR-005 (rozszerzenie: zdjęcie z tekstem albo aparat zamiast wklejonego tekstu) | ready |
+| S-14 | photo-flashcard-generation | zrobić zdjęcie aparatem albo wgrać zdjęcie z tekstem, przejrzeć fiszki z odczytanego tekstu i zapisać je do zestawu | F-01, S-01, S-02, S-09 | FR-004, FR-005 (rozszerzenie: zdjęcie z tekstem albo aparat zamiast wklejonego tekstu) | done |
 
 ## Streams
 
@@ -299,7 +299,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Czy odczyt ma objąć tylko tekst drukowany (podręcznik, wydruk, slajd), czy także pismo odręczne (notatka, tablica)? — Owner: user. Block: no.
 - **Risk:** Zły odczyt tekstu ze zdjęcia daje fiszki oparte na złym materiale, jeśli pominąć przegląd. Dlatego slice korzysta z istniejącej bramki akceptacji ze S-02 i nie zapisuje kart bez decyzji użytkownika. Zdjęcie służy tylko do odczytu tekstu i nie zostaje zapisane — tak jak tekst źródłowy w NFR prywatności. Wklejanie tekstu (S-02) i temat (S-13) zostają osobnymi ścieżkami.
-- **Status:** ready
+- **Status:** done
 
 > **Scope:** zalogowany użytkownik wgrywa zdjęcie z widocznym tekstem albo robi je aparatem urządzenia; system odczytuje tekst, generuje propozycje fiszek i pokazuje je do przeglądu (akceptuj / edytuj / odrzuć) przed zapisem do nowego albo istniejącego zestawu. Paper theme i oba języki interfejsu (PL/EN). Język treści fiszek wynika z tekstu na zdjęciu, nie z języka interfejsu. **Non-goals:** zastąpienie generowania z wklejonego tekstu (S-02) i z tematu (S-13); import plików PDF, DOCX, TXT, PPTX (nadal w Parked); przechowywanie zdjęcia po odczycie; publiczne lub współdzielone zestawy; fiszki bez przeglądu użytkownika; natywna aplikacja aparatu poza przeglądarką.
 
@@ -353,5 +353,6 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **S-11: użytkownik, który nie pamięta hasła, może z ekranu logowania poprosić o link resetu na swój e-mail, ustawić nowe hasło i zalogować się nim do istniejącego konta. Zestawy i fiszki zostają bez zmian.** — Archived 2026-10-29 → `context/archive/2026-10-27-password-recovery/`. Lesson: —.
 - **S-12: gość może zalogować się, założyć konto i poprosić o link resetu hasła dopiero po tym, jak Cloudflare Turnstile potwierdzi, że żądanie nie pochodzi od bota. Prawdziwy użytkownik przechodzi te same ekrany co dziś; bez ważnego tokenu serwer odrzuca formularz.** — Archived 2026-10-29 → `context/archive/2026-10-29-auth-turnstile/`. Lesson: —.
 - **S-13: podać temat, dostać fiszki oparte na wyszukanych informacjach, przejrzeć je i zapisać do zestawu** — Archived 2026-10-29 → `context/archive/2026-10-29-topic-flashcard-generation/`. Lesson: —.
+- **S-14: użytkownik może zrobić zdjęcie aparatem albo wgrać istniejące zdjęcie z tekstem; system odczytuje tekst z obrazu i proponuje pary pytanie–odpowiedź; użytkownik akceptuje, edytuje albo odrzuca pojedyncze karty i zapisuje przyjęte do wybranego zestawu.** — Archived 2026-10-29 → `context/archive/2026-10-29-photo-flashcard-generation/`. Lesson: —.
 
 **Next up:** open slice. **S-14: photo-flashcard-generation** — `/10x-plan photo-flashcard-generation`.
