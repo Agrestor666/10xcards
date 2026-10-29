@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { CHECK_EMAIL_PATH, forgotPasswordRedirectTarget, recoverRedirectTo } from "@/lib/password-recovery";
+import { extractTurnstileToken, resolveClientIp, verifyTurnstileToken } from "@/lib/turnstile";
 
 export const POST: APIRoute = async (context) => {
   const form = await context.request.formData();
@@ -9,6 +10,14 @@ export const POST: APIRoute = async (context) => {
   const precheck = forgotPasswordRedirectTarget(email, null);
   if (precheck !== CHECK_EMAIL_PATH) {
     return context.redirect(precheck);
+  }
+
+  const captchaOk = await verifyTurnstileToken({
+    token: extractTurnstileToken(form),
+    remoteIp: resolveClientIp(context.request.headers),
+  });
+  if (!captchaOk) {
+    return context.redirect("/auth/forgot-password?error=captcha_failed");
   }
 
   const supabase = context.locals.supabase;

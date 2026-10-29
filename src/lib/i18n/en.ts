@@ -75,6 +75,7 @@ export const en = {
   "auth.validation.password_chars_needed_one": "{count} more character needed",
   "auth.validation.password_chars_needed_other": "{count} more characters needed",
   "auth.validation.password_chars_needed_many": "{count} more characters needed",
+  "auth.validation.captcha_required": "Please complete the security check.",
 
   "auth.button.sign_in": "Sign in",
   "auth.button.sign_in_pending": "Signing in...",
@@ -95,8 +96,10 @@ export const en = {
   "auth.error.rate_limit": "Too many attempts. Please try again later.",
   "auth.error.supabase_unconfigured": "Authentication is not configured.",
   "auth.error.generic": "Something went wrong. Please try again.",
+  "auth.error.captcha_failed": "Security verification failed. Please try again.",
 
   "config.supabase.message": "Supabase is not configured — authentication features are disabled.",
+  "config.turnstile.message": "Cloudflare Turnstile is not configured — authentication forms will reject submissions.",
   "config.docs_label": "See configuration instructions",
 
   "api.error.unauthorized": "Please sign in to continue.",

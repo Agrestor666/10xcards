@@ -77,6 +77,7 @@ export const pl: Record<keyof typeof en, string> = {
   "auth.validation.password_chars_needed_one": "Potrzebny jeszcze {count} znak",
   "auth.validation.password_chars_needed_other": "Potrzebne jeszcze {count} znaki",
   "auth.validation.password_chars_needed_many": "Potrzebnych jeszcze {count} znaków",
+  "auth.validation.captcha_required": "Potwierdź, że nie jesteś botem.",
 
   "auth.button.sign_in": "Zaloguj się",
   "auth.button.sign_in_pending": "Logowanie...",
@@ -97,8 +98,11 @@ export const pl: Record<keyof typeof en, string> = {
   "auth.error.rate_limit": "Zbyt wiele prób. Spróbuj ponownie później.",
   "auth.error.supabase_unconfigured": "Uwierzytelnianie nie jest skonfigurowane.",
   "auth.error.generic": "Coś poszło nie tak. Spróbuj ponownie.",
+  "auth.error.captcha_failed": "Weryfikacja bezpieczeństwa nie powiodła się. Spróbuj ponownie.",
 
   "config.supabase.message": "Supabase nie jest skonfigurowany — funkcje uwierzytelniania są wyłączone.",
+  "config.turnstile.message":
+    "Cloudflare Turnstile nie jest skonfigurowany — formularze logowania i rejestracji będą odrzucać zgłoszenia.",
   "config.docs_label": "Zobacz instrukcję konfiguracji",
 
   "api.error.unauthorized": "Zaloguj się, aby kontynuować.",

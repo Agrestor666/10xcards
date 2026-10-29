@@ -8,6 +8,7 @@ export type AuthErrorKey =
   | "weak_password"
   | "rate_limit"
   | "supabase_unconfigured"
+  | "captcha_failed"
   | "generic";
 
 const AUTH_ERROR_KEYS = new Set<string>([
@@ -17,6 +18,7 @@ const AUTH_ERROR_KEYS = new Set<string>([
   "weak_password",
   "rate_limit",
   "supabase_unconfigured",
+  "captcha_failed",
   "generic",
 ]);
 
@@ -27,6 +29,7 @@ const AUTH_ERROR_MESSAGE_KEYS: Record<AuthErrorKey, MessageKey> = {
   weak_password: "auth.error.weak_password",
   rate_limit: "auth.error.rate_limit",
   supabase_unconfigured: "auth.error.supabase_unconfigured",
+  captcha_failed: "auth.error.captcha_failed",
   generic: "auth.error.generic",
 };
 
