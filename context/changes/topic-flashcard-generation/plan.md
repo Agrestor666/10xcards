@@ -375,11 +375,11 @@ Extend the Playwright API contract suite and E2E UI suite to cover topic-mode ge
 
 #### Automated
 
-- [x] 3.1 Unit tests pass: `npm test`
-- [x] 3.2 Linting passes: `npm run lint`
-- [x] 3.3 Production SSR build succeeds: `npm run build`
-- [x] 3.4 Playwright E2E suite passes: `npm run test:e2e`
+- [x] 3.1 Unit tests pass: `npm test` — accafa8
+- [x] 3.2 Linting passes: `npm run lint` — accafa8
+- [x] 3.3 Production SSR build succeeds: `npm run build` — accafa8
+- [x] 3.4 Playwright E2E suite passes: `npm run test:e2e` — accafa8
 
 #### Manual
 
-- [x] 3.5 Review Playwright test report and confirm all API contract and UI E2E tests pass cleanly
+- [x] 3.5 Review Playwright test report and confirm all API contract and UI E2E tests pass cleanly — accafa8
