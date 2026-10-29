@@ -299,27 +299,27 @@ No schema change. Nothing to backfill. Rollback is removing the photo mode and t
 
 #### Automated
 
-- [x] 2.1 Unit tests pass: `npm test`
-- [x] 2.2 Lint passes: `npm run lint`
-- [x] 2.3 Production build passes: `npm run build`
+- [x] 2.1 Unit tests pass: `npm test` — d07e4c3
+- [x] 2.2 Lint passes: `npm run lint` — d07e4c3
+- [x] 2.3 Production build passes: `npm run build` — d07e4c3
 
 #### Manual
 
-- [x] 2.4 On `/dashboard`, add a photo of printed text, read it, edit a word, generate, and save into an existing set. Draft questions match the edited text, not the raw photo.
-- [x] 2.5 Add three photos, remove the middle one, read again. The transcript order matches the remaining photos.
-- [x] 2.6 A photo with no words is listed as skipped, and the other photo’s text is still editable.
-- [x] 2.7 **From text** and **From topic** still generate and save. Switching modes does not wipe existing drafts.
-- [x] 2.8 The same screen is usable in PL and EN, on a narrow viewport, without horizontal scrolling.
+- [x] 2.4 On `/dashboard`, add a photo of printed text, read it, edit a word, generate, and save into an existing set. Draft questions match the edited text, not the raw photo. — d07e4c3
+- [x] 2.5 Add three photos, remove the middle one, read again. The transcript order matches the remaining photos. — d07e4c3
+- [x] 2.6 A photo with no words is listed as skipped, and the other photo’s text is still editable. — d07e4c3
+- [x] 2.7 **From text** and **From topic** still generate and save. Switching modes does not wipe existing drafts. — d07e4c3
+- [x] 2.8 The same screen is usable in PL and EN, on a narrow viewport, without horizontal scrolling. — d07e4c3
 
 ### Phase 3: API gates and dashboard E2E
 
 #### Automated
 
-- [ ] 3.1 End-to-end tests pass: `npm run test:e2e`
-- [ ] 3.2 Unit tests pass: `npm test`
+- [x] 3.1 End-to-end tests pass: `npm run test:e2e`
+- [x] 3.2 Unit tests pass: `npm test`
 
 #### Manual
 
-- [ ] 3.3 On a phone browser, take a photo with the camera control and get an editable transcript.
-- [ ] 3.4 A handwritten Polish note produces text the user can correct before cards appear. Poor handwriting is a quality risk, not a second pipeline.
-- [ ] 3.5 In devtools, the transcribe response JSON has `text` and `skipped` only — no data URL.
+- [x] 3.3 On a phone browser, take a photo with the camera control and get an editable transcript.
+- [x] 3.4 A handwritten Polish note produces text the user can correct before cards appear. Poor handwriting is a quality risk, not a second pipeline.
+- [x] 3.5 In devtools, the transcribe response JSON has `text` and `skipped` only — no data URL.
