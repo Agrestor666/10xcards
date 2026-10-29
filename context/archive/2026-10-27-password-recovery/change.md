@@ -1,10 +1,10 @@
 ---
 change_id: password-recovery
 title: Password recovery from the sign-in screen
-status: implemented
+status: archived
 created: 2026-10-27
-updated: 2026-10-28
-archived_at: null
+updated: 2026-10-29
+archived_at: 2026-10-29T06:39:59Z
 ---
 
 ## Notes
