@@ -46,7 +46,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   const { pathname } = context.url;
   if (context.locals.user) {
-    if (pathname === "/" || pathname === "/auth/signin" || pathname === "/auth/signup") {
+    if (
+      pathname === "/" ||
+      pathname === "/auth/signin" ||
+      pathname === "/auth/signup" ||
+      pathname === "/auth/forgot-password" ||
+      pathname === "/auth/check-email"
+    ) {
       return context.redirect("/dashboard");
     }
   }
