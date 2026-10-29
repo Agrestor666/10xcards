@@ -4,6 +4,7 @@ import { FormField } from "@/components/auth/FormField";
 import { PasswordToggle } from "@/components/auth/PasswordToggle";
 import { SubmitButton } from "@/components/auth/SubmitButton";
 import { ServerError } from "@/components/auth/ServerError";
+import { TurnstileWidget } from "@/components/auth/TurnstileWidget";
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { useLocale } from "@/components/i18n/useLocale";
 import type { AppLocale } from "@/lib/locale";
@@ -23,6 +24,7 @@ function passwordCharsNeededKey(remaining: number) {
 interface Props {
   locale: AppLocale;
   serverError?: string | null;
+  turnstileSiteKey?: string;
 }
 
 function formValue(formData: FormData, key: string): string {
@@ -30,11 +32,16 @@ function formValue(formData: FormData, key: string): string {
   return typeof value === "string" ? value : "";
 }
 
-function SignUpFormInner({ serverError }: Pick<Props, "serverError">) {
-  const { t } = useLocale();
+function SignUpFormInner({ serverError, turnstileSiteKey }: Omit<Props, "locale">) {
+  const { locale, t } = useLocale();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
+  const [errors, setErrors] = useState<{
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+    captcha?: string;
+  }>({});
   const [passwordLengthHint, setPasswordLengthHint] = useState(0);
 
   function validate(form: HTMLFormElement) {
@@ -42,6 +49,7 @@ function SignUpFormInner({ serverError }: Pick<Props, "serverError">) {
     const email = formValue(fd, "email").trim();
     const password = formValue(fd, "password");
     const confirmPassword = formValue(fd, "confirmPassword");
+    const captchaToken = formValue(fd, "cf-turnstile-response").trim();
 
     const next: typeof errors = {};
 
@@ -61,6 +69,10 @@ function SignUpFormInner({ serverError }: Pick<Props, "serverError">) {
       next.confirmPassword = t("auth.validation.confirm_required");
     } else if (password !== confirmPassword) {
       next.confirmPassword = t("auth.validation.password_mismatch");
+    }
+
+    if (!captchaToken) {
+      next.captcha = t("auth.validation.captcha_required");
     }
 
     return next;
@@ -153,6 +165,17 @@ function SignUpFormInner({ serverError }: Pick<Props, "serverError">) {
         }
       />
 
+      <TurnstileWidget
+        siteKey={turnstileSiteKey}
+        locale={locale}
+        error={errors.captcha}
+        onTokenChange={(next) => {
+          if (next.trim()) {
+            setErrors((prev) => (prev.captcha ? { ...prev, captcha: undefined } : prev));
+          }
+        }}
+      />
+
       <ServerError message={serverError} theme="paper" />
 
       <SubmitButton pendingText={t("auth.button.create_account_pending")} icon={<UserPlus className="size-4" />}>
@@ -162,10 +185,10 @@ function SignUpFormInner({ serverError }: Pick<Props, "serverError">) {
   );
 }
 
-export default function SignUpForm({ locale, serverError }: Props) {
+export default function SignUpForm({ locale, serverError, turnstileSiteKey }: Props) {
   return (
     <LocaleProvider locale={locale}>
-      <SignUpFormInner serverError={serverError} />
+      <SignUpFormInner serverError={serverError} turnstileSiteKey={turnstileSiteKey} />
     </LocaleProvider>
   );
 }

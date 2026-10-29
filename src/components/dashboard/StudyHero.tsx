@@ -1,6 +1,7 @@
 import * as React from "react";
 import {
   DASHBOARD_SET_CARDS_ADDED,
+  DASHBOARD_SET_CREATED,
   DASHBOARD_SET_DELETED,
   DASHBOARD_SET_REVIEW_GRADED,
   fetchDashboardDueSummary,
@@ -18,8 +19,13 @@ import { NewSetDialog } from "@/components/dashboard/NewSetDialog";
 function StudyHeroInner({ initialTotalDue, hasSets }: { initialTotalDue: number; hasSets: boolean }) {
   const { locale, t } = useLocale();
   const [totalDue, setTotalDue] = React.useState(initialTotalDue);
+  const [hasAnySets, setHasAnySets] = React.useState(hasSets);
 
   React.useEffect(() => {
+    function onSetCreated() {
+      setHasAnySets(true);
+    }
+
     function onCardsAdded(event: Event) {
       const detail = (event as CustomEvent<DashboardSetCardsAddedDetail>).detail;
       const dueDelta = detail.dueAddedCount ?? detail.addedCount;
@@ -47,18 +53,20 @@ function StudyHeroInner({ initialTotalDue, hasSets }: { initialTotalDue: number;
     }
 
     window.addEventListener(DASHBOARD_SET_CARDS_ADDED, onCardsAdded);
+    window.addEventListener(DASHBOARD_SET_CREATED, onSetCreated);
     window.addEventListener(DASHBOARD_SET_DELETED, onSetDeleted);
     window.addEventListener(DASHBOARD_SET_REVIEW_GRADED, onReviewGraded);
     window.addEventListener("pageshow", onPageShow);
     return () => {
       window.removeEventListener(DASHBOARD_SET_CARDS_ADDED, onCardsAdded);
+      window.removeEventListener(DASHBOARD_SET_CREATED, onSetCreated);
       window.removeEventListener(DASHBOARD_SET_DELETED, onSetDeleted);
       window.removeEventListener(DASHBOARD_SET_REVIEW_GRADED, onReviewGraded);
       window.removeEventListener("pageshow", onPageShow);
     };
   }, []);
 
-  if (!hasSets) {
+  if (!hasAnySets) {
     return (
       <header className={cn("border-border bg-card rounded-2xl border p-8 shadow-sm")}>
         <h1 className="font-display text-4xl tracking-tight">{t("dashboard.hero.empty.title")}</h1>
