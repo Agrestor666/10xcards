@@ -344,6 +344,12 @@ Extend the Playwright API contract suite and E2E UI suite to cover topic-mode ge
 - Prior AI contract & privacy tests: `context/archive/2026-06-12-ai-generation-contract-privacy/plan-brief.md`
 - Test plan cookbook: `context/foundation/test-plan.md`
 
+## Addendum
+
+Recorded during implementation review on 2026-10-29.
+
+- This slice raised `MAX_SOURCE_TEXT_CHARS` from `8_000` to `20_000` and `OPENROUTER_REQUEST_TIMEOUT_MS` from `15_000` to `30_000` (`src/lib/ai-generation-limits.ts`). The plan text already named the new numbers as the baseline. Paste-text generation stays the default path; text and topic requests share the 30s timeout.
+
 ## Progress
 
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles. See `references/progress-format.md`.

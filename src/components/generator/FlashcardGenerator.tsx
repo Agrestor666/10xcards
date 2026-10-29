@@ -145,8 +145,9 @@ function FlashcardGeneratorInner({
 
   const textTrimmed = text.trim();
   const topicTrimmed = topic.trim();
-  const canGenerate = !isGenerating && (mode === "text" ? textTrimmed.length > 0 : topicTrimmed.length > 0);
-  const canSave = saveStatus !== "saving" && cardsDraft.length > 0 && Boolean(selectedSetId);
+  const canGenerate =
+    !isGenerating && saveStatus !== "saving" && (mode === "text" ? textTrimmed.length > 0 : topicTrimmed.length > 0);
+  const canSave = !isGenerating && saveStatus !== "saving" && cardsDraft.length > 0 && Boolean(selectedSetId);
 
   const saveDisabledReason = useMemo(() => {
     if (saveStatus === "saving") return t("common.saving");
@@ -174,7 +175,9 @@ function FlashcardGeneratorInner({
   async function onGenerate() {
     setErrorMessage(null);
     setSuccessMessage(null);
-    setSaveStatus("idle");
+    if (saveStatus !== "saving") {
+      setSaveStatus("idle");
+    }
 
     if (mode === "topic") {
       const trimmed = topic.trim();
