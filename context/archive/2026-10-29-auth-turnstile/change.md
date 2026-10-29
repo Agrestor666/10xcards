@@ -1,9 +1,10 @@
 ---
 change_id: auth-turnstile
 title: Cloudflare Turnstile bot protection on public auth flows
-status: implementing
+status: archived
 created: 2026-10-29
 updated: 2026-10-29
+archived_at: 2026-10-29T12:26:49Z
 ---
 
 ## Notes
