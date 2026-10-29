@@ -46,6 +46,8 @@ Ręczne tworzenie fiszek edukacyjnych jest skrajnie czasochłonne — ta bariera
 | S-10 | app-icon-favicon      | widzieć spójną ikonę 10xCards w zakładce przeglądarki (favicon) i przy dodawaniu aplikacji do ekranu głównego | S-08 | NFR użyteczność, paper theme | done |
 | S-11 | password-recovery     | odzyskać zapomniane hasło: podać e-mail, ustawić nowe hasło z linku i zalogować się | F-01, S-08, S-09 | FR-001, FR-002, Access Control | done |
 | S-12 | auth-turnstile        | zalogować się, założyć konto i poprosić o reset hasła dopiero po sprawdzeniu, że nie jest botem (Cloudflare Turnstile) | F-01, S-08, S-09, S-11 | FR-001, FR-002, Access Control | done |
+| S-13 | topic-flashcard-generation | podać temat, dostać fiszki oparte na wyszukanych informacjach, przejrzeć je i zapisać do zestawu | F-01, S-01, S-02, S-09 | FR-004, FR-005 (rozszerzenie: temat zamiast wklejonego tekstu) | done |
+| S-14 | photo-flashcard-generation | zrobić zdjęcie aparatem albo wgrać zdjęcie z tekstem, przejrzeć fiszki z odczytanego tekstu i zapisać je do zestawu | F-01, S-01, S-02, S-09 | FR-004, FR-005 (rozszerzenie: zdjęcie z tekstem albo aparat zamiast wklejonego tekstu) | ready |
 
 ## Streams
 
@@ -64,7 +66,9 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 | H      | Dwujęzyczność UI      | `S-09` ✓                | Zakończony — PL/EN, locale cookie, locked after login.                            |
 | I      | Branding / ikona      | `S-10` ✓                | Zakończony — favicon, apple-touch-icon, `site.webmanifest` (archiwum 2026-06-08). |
 | J      | Konto / odzyskanie hasła | `S-11` ✓             | Zakończony — reset hasła z linku w mailu. |
-| K      | Konto / ochrona przed botami | `S-12`          | Publiczne formularze auth (logowanie, rejestracja, prośba o reset) za Cloudflare Turnstile. |
+| K      | Konto / ochrona przed botami | `S-12` ✓        | Zakończony — Turnstile na logowaniu, rejestracji i prośbie o reset. |
+| L      | Generowanie z tematu | `S-13`          | Nowy wejściowy przepływ obok wklejania tekstu: temat → wyszukanie → propozycja fiszek → zapis. Równolegle z S-14. |
+| M      | Generowanie ze zdjęcia | `S-14`        | Zdjęcie z tekstem albo aparat → odczyt tekstu → propozycja fiszek → zapis. Równolegle z S-13. |
 
 ## Baseline
 
@@ -269,6 +273,36 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 > **Scope:** Cloudflare Turnstile na `/auth/signin`, `/auth/signup` i `/auth/forgot-password`, plus odrzucenie `POST /api/auth/signin`, `POST /api/auth/signup` i `POST /api/auth/forgot-password` bez ważnego tokenu. Paper theme i oba języki interfejsu (PL/EN). **Non-goals:** Turnstile na generowaniu AI, na trasach zalogowanego użytkownika i na stronie ustawienia nowego hasła (link z maila już dowodzi dostępu do skrzynki); osobny rate limit; hCaptcha / reCAPTCHA; ochrona przed botami poza auth.
 
+### S-13: Generowanie fiszek z tematu
+
+- **Outcome:** użytkownik podaje temat (krótką prośbę o fiszki), system wyszukuje informacje na ten temat i proponuje pary pytanie–odpowiedź; użytkownik akceptuje, edytuje albo odrzuca pojedyncze karty i zapisuje przyjęte do wybranego zestawu.
+- **Change ID:** topic-flashcard-generation
+- **PRD refs:** FR-004, FR-005, US-01 — slice dodany na życzenie; FR-004 opisuje wklejony tekst, ten slice dokłada drugie wejście: temat plus wyszukanie, z tą samą bramką przeglądu przed zapisem (FR-005)
+- **Prerequisites:** F-01, S-01, S-02, S-09
+- **Parallel with:** S-14
+- **Blockers:** —
+- **Unknowns:**
+  - Czy zapisana fiszka ma pokazywać, skąd wzięto informację (tytuł lub adres źródła), czy wystarczy sama para pytanie–odpowiedź? — Owner: user. Block: no.
+- **Risk:** Fiszki nie pochodzą z materiału użytkownika, więc błąd wyszukania albo zła odpowiedź modelu trafia prosto do zestawu, jeśli pominąć przegląd. Dlatego slice korzysta z istniejącej bramki akceptacji ze S-02 i nie zapisuje kart bez decyzji użytkownika. Wklejanie własnego tekstu zostaje osobną ścieżką.
+- **Status:** done
+
+> **Scope:** zalogowany użytkownik podaje temat po polsku lub angielsku; system wyszukuje informacje, generuje propozycje fiszek i pokazuje je do przeglądu (akceptuj / edytuj / odrzuć) przed zapisem do nowego albo istniejącego zestawu. Paper theme i oba języki interfejsu (PL/EN). Język treści fiszek wynika z tematu, nie z języka interfejsu. **Non-goals:** zastąpienie generowania z wklejonego tekstu (S-02 zostaje); import plików; publiczne lub współdzielone zestawy; fiszki bez przeglądu użytkownika; Turnstile na tym przepływie.
+
+### S-14: Generowanie fiszek ze zdjęcia
+
+- **Outcome:** użytkownik może zrobić zdjęcie aparatem albo wgrać istniejące zdjęcie z tekstem; system odczytuje tekst z obrazu i proponuje pary pytanie–odpowiedź; użytkownik akceptuje, edytuje albo odrzuca pojedyncze karty i zapisuje przyjęte do wybranego zestawu.
+- **Change ID:** photo-flashcard-generation
+- **PRD refs:** FR-004, FR-005, US-01 — slice dodany na życzenie; FR-004 opisuje wklejony tekst, ten slice dokłada trzecie wejście: zdjęcie z tekstem albo ujęcie z aparatu, z tą samą bramką przeglądu przed zapisem (FR-005)
+- **Prerequisites:** F-01, S-01, S-02, S-09
+- **Parallel with:** S-13
+- **Blockers:** —
+- **Unknowns:**
+  - Czy odczyt ma objąć tylko tekst drukowany (podręcznik, wydruk, slajd), czy także pismo odręczne (notatka, tablica)? — Owner: user. Block: no.
+- **Risk:** Zły odczyt tekstu ze zdjęcia daje fiszki oparte na złym materiale, jeśli pominąć przegląd. Dlatego slice korzysta z istniejącej bramki akceptacji ze S-02 i nie zapisuje kart bez decyzji użytkownika. Zdjęcie służy tylko do odczytu tekstu i nie zostaje zapisane — tak jak tekst źródłowy w NFR prywatności. Wklejanie tekstu (S-02) i temat (S-13) zostają osobnymi ścieżkami.
+- **Status:** ready
+
+> **Scope:** zalogowany użytkownik wgrywa zdjęcie z widocznym tekstem albo robi je aparatem urządzenia; system odczytuje tekst, generuje propozycje fiszek i pokazuje je do przeglądu (akceptuj / edytuj / odrzuć) przed zapisem do nowego albo istniejącego zestawu. Paper theme i oba języki interfejsu (PL/EN). Język treści fiszek wynika z tekstu na zdjęciu, nie z języka interfejsu. **Non-goals:** zastąpienie generowania z wklejonego tekstu (S-02) i z tematu (S-13); import plików PDF, DOCX, TXT, PPTX (nadal w Parked); przechowywanie zdjęcia po odczycie; publiczne lub współdzielone zestawy; fiszki bez przeglądu użytkownika; natywna aplikacja aparatu poza przeglądarką.
+
 ## Backlog Handoff
 
 | Roadmap ID | Change ID             | Suggested issue title                                                    | Ready for `/10x-plan` | Notes                                                         |
@@ -286,7 +320,9 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | S-09       | bilingual-ui            | Bilingual UI (PL/EN): landing selector, browser default, locked after login  | —                     | **done** — archived `context/archive/2026-05-30-bilingual-ui/` |
 | S-10       | app-icon-favicon        | App icon + favicon: agent-generated icon for browser tab and home screen       | —                     | **done** — archived `context/archive/2026-06-08-app-icon-favicon/` |
 | S-11       | password-recovery       | Password recovery: request reset email, set a new password, sign in            | —                     | **done** — archived `context/archive/2026-10-27-password-recovery/` |
-| S-12       | auth-turnstile          | Auth bot protection: Cloudflare Turnstile on sign-in, sign-up, and password-reset request | yes            | Run `/10x-plan auth-turnstile`. Brak osobnego FR w `prd.md` — slice dodany na życzenie; FR-001/FR-002 pokrywają rejestrację i logowanie. |
+| S-12       | auth-turnstile          | Auth bot protection: Cloudflare Turnstile on sign-in, sign-up, and password-reset request | —              | **done** — archived `context/archive/2026-10-29-auth-turnstile/` |
+| S-13       | topic-flashcard-generation | Topic generation: user names a subject, AI retrieves information, user reviews and saves cards | yes         | Run `/10x-plan topic-flashcard-generation`. Brak osobnego FR w `prd.md` — slice dodany na życzenie; FR-005 zostaje bramką przed zapisem. |
+| S-14       | photo-flashcard-generation | Photo generation: user uploads a photo of text or takes one with the camera, reviews cards from the read text, and saves them | yes | Run `/10x-plan photo-flashcard-generation`. Brak osobnego FR w `prd.md` — slice dodany na życzenie; FR-005 zostaje bramką przed zapisem. Import PDF/DOCX/TXT/PPTX zostaje w Parked. |
 
 ## Open Roadmap Questions
 
@@ -294,7 +330,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Parked
 
-- **Import plików (PDF, DOCX, TXT, PPTX)** — Why parked: PRD §Non-Goals; parsowanie zewnętrznych dokumentów dodaje dużą powierzchnię niewymaganą do walidacji wartości rdzenia.
+- **Import plików (PDF, DOCX, TXT, PPTX)** — Why parked: PRD §Non-Goals; parsowanie zewnętrznych dokumentów dodaje dużą powierzchnię niewymaganą do walidacji wartości rdzenia. Zdjęcie z tekstem i aparat są osobno, w S-14 — to nie jest import tych formatów.
 - **Funkcje społecznościowe i udostępnianie zestawów** — Why parked: PRD §Non-Goals; zestawy są prywatne w zakresie MVP.
 - **Integracje z zewnętrznymi platformami (Quizlet, LMS, Notion, API)** — Why parked: PRD §Non-Goals.
 - **Natywne aplikacje mobilne (iOS / Android)** — Why parked: PRD §Non-Goals; web-only w MVP z responsywnym layoutem.
@@ -316,5 +352,6 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **S-06: użytkownik może z poziomu ustawień konta trwale usunąć konto po potwierdzeniu; system usuwa konto w Supabase Auth oraz wszystkie powiązane zestawy i fiszki.** — Archived 2026-06-08 → `context/archive/2026-05-28-account-deletion/`. Lesson: —.
 - **S-11: użytkownik, który nie pamięta hasła, może z ekranu logowania poprosić o link resetu na swój e-mail, ustawić nowe hasło i zalogować się nim do istniejącego konta. Zestawy i fiszki zostają bez zmian.** — Archived 2026-10-29 → `context/archive/2026-10-27-password-recovery/`. Lesson: —.
 - **S-12: gość może zalogować się, założyć konto i poprosić o link resetu hasła dopiero po tym, jak Cloudflare Turnstile potwierdzi, że żądanie nie pochodzi od bota. Prawdziwy użytkownik przechodzi te same ekrany co dziś; bez ważnego tokenu serwer odrzuca formularz.** — Archived 2026-10-29 → `context/archive/2026-10-29-auth-turnstile/`. Lesson: —.
+- **S-13: podać temat, dostać fiszki oparte na wyszukanych informacjach, przejrzeć je i zapisać do zestawu** — Archived 2026-10-29 → `context/archive/2026-10-29-topic-flashcard-generation/`. Lesson: —.
 
-**Next up:** **S-12: auth-turnstile** — jedyny otwarty slice. Kolejny krok: `/10x-plan auth-turnstile`.
+**Next up:** open slice. **S-14: photo-flashcard-generation** — `/10x-plan photo-flashcard-generation`.
