@@ -288,28 +288,28 @@ No schema change. Nothing to backfill. Rollback is removing the photo mode and t
 
 #### Automated
 
-- [x] 1.1 Unit tests pass: `npm test`
-- [x] 1.2 Lint passes: `npm run lint`
+- [x] 1.1 Unit tests pass: `npm test` — c67e4a3
+- [x] 1.2 Lint passes: `npm run lint` — c67e4a3
 
 #### Manual
 
-- [x] 1.3 With `OPENROUTER_API_KEY` in local dev, one small JPEG sent to `POST /api/ai/transcribe` returns text, and a blank image in a two-image body shows up only in `skipped`. No new database row appears.
+- [x] 1.3 With `OPENROUTER_API_KEY` in local dev, one small JPEG sent to `POST /api/ai/transcribe` returns text, and a blank image in a two-image body shows up only in `skipped`. No new database row appears. — c67e4a3
 
 ### Phase 2: Photo mode in the generator
 
 #### Automated
 
-- [ ] 2.1 Unit tests pass: `npm test`
-- [ ] 2.2 Lint passes: `npm run lint`
-- [ ] 2.3 Production build passes: `npm run build`
+- [x] 2.1 Unit tests pass: `npm test`
+- [x] 2.2 Lint passes: `npm run lint`
+- [x] 2.3 Production build passes: `npm run build`
 
 #### Manual
 
-- [ ] 2.4 On `/dashboard`, add a photo of printed text, read it, edit a word, generate, and save into an existing set. Draft questions match the edited text, not the raw photo.
-- [ ] 2.5 Add three photos, remove the middle one, read again. The transcript order matches the remaining photos.
-- [ ] 2.6 A photo with no words is listed as skipped, and the other photo’s text is still editable.
-- [ ] 2.7 **From text** and **From topic** still generate and save. Switching modes does not wipe existing drafts.
-- [ ] 2.8 The same screen is usable in PL and EN, on a narrow viewport, without horizontal scrolling.
+- [x] 2.4 On `/dashboard`, add a photo of printed text, read it, edit a word, generate, and save into an existing set. Draft questions match the edited text, not the raw photo.
+- [x] 2.5 Add three photos, remove the middle one, read again. The transcript order matches the remaining photos.
+- [x] 2.6 A photo with no words is listed as skipped, and the other photo’s text is still editable.
+- [x] 2.7 **From text** and **From topic** still generate and save. Switching modes does not wipe existing drafts.
+- [x] 2.8 The same screen is usable in PL and EN, on a narrow viewport, without horizontal scrolling.
 
 ### Phase 3: API gates and dashboard E2E
 

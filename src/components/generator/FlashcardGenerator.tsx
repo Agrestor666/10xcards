@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { FlashcardRow } from "@/components/flashcards/FlashcardRow";
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { useLocale } from "@/components/i18n/useLocale";
 import {
   MAX_CARD_FIELD_CHARS,
   MAX_CARDS_PER_REQUEST,
+  MAX_PHOTO_COUNT,
   MAX_SOURCE_TEXT_CHARS,
   MAX_TOPIC_CHARS,
 } from "@/lib/ai-generation-limits";
@@ -22,12 +23,22 @@ import { flashcardSetErrorMessage } from "@/lib/flashcard-set-errors";
 import { FLASHCARD_SET_NAME_MAX_LENGTH, validateFlashcardSetName } from "@/lib/flashcard-set-name";
 import type { MessageKey } from "@/lib/i18n";
 import type { AppLocale } from "@/lib/locale";
+import { preparePhotoDataUrl, type PhotoPrepFailure } from "@/lib/photo-prep";
 import { cn } from "@/lib/utils";
 
 const NEW_SET_OPTION_VALUE = "__new__";
 
 const paperFieldClass =
   "border-border bg-background text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-ring/30 w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:outline-none";
+
+function outlinedActionClass(enabled: boolean): string {
+  return cn(
+    "inline-flex items-center justify-center rounded-lg border px-4 py-2 text-sm font-medium transition-colors",
+    enabled
+      ? "border-border bg-primary/15 hover:bg-primary/25"
+      : "border-border bg-muted text-muted-foreground cursor-not-allowed",
+  );
+}
 
 interface FlashcardSetOption {
   id: string;
@@ -47,13 +58,33 @@ interface CreatedFlashcardSet {
   updated_at: string;
 }
 
-type GeneratorMode = "text" | "topic";
+type GeneratorMode = "text" | "topic" | "photo";
+
+interface GeneratorPhoto {
+  id: string;
+  dataUrl: string;
+}
+
+const GENERATOR_MODES = [
+  { id: "text", labelKey: "generator.mode.text" },
+  { id: "topic", labelKey: "generator.mode.topic" },
+  { id: "photo", labelKey: "generator.mode.photo" },
+] as const satisfies readonly { id: GeneratorMode; labelKey: MessageKey }[];
 
 type SaveStatus = "idle" | "saving" | "success" | "error";
 
 type GenerateResponse =
   | { ok: true; cards: { question: string; answer: string }[] }
   | { ok: false; errorKey?: string; message?: string };
+
+type TranscribeResponse =
+  | { ok: true; text: string; skipped: number[] }
+  | { ok: false; errorKey?: string; message?: string };
+
+type GenerateRequestBody =
+  | { mode: "text"; text: string }
+  | { mode: "topic"; topic: string }
+  | { mode: "transcript"; text: string };
 
 type BulkCreateResponse = { ok: true; insertedCount: number } | { ok: false; message: string };
 
@@ -96,7 +127,12 @@ function FlashcardGeneratorInner({
   const [mode, setMode] = useState<GeneratorMode>("text");
   const [text, setText] = useState("");
   const [topic, setTopic] = useState("");
+  const [transcript, setTranscript] = useState("");
+  const [photos, setPhotos] = useState<GeneratorPhoto[]>([]);
+  const [skippedPhotos, setSkippedPhotos] = useState<number[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isReading, setIsReading] = useState(false);
+  const [isPreparingPhotos, setIsPreparingPhotos] = useState(false);
   const [cardsDraft, setCardsDraft] = useState<FlashcardDraft[]>([]);
   const [availableSets, setAvailableSets] = useState(sets);
   const [selectedSetId, setSelectedSetId] = useState(() => initialSelectedSetId(sets, preferredSetId));
@@ -106,10 +142,19 @@ function FlashcardGeneratorInner({
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const newSetNameTouchedRef = useRef(false);
   const availableSetsRef = useRef(availableSets);
+  const photosRef = useRef(photos);
+  const preparingPhotosRef = useRef(false);
+  const readingRef = useRef(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     availableSetsRef.current = availableSets;
   }, [availableSets]);
+
+  useEffect(() => {
+    photosRef.current = photos;
+  }, [photos]);
 
   useEffect(() => {
     function onSetCreated(event: Event) {
@@ -145,9 +190,23 @@ function FlashcardGeneratorInner({
 
   const textTrimmed = text.trim();
   const topicTrimmed = topic.trim();
-  const canGenerate =
-    !isGenerating && saveStatus !== "saving" && (mode === "text" ? textTrimmed.length > 0 : topicTrimmed.length > 0);
-  const canSave = !isGenerating && saveStatus !== "saving" && cardsDraft.length > 0 && Boolean(selectedSetId);
+  const transcriptTrimmed = transcript.trim();
+  const sourceReady =
+    mode === "text"
+      ? textTrimmed.length > 0
+      : mode === "topic"
+        ? topicTrimmed.length > 0
+        : transcriptTrimmed.length > 0;
+  const canGenerate = !isGenerating && !isReading && !isPreparingPhotos && saveStatus !== "saving" && sourceReady;
+  const canRead = photos.length > 0 && !isReading && !isPreparingPhotos && !isGenerating && saveStatus !== "saving";
+  const canAddPhoto = photos.length < MAX_PHOTO_COUNT && !isReading && !isPreparingPhotos;
+  const canSave =
+    !isGenerating &&
+    !isReading &&
+    !isPreparingPhotos &&
+    saveStatus !== "saving" &&
+    cardsDraft.length > 0 &&
+    Boolean(selectedSetId);
 
   const saveDisabledReason = useMemo(() => {
     if (saveStatus === "saving") return t("common.saving");
@@ -159,6 +218,127 @@ function FlashcardGeneratorInner({
   function selectMode(next: GeneratorMode) {
     setMode(next);
     setErrorMessage(null);
+  }
+
+  function photoFailureMessage(reason: PhotoPrepFailure): string {
+    if (reason === "too_large") {
+      return t("generator.error.photo_too_large");
+    }
+    return t("generator.error.photo_unreadable");
+  }
+
+  function removePhoto(id: string) {
+    setPhotos((prev) => {
+      const next = prev.filter((photo) => photo.id !== id);
+      photosRef.current = next;
+      return next;
+    });
+    setSkippedPhotos([]);
+    setErrorMessage(null);
+  }
+
+  async function addPhotoFiles(files: File[]) {
+    if (files.length === 0 || preparingPhotosRef.current || readingRef.current) {
+      return;
+    }
+
+    preparingPhotosRef.current = true;
+    setIsPreparingPhotos(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    try {
+      const room = MAX_PHOTO_COUNT - photosRef.current.length;
+      const accepted = files.slice(0, Math.max(0, room));
+      const droppedForCount = files.length > room;
+      const prepared: GeneratorPhoto[] = [];
+      let failure: PhotoPrepFailure | null = null;
+
+      for (const file of accepted) {
+        const result = await preparePhotoDataUrl(file);
+        if (!result.ok) {
+          failure = result.reason;
+          continue;
+        }
+        prepared.push({ id: createDraftId(), dataUrl: result.dataUrl });
+      }
+
+      if (prepared.length > 0) {
+        setPhotos((prev) => {
+          const next = [...prev, ...prepared].slice(0, MAX_PHOTO_COUNT);
+          photosRef.current = next;
+          return next;
+        });
+        setSkippedPhotos([]);
+      }
+
+      if (failure) {
+        setErrorMessage(photoFailureMessage(failure));
+      } else if (droppedForCount) {
+        setErrorMessage(t("generator.error.photo_max", { max: MAX_PHOTO_COUNT }));
+      }
+    } finally {
+      preparingPhotosRef.current = false;
+      setIsPreparingPhotos(false);
+    }
+  }
+
+  function onPhotoInputChange(event: ChangeEvent<HTMLInputElement>) {
+    const selected = event.currentTarget.files;
+    const files = selected ? Array.from(selected) : [];
+    event.currentTarget.value = "";
+    void addPhotoFiles(files);
+  }
+
+  async function onRead() {
+    const images = photosRef.current.map((photo) => photo.dataUrl);
+    if (images.length === 0 || readingRef.current || preparingPhotosRef.current) {
+      return;
+    }
+
+    readingRef.current = true;
+    setIsReading(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    try {
+      const res = await fetch("/api/ai/transcribe", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ images }),
+      });
+
+      const payload = await parseJson<TranscribeResponse>(res);
+      if (!payload || !("ok" in payload)) {
+        setErrorMessage(t("generator.error.generate"));
+        return;
+      }
+
+      if (!payload.ok) {
+        if (payload.message) {
+          setErrorMessage(payload.message);
+        } else if (payload.errorKey) {
+          setErrorMessage(t(payload.errorKey as MessageKey));
+        } else {
+          setErrorMessage(t("generator.error.generate"));
+        }
+        return;
+      }
+
+      if (typeof payload.text !== "string") {
+        setErrorMessage(t("generator.error.generate"));
+        return;
+      }
+
+      setTranscript(payload.text);
+      setSkippedPhotos(payload.skipped.filter((index) => typeof index === "number"));
+    } catch {
+      setErrorMessage(t("generator.error.generate"));
+    } finally {
+      readingRef.current = false;
+      setIsReading(false);
+    }
   }
 
   function onSelectedSetChange(next: string) {
@@ -193,7 +373,7 @@ function FlashcardGeneratorInner({
       return;
     }
 
-    const trimmed = text.trim();
+    const trimmed = (mode === "photo" ? transcript : text).trim();
     if (!trimmed) {
       setErrorMessage(t("generator.error.paste_text"));
       return;
@@ -202,10 +382,10 @@ function FlashcardGeneratorInner({
       setErrorMessage(t("generator.error.text_max", { max: MAX_SOURCE_TEXT_CHARS }));
       return;
     }
-    await requestDrafts({ mode: "text", text: trimmed });
+    await requestDrafts(mode === "photo" ? { mode: "transcript", text: trimmed } : { mode: "text", text: trimmed });
   }
 
-  async function requestDrafts(body: { mode: "text"; text: string } | { mode: "topic"; topic: string }) {
+  async function requestDrafts(body: GenerateRequestBody) {
     setIsGenerating(true);
     try {
       const res = await fetch("/api/ai/generate", {
@@ -364,8 +544,11 @@ function FlashcardGeneratorInner({
       });
       if (mode === "text") {
         setText("");
-      } else {
+      } else if (mode === "topic") {
         setTopic("");
+      } else {
+        setTranscript("");
+        setSkippedPhotos([]);
       }
       setCardsDraft([]);
     } catch {
@@ -394,40 +577,31 @@ function FlashcardGeneratorInner({
       )}
 
       <div className="mt-4 grid gap-3">
-        <div role="group" className="border-border bg-muted inline-flex w-fit rounded-lg border p-1">
-          <button
-            type="button"
-            aria-pressed={mode === "text"}
-            onClick={() => {
-              selectMode("text");
-            }}
-            className={cn(
-              "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-              mode === "text"
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            {t("generator.mode.text")}
-          </button>
-          <button
-            type="button"
-            aria-pressed={mode === "topic"}
-            onClick={() => {
-              selectMode("topic");
-            }}
-            className={cn(
-              "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-              mode === "topic"
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            {t("generator.mode.topic")}
-          </button>
+        <div
+          role="group"
+          className="border-border bg-muted flex w-full max-w-full flex-wrap gap-1 rounded-lg border p-1 sm:w-fit"
+        >
+          {GENERATOR_MODES.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              aria-pressed={mode === item.id}
+              onClick={() => {
+                selectMode(item.id);
+              }}
+              className={cn(
+                "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                mode === item.id
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {t(item.labelKey)}
+            </button>
+          ))}
         </div>
 
-        {mode === "text" ? (
+        {mode === "text" && (
           <div className="grid gap-2">
             <div className="flex items-center justify-between gap-3">
               <label className="text-sm font-medium">{t("generator.source_text")}</label>
@@ -450,7 +624,9 @@ function FlashcardGeneratorInner({
               className={cn(paperFieldClass, "resize-y")}
             />
           </div>
-        ) : (
+        )}
+
+        {mode === "topic" && (
           <div className="grid gap-2">
             <div className="flex items-center justify-between gap-3">
               <label htmlFor="generator-topic" className="text-sm font-medium">
@@ -487,6 +663,125 @@ function FlashcardGeneratorInner({
           </div>
         )}
 
+        {mode === "photo" && (
+          <div className="grid min-w-0 gap-3">
+            <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+              <button
+                type="button"
+                onClick={() => {
+                  fileInputRef.current?.click();
+                }}
+                disabled={!canAddPhoto}
+                className={cn(outlinedActionClass(canAddPhoto), "w-full sm:w-auto")}
+              >
+                {t("generator.photo.add_file")}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  cameraInputRef.current?.click();
+                }}
+                disabled={!canAddPhoto}
+                className={cn(outlinedActionClass(canAddPhoto), "w-full sm:w-auto")}
+              >
+                {t("generator.photo.add_camera")}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="sr-only"
+                aria-label={t("generator.photo.add_file")}
+                onChange={onPhotoInputChange}
+              />
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="sr-only"
+                aria-label={t("generator.photo.add_camera")}
+                onChange={onPhotoInputChange}
+              />
+            </div>
+
+            {photos.length > 0 && (
+              <ul className="flex flex-wrap gap-3">
+                {photos.map((photo, index) => {
+                  const photoNumber = index + 1;
+                  return (
+                    <li
+                      key={photo.id}
+                      className="border-border relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border"
+                    >
+                      <img
+                        src={photo.dataUrl}
+                        alt={t("generator.photo.alt", { index: photoNumber })}
+                        className="h-full w-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        aria-label={t("generator.photo.remove", { index: photoNumber })}
+                        onClick={() => {
+                          removePhoto(photo.id);
+                        }}
+                        disabled={isReading || isPreparingPhotos}
+                        className="bg-background/90 text-foreground absolute top-1 right-1 rounded px-1.5 py-0.5 text-xs leading-none"
+                      >
+                        ×
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+
+            <button
+              type="button"
+              onClick={() => {
+                void onRead();
+              }}
+              disabled={!canRead}
+              className={cn(outlinedActionClass(canRead), "w-full sm:w-auto")}
+            >
+              {isReading ? t("generator.photo.reading") : t("generator.photo.read")}
+            </button>
+
+            {skippedPhotos.length > 0 && (
+              <p className="text-muted-foreground text-sm" role="status">
+                {t("generator.photo.skipped", { numbers: skippedPhotos.join(", ") })}
+              </p>
+            )}
+
+            <div className="grid gap-2">
+              <div className="flex items-center justify-between gap-3">
+                <label htmlFor="generator-transcript" className="text-sm font-medium">
+                  {t("generator.photo.transcript")}
+                </label>
+                <span
+                  className={cn(
+                    "text-muted-foreground font-mono text-xs",
+                    transcriptTrimmed.length > MAX_SOURCE_TEXT_CHARS && "text-destructive",
+                  )}
+                >
+                  {transcriptTrimmed.length}/{MAX_SOURCE_TEXT_CHARS}
+                </span>
+              </div>
+              <textarea
+                id="generator-transcript"
+                value={transcript}
+                onChange={(event) => {
+                  setTranscript(event.target.value);
+                }}
+                rows={6}
+                placeholder={t("generator.photo.placeholder")}
+                className={cn(paperFieldClass, "resize-y")}
+              />
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <button
             type="button"
@@ -494,12 +789,7 @@ function FlashcardGeneratorInner({
               void onGenerate();
             }}
             disabled={!canGenerate}
-            className={cn(
-              "inline-flex items-center justify-center rounded-lg border px-4 py-2 text-sm font-medium transition-colors",
-              canGenerate
-                ? "border-border bg-primary/15 hover:bg-primary/25"
-                : "border-border bg-muted text-muted-foreground cursor-not-allowed",
-            )}
+            className={outlinedActionClass(canGenerate)}
           >
             {isGenerating ? t("generator.generating") : t("generator.generate")}
           </button>
