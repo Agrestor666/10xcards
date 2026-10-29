@@ -100,6 +100,8 @@ Local email confirmation is disabled in `supabase/config.toml`. Emails produced 
 | `SUPABASE_KEY`              | Yes                         | Supabase anon/publishable key used by the SSR client |
 | `SUPABASE_SERVICE_ROLE_KEY` | For account deletion        | Server-only administrative key                       |
 | `OPENROUTER_API_KEY`        | For AI generation           | Server-only OpenRouter API key                       |
+| `TURNSTILE_SITE_KEY`        | Yes                         | Cloudflare Turnstile site key rendered on auth forms |
+| `TURNSTILE_SECRET_KEY`      | Yes                         | Server-only Turnstile secret used by siteverify      |
 | `E2E_USER_EMAIL`            | For authenticated E2E tests | Test account email                                   |
 | `E2E_USER_PASSWORD`         | For authenticated E2E tests | Test account password                                |
 | `E2E_USER_B_EMAIL`          | For cross-user RLS E2E      | Second test account email                            |
@@ -227,6 +229,8 @@ npx wrangler secret put SUPABASE_URL
 npx wrangler secret put SUPABASE_KEY
 npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
 npx wrangler secret put OPENROUTER_API_KEY
+npx wrangler secret put TURNSTILE_SITE_KEY
+npx wrangler secret put TURNSTILE_SECRET_KEY
 ```
 
 Deployment is intentionally manual and runs from a trusted local Cursor terminal:

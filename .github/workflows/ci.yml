@@ -52,6 +52,8 @@ jobs:
             echo "SUPABASE_KEY=$ANON_KEY"
             echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY"
             echo "OPENROUTER_API_KEY=local-e2e-placeholder"
+            echo "TURNSTILE_SITE_KEY=1x00000000000000000000AA"
+            echo "TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA"
             echo "E2E_USER_EMAIL=e2e@example.test"
             echo "E2E_USER_PASSWORD=LocalE2E-Only-2026!"
             echo "E2E_USER_B_EMAIL=e2e-b@example.test"

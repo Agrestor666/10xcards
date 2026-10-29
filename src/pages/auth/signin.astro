@@ -1,4 +1,5 @@
 ---
+import { TURNSTILE_SITE_KEY } from "astro:env/server";
 import Layout from "@/layouts/Layout.astro";
 import PaperShell from "@/components/layout/PaperShell.astro";
 import SignInForm from "@/components/auth/SignInForm";
@@ -25,7 +26,7 @@ const notice = resolveAuthNoticeMessage(locale, Astro.url.searchParams.get("noti
           </p>
         )
       }
-      <SignInForm locale={locale} serverError={serverError} client:load />
+      <SignInForm locale={locale} serverError={serverError} turnstileSiteKey={TURNSTILE_SITE_KEY} client:load />
       <p class="mt-4 text-center text-sm">
         <a href="/auth/forgot-password" class="text-primary font-medium hover:underline">
           {t(locale, "auth.signin.forgot_link")}

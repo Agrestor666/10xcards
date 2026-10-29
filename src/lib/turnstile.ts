@@ -1,8 +1,12 @@
 import { TURNSTILE_SECRET_KEY } from "astro:env/server";
+import { TURNSTILE_RESPONSE_FIELD } from "@/lib/turnstile-constants";
 
-export const TURNSTILE_RESPONSE_FIELD = "cf-turnstile-response";
-export const TURNSTILE_DUMMY_SITE_KEY = "1x00000000000000000000AA";
-export const TURNSTILE_DUMMY_TOKEN = "XXXX.DUMMY.TOKEN.XXXX";
+export {
+  TURNSTILE_DUMMY_SITE_KEY,
+  TURNSTILE_DUMMY_TOKEN,
+  TURNSTILE_RESPONSE_FIELD,
+  TURNSTILE_SCRIPT_SRC,
+} from "@/lib/turnstile-constants";
 
 const SITEVERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 const MAX_TOKEN_LENGTH = 2048;

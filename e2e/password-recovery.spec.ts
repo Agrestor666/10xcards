@@ -10,6 +10,7 @@ test.describe("Password recovery — guest", () => {
     await page.getByRole("link", { name: /Forgot password\?|Nie pamiętasz hasła\?/ }).click();
 
     await expect(page).toHaveURL(/\/auth\/forgot-password$/);
+    await expect(page.locator("form[data-hydrated='true']")).toBeAttached();
     await page.getByRole("button", { name: /Send reset link|Wyślij link resetujący/ }).click();
 
     await expect(page).toHaveURL(/\/auth\/forgot-password/);

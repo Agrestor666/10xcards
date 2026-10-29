@@ -317,23 +317,23 @@ export interface TurnstileWidgetProps {
 
 #### Automated
 
-- [x] 1.1 Astro env types sync cleanly: `npx astro sync`
-- [x] 1.2 Unit tests pass: `npm test`
-- [x] 1.3 Linting passes: `npm run lint`
+- [x] 1.1 Astro env types sync cleanly: `npx astro sync` — dfac4fa
+- [x] 1.2 Unit tests pass: `npm test` — dfac4fa
+- [x] 1.3 Linting passes: `npm run lint` — dfac4fa
 
 #### Manual
 
-- [x] 1.4 Sending a raw `POST /api/auth/signin` without `cf-turnstile-response` redirects to `/auth/signin?error=captcha_failed`
+- [x] 1.4 Sending a raw `POST /api/auth/signin` without `cf-turnstile-response` redirects to `/auth/signin?error=captcha_failed` — dfac4fa
 
 ### Phase 2: Client-Side TurnstileWidget, Auth Forms/Pages & E2E Tests
 
 #### Automated
 
-- [ ] 2.1 Unit tests pass: `npm test`
-- [ ] 2.2 Linting passes: `npm run lint`
-- [ ] 2.3 Production SSR build succeeds: `npm run build`
+- [x] 2.1 Unit tests pass: `npm test`
+- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.3 Production SSR build succeeds: `npm run build`
 - [ ] 2.4 Playwright E2E suite passes: `npm run test:e2e`
 
 #### Manual
 
-- [ ] 2.5 Turnstile widget renders in Paper style on `/auth/signin`, `/auth/signup`, and `/auth/forgot-password` in PL/EN and allows valid submissions while rejecting missing/invalid tokens
+- [x] 2.5 Turnstile widget renders in Paper style on `/auth/signin`, `/auth/signup`, and `/auth/forgot-password` in PL/EN and allows valid submissions while rejecting missing/invalid tokens
