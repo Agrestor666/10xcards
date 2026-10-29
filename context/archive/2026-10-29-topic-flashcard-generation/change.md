@@ -1,7 +1,8 @@
 ---
 change_id: topic-flashcard-generation
 title: Topic flashcard generation — web search retrieval, draft review, and inline new-set save
-status: implemented
+status: archived
+archived_at: 2026-10-29T19:51:59Z
 created: 2026-10-29
 updated: 2026-10-29
 ---
