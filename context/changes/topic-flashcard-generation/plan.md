@@ -352,24 +352,24 @@ Extend the Playwright API contract suite and E2E UI suite to cover topic-mode ge
 
 #### Automated
 
-- [x] 1.1 Unit tests pass: `npm test`
-- [x] 1.2 Linting passes: `npm run lint`
+- [x] 1.1 Unit tests pass: `npm test` — 6c65d9d
+- [x] 1.2 Linting passes: `npm run lint` — 6c65d9d
 
 #### Manual
 
-- [x] 1.3 Code review confirms `POST /api/ai/generate` accepts both `{ text }` and `{ topic }` and `POST /api/flashcard-sets/create` returns `{ ok: true, set }` for JSON requests
+- [x] 1.3 Code review confirms `POST /api/ai/generate` accepts both `{ text }` and `{ topic }` and `POST /api/flashcard-sets/create` returns `{ ok: true, set }` for JSON requests — 6c65d9d
 
 ### Phase 2: Dashboard Sync & Generator UI (Topic Tab + Inline New Set)
 
 #### Automated
 
-- [ ] 2.1 Unit tests pass: `npm test`
-- [ ] 2.2 Linting passes: `npm run lint`
-- [ ] 2.3 Production SSR build succeeds: `npm run build`
+- [x] 2.1 Unit tests pass: `npm test`
+- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.3 Production SSR build succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 2.4 Topic mode generation and inline new-set save work in browser on `/dashboard` in both PL and EN locales with live tile sync
+- [x] 2.4 Topic mode generation and inline new-set save work in browser on `/dashboard` in both PL and EN locales with live tile sync
 
 ### Phase 3: Playwright API Contract & E2E UI Verification
 

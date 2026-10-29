@@ -25,10 +25,13 @@ import { useLocale } from "@/components/i18n/useLocale";
 import { tPlural } from "@/lib/i18n";
 import {
   DASHBOARD_SET_CARDS_ADDED,
+  DASHBOARD_SET_CREATED,
   DASHBOARD_SET_REVIEW_GRADED,
   dispatchDashboardSetDeleted,
+  dispatchDashboardSetUpdated,
   fetchDashboardDueSummary,
   type DashboardSetCardsAddedDetail,
+  type DashboardSetCreatedDetail,
   type DashboardSetReviewGradedDetail,
 } from "@/lib/dashboard-set-sync";
 import type { AppLocale } from "@/lib/locale";
@@ -151,6 +154,11 @@ function SetDashboardGridInner({ initialSets }: { initialSets: DashboardSetRow[]
       );
     }
 
+    function onSetCreated(event: Event) {
+      const detail = (event as CustomEvent<DashboardSetCreatedDetail>).detail;
+      setSets((prev) => (prev.some((s) => s.id === detail.set.id) ? prev : [detail.set, ...prev]));
+    }
+
     function onPageShow(event: PageTransitionEvent) {
       if (!event.persisted) return;
       void fetchDashboardDueSummary().then((summary) => {
@@ -165,10 +173,12 @@ function SetDashboardGridInner({ initialSets }: { initialSets: DashboardSetRow[]
     }
 
     window.addEventListener(DASHBOARD_SET_CARDS_ADDED, onCardsAdded);
+    window.addEventListener(DASHBOARD_SET_CREATED, onSetCreated);
     window.addEventListener(DASHBOARD_SET_REVIEW_GRADED, onReviewGraded);
     window.addEventListener("pageshow", onPageShow);
     return () => {
       window.removeEventListener(DASHBOARD_SET_CARDS_ADDED, onCardsAdded);
+      window.removeEventListener(DASHBOARD_SET_CREATED, onSetCreated);
       window.removeEventListener(DASHBOARD_SET_REVIEW_GRADED, onReviewGraded);
       window.removeEventListener("pageshow", onPageShow);
     };
@@ -232,6 +242,7 @@ function SetDashboardGridInner({ initialSets }: { initialSets: DashboardSetRow[]
             : s,
         ),
       );
+      dispatchDashboardSetUpdated({ id, name: body.set.name });
       closeRename();
     } catch {
       showError(t("sets.grid.error.rename"));
