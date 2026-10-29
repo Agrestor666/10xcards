@@ -217,6 +217,7 @@ export const pl: Record<keyof typeof en, string> = {
   "generator.error.text_max": "Tekst może mieć co najwyżej {max} znaków.",
   "generator.error.enter_topic": "Podaj temat, aby wygenerować fiszki.",
   "generator.error.topic_max": "Temat może mieć co najwyżej {max} znaków.",
+  "generator.error.no_readable_text": "Nie udało się odczytać tekstu ze zdjęć. Spróbuj wyraźniejszego zdjęcia.",
   "generator.error.generate": "Nie udało się wygenerować fiszek. Spróbuj ponownie.",
   "generator.error.timeout": "Generowanie przekroczyło limit czasu. Spróbuj z krótszym tekstem.",
   "generator.error.no_cards": "Nie wygenerowano fiszek. Spróbuj ponownie.",

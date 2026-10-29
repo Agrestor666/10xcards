@@ -214,6 +214,7 @@ export const en = {
   "generator.error.text_max": "Text must be at most {max} characters.",
   "generator.error.enter_topic": "Enter a topic to generate flashcards.",
   "generator.error.topic_max": "Topic must be at most {max} characters.",
+  "generator.error.no_readable_text": "No readable text was found in the photos. Try a clearer image.",
   "generator.error.generate": "Could not generate flashcards. Please try again.",
   "generator.error.timeout": "Generation timed out. Try a shorter passage.",
   "generator.error.no_cards": "No flashcards were generated. Please try again.",

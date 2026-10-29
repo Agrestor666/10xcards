@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { MAX_TOPIC_CHARS } from "@/lib/ai-generation-limits";
+import { MAX_SOURCE_TEXT_CHARS, MAX_TOPIC_CHARS } from "@/lib/ai-generation-limits";
 import { handleAiGenerateRequest, type AiGenerateHandlerSupabase } from "@/lib/ai-generate-handler";
 import { t } from "@/lib/i18n";
 import type { GenerateFlashcardsResult } from "@/lib/openrouter-generate";
@@ -229,6 +229,114 @@ describe("handleAiGenerateRequest topic mode (S-13, Risk #3)", () => {
     expect(result.status).toBe(400);
     expect(result.body).toEqual({ ok: false, message: t("en", "api.error.invalid_body") });
     expect(JSON.stringify(result.body)).not.toContain(SENTINEL);
+    expect(generateFlashcardsFromText).not.toHaveBeenCalled();
+    expect(generateFlashcardsFromTopic).not.toHaveBeenCalled();
+  });
+});
+
+/** S-14 transcript mode must dispatch to generateFlashcardsFromTranscript and preserve Risk #3 privacy */
+describe("handleAiGenerateRequest transcript mode (S-14, Risk #3)", () => {
+  function transcriptGenerators() {
+    const generateFlashcardsFromText = vi.fn();
+    const generateFlashcardsFromTopic = vi.fn();
+    const generateFlashcardsFromTranscript = vi.fn().mockResolvedValue({
+      ok: true,
+      cards: [{ question: "Q?", answer: "A." }],
+    } satisfies GenerateFlashcardsResult);
+
+    return {
+      generateFlashcardsFromText,
+      generateFlashcardsFromTopic,
+      generateFlashcardsFromTranscript,
+    };
+  }
+
+  it("calls generateFlashcardsFromTranscript for { mode: 'transcript', text } and never calls paste or topic generators", async () => {
+    const supabase = createSupabaseMock();
+    const { generateFlashcardsFromText, generateFlashcardsFromTopic, generateFlashcardsFromTranscript } =
+      transcriptGenerators();
+
+    const result = await handleAiGenerateRequest({
+      locale: "en",
+      supabase,
+      body: { mode: "transcript", text: `  ${SENTINEL}  ` },
+      generateFlashcardsFromText,
+      generateFlashcardsFromTopic,
+      generateFlashcardsFromTranscript,
+    });
+
+    expect(result.status).toBe(200);
+    expect(result.body).toEqual({ ok: true, cards: [{ question: "Q?", answer: "A." }] });
+    expect(JSON.stringify(result.body)).not.toContain(SENTINEL);
+    expect(generateFlashcardsFromTranscript).toHaveBeenCalledWith(SENTINEL);
+    expect(generateFlashcardsFromText).not.toHaveBeenCalled();
+    expect(generateFlashcardsFromTopic).not.toHaveBeenCalled();
+    expect(supabase.fromCalls).toHaveLength(0);
+  });
+
+  it("returns 400 generator.error.paste_text for empty or whitespace transcript", async () => {
+    const supabase = createSupabaseMock();
+    const { generateFlashcardsFromText, generateFlashcardsFromTopic, generateFlashcardsFromTranscript } =
+      transcriptGenerators();
+
+    const result = await handleAiGenerateRequest({
+      locale: "en",
+      supabase,
+      body: { mode: "transcript", text: "   " },
+      generateFlashcardsFromText,
+      generateFlashcardsFromTopic,
+      generateFlashcardsFromTranscript,
+    });
+
+    expect(result.status).toBe(400);
+    expect(result.body).toEqual({ ok: false, message: t("en", "generator.error.paste_text") });
+    expect(generateFlashcardsFromTranscript).not.toHaveBeenCalled();
+    expect(supabase.fromCalls).toHaveLength(0);
+  });
+
+  it("returns 400 generator.error.text_max for over-max transcript without echoing the input", async () => {
+    const supabase = createSupabaseMock();
+    const { generateFlashcardsFromText, generateFlashcardsFromTopic, generateFlashcardsFromTranscript } =
+      transcriptGenerators();
+    const overMax = `${SENTINEL}${"x".repeat(MAX_SOURCE_TEXT_CHARS + 1)}`;
+
+    const result = await handleAiGenerateRequest({
+      locale: "en",
+      supabase,
+      body: { mode: "transcript", text: overMax },
+      generateFlashcardsFromText,
+      generateFlashcardsFromTopic,
+      generateFlashcardsFromTranscript,
+    });
+
+    expect(result.status).toBe(400);
+    expect(result.body).toEqual({
+      ok: false,
+      message: t("en", "generator.error.text_max", { max: MAX_SOURCE_TEXT_CHARS }),
+    });
+    expect(JSON.stringify(result.body)).not.toContain(SENTINEL);
+    expect(generateFlashcardsFromTranscript).not.toHaveBeenCalled();
+    expect(supabase.fromCalls).toHaveLength(0);
+  });
+
+  it("returns 400 api.error.invalid_body when mode is transcript and topic is also present", async () => {
+    const supabase = createSupabaseMock();
+    const { generateFlashcardsFromText, generateFlashcardsFromTopic, generateFlashcardsFromTranscript } =
+      transcriptGenerators();
+
+    const result = await handleAiGenerateRequest({
+      locale: "en",
+      supabase,
+      body: { mode: "transcript", text: "notes", topic: SENTINEL },
+      generateFlashcardsFromText,
+      generateFlashcardsFromTopic,
+      generateFlashcardsFromTranscript,
+    });
+
+    expect(result.status).toBe(400);
+    expect(result.body).toEqual({ ok: false, message: t("en", "api.error.invalid_body") });
+    expect(JSON.stringify(result.body)).not.toContain(SENTINEL);
+    expect(generateFlashcardsFromTranscript).not.toHaveBeenCalled();
     expect(generateFlashcardsFromText).not.toHaveBeenCalled();
     expect(generateFlashcardsFromTopic).not.toHaveBeenCalled();
   });

@@ -21,6 +21,7 @@ export interface HandleAiGenerateRequestInput {
   body: unknown;
   generateFlashcardsFromText: (text: string) => Promise<GenerateFlashcardsResult>;
   generateFlashcardsFromTopic?: (topic: string) => Promise<GenerateFlashcardsResult>;
+  generateFlashcardsFromTranscript?: (text: string) => Promise<GenerateFlashcardsResult>;
 }
 
 export interface HandleAiGenerateRequestResult {
@@ -28,7 +29,11 @@ export interface HandleAiGenerateRequestResult {
   body: Record<string, unknown>;
 }
 
-type ClassifiedGenerateBody = { kind: "text"; text: string } | { kind: "topic"; topic: string } | { kind: "invalid" };
+type ClassifiedGenerateBody =
+  | { kind: "text"; text: string }
+  | { kind: "topic"; topic: string }
+  | { kind: "transcript"; text: string }
+  | { kind: "invalid" };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -46,6 +51,13 @@ function classifyGenerateBody(body: unknown): ClassifiedGenerateBody {
   const topicIsString = typeof body.topic === "string";
   const modeDisambiguates = mode === "text" || mode === "topic";
 
+  if (mode === "transcript") {
+    if (hasTopicKey || !textIsString) {
+      return { kind: "invalid" };
+    }
+    return { kind: "transcript", text: body.text as string };
+  }
+
   if (hasTextKey && hasTopicKey && !modeDisambiguates) {
     return { kind: "invalid" };
   }
@@ -57,7 +69,7 @@ function classifyGenerateBody(body: unknown): ClassifiedGenerateBody {
     return { kind: "topic", topic: body.topic as string };
   }
 
-  if (mode === "text" || (hasTextKey && textIsString)) {
+  if (mode === "text" || (hasTextKey && textIsString && (mode === undefined || mode === "text"))) {
     if (!textIsString) {
       return { kind: "invalid" };
     }
@@ -78,7 +90,14 @@ function generationResultResponse(result: GenerateFlashcardsResult): HandleAiGen
 export async function handleAiGenerateRequest(
   input: HandleAiGenerateRequestInput,
 ): Promise<HandleAiGenerateRequestResult> {
-  const { locale, supabase, body, generateFlashcardsFromText, generateFlashcardsFromTopic } = input;
+  const {
+    locale,
+    supabase,
+    body,
+    generateFlashcardsFromText,
+    generateFlashcardsFromTopic,
+    generateFlashcardsFromTranscript,
+  } = input;
 
   if (!supabase) {
     return { status: 503, body: { ok: false, message: supabaseNotConfiguredMessage(locale) } };
@@ -134,6 +153,14 @@ export async function handleAiGenerateRequest(
         message: t(locale, "generator.error.text_max", { max: MAX_SOURCE_TEXT_CHARS }),
       },
     };
+  }
+
+  if (classified.kind === "transcript") {
+    if (!generateFlashcardsFromTranscript) {
+      return { status: 502, body: { ok: false, errorKey: "generator.error.generate" } };
+    }
+
+    return generationResultResponse(await generateFlashcardsFromTranscript(text));
   }
 
   return generationResultResponse(await generateFlashcardsFromText(text));

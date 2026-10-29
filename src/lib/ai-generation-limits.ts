@@ -4,6 +4,15 @@ export const MAX_SOURCE_TEXT_CHARS = 20_000;
 /** Max topic prompt length for topic-based generation (client + server). */
 export const MAX_TOPIC_CHARS = 200;
 
+/** Max photos accepted in one transcribe request (client + server). */
+export const MAX_PHOTO_COUNT = 3;
+
+/** Max decoded image size per photo in bytes (client + server). */
+export const MAX_PHOTO_BYTES = 1_500_000;
+
+/** Max longest-edge dimension (px) when resizing a photo on the client. */
+export const MAX_PHOTO_EDGE_PX = 1600;
+
 /** OpenRouter web-search plugin result cap for topic generation. */
 export const OPENROUTER_WEB_SEARCH_MAX_RESULTS = 5;
 

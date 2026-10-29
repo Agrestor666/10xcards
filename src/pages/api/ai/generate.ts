@@ -3,7 +3,11 @@ import { handleAiGenerateRequest } from "@/lib/ai-generate-handler";
 import { jsonResponse } from "@/lib/api-json";
 import { t } from "@/lib/i18n";
 import { getLocaleFromContext } from "@/lib/locale";
-import { generateFlashcardsFromText, generateFlashcardsFromTopic } from "@/lib/openrouter-generate";
+import {
+  generateFlashcardsFromText,
+  generateFlashcardsFromTopic,
+  generateFlashcardsFromTranscript,
+} from "@/lib/openrouter-generate";
 
 export const prerender = false;
 
@@ -23,6 +27,7 @@ export const POST: APIRoute = async (context) => {
     body,
     generateFlashcardsFromText,
     generateFlashcardsFromTopic,
+    generateFlashcardsFromTranscript,
   });
 
   return jsonResponse(result.body, result.status);
