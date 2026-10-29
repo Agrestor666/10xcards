@@ -5,6 +5,7 @@ import {
   OPENROUTER_DEFAULT_BASE_URL,
   OPENROUTER_DEFAULT_MODEL,
   OPENROUTER_REQUEST_TIMEOUT_MS,
+  OPENROUTER_WEB_SEARCH_MAX_RESULTS,
 } from "@/lib/ai-generation-limits";
 import { type FlashcardDraft, validateFlashcardDrafts } from "@/lib/flashcard-draft-validation";
 
@@ -29,7 +30,17 @@ Respond with ONLY valid JSON in this exact shape (no markdown, no commentary):
 
 Create multiple cards when the text supports it. Keep questions and answers clear and self-contained.`;
 
-export async function generateFlashcardsFromText(text: string): Promise<GenerateFlashcardsResult> {
+const TOPIC_SYSTEM_PROMPT = `You are a flashcard generator. Given a study topic and web search results, produce 8 to 12 concise, factually accurate question-and-answer pairs that cover the most important concepts, definitions, and facts about the topic.
+
+Write the questions and answers in the same language as the user's topic. Do NOT include markdown links, URLs, or source citations in the questions or answers.
+
+Respond with ONLY valid JSON in this exact shape (no markdown, no commentary):
+{"cards":[{"question":"...","answer":"..."}]}`;
+
+const TOPIC_WEB_SEARCH_PROMPT =
+  "Use the following web search results to produce accurate, factual flashcards for the requested topic. Do NOT include markdown links or URLs in the question or answer fields; respond ONLY with the requested JSON object:";
+
+async function requestOpenRouterCards(requestBody: Record<string, unknown>): Promise<GenerateFlashcardsResult> {
   if (!OPENROUTER_API_KEY) {
     return { ok: false, errorKey: "generator.error.generate" };
   }
@@ -46,14 +57,7 @@ export async function generateFlashcardsFromText(text: string): Promise<Generate
         Authorization: `Bearer ${OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        model: OPENROUTER_DEFAULT_MODEL,
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: text },
-        ],
-      }),
+      body: JSON.stringify(requestBody),
       signal: controller.signal,
     });
 
@@ -105,4 +109,33 @@ export async function generateFlashcardsFromText(text: string): Promise<Generate
   } finally {
     clearTimeout(timeoutId);
   }
+}
+
+export async function generateFlashcardsFromText(text: string): Promise<GenerateFlashcardsResult> {
+  return requestOpenRouterCards({
+    model: OPENROUTER_DEFAULT_MODEL,
+    response_format: { type: "json_object" },
+    messages: [
+      { role: "system", content: SYSTEM_PROMPT },
+      { role: "user", content: text },
+    ],
+  });
+}
+
+export async function generateFlashcardsFromTopic(topic: string): Promise<GenerateFlashcardsResult> {
+  return requestOpenRouterCards({
+    model: OPENROUTER_DEFAULT_MODEL,
+    response_format: { type: "json_object" },
+    plugins: [
+      {
+        id: "web",
+        max_results: OPENROUTER_WEB_SEARCH_MAX_RESULTS,
+        search_prompt: TOPIC_WEB_SEARCH_PROMPT,
+      },
+    ],
+    messages: [
+      { role: "system", content: TOPIC_SYSTEM_PROMPT },
+      { role: "user", content: topic },
+    ],
+  });
 }
