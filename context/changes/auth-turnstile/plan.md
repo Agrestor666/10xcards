@@ -246,6 +246,20 @@ export interface TurnstileWidgetProps {
 
 **Contract**: Update the `## Environment Variables` table (`README.md:97-108`) and `## Deployment` secret list (`README.md:225-230`).
 
+#### 5. Supporting files
+
+**File**: `src/lib/turnstile-constants.ts`
+
+Client-safe constants (`TURNSTILE_RESPONSE_FIELD`, dummy site key and token, script URL) so `TurnstileWidget` does not import `astro:env/server`. `src/lib/turnstile.ts` re-exports them.
+
+**File**: `playwright.config.ts`
+
+Guest project `testMatch` includes `auth-turnstile.spec.ts`. The authenticated Chromium project ignores that spec.
+
+**File**: `e2e/password-recovery.spec.ts`
+
+Wait for `form[data-hydrated='true']` before the empty-submit assertion so the dummy Turnstile token is in the form.
+
 ### Success Criteria:
 
 #### Automated Verification:
@@ -329,11 +343,11 @@ export interface TurnstileWidgetProps {
 
 #### Automated
 
-- [x] 2.1 Unit tests pass: `npm test`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 Production SSR build succeeds: `npm run build`
+- [x] 2.1 Unit tests pass: `npm test` — 6544e14
+- [x] 2.2 Linting passes: `npm run lint` — 6544e14
+- [x] 2.3 Production SSR build succeeds: `npm run build` — 6544e14
 - [ ] 2.4 Playwright E2E suite passes: `npm run test:e2e`
 
 #### Manual
 
-- [x] 2.5 Turnstile widget renders in Paper style on `/auth/signin`, `/auth/signup`, and `/auth/forgot-password` in PL/EN and allows valid submissions while rejecting missing/invalid tokens
+- [x] 2.5 Turnstile widget renders in Paper style on `/auth/signin`, `/auth/signup`, and `/auth/forgot-password` in PL/EN and allows valid submissions while rejecting missing/invalid tokens — 6544e14

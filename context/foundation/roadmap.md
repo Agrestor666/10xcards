@@ -3,7 +3,7 @@ project: "10xCards"
 version: 1
 status: active
 created: 2026-05-25
-updated: 2026-06-08
+updated: 2026-10-29
 prd_version: 1
 prd_v2_slice: S-05
 shape_notes_slice: S-07
@@ -44,6 +44,8 @@ Ręczne tworzenie fiszek edukacyjnych jest skrajnie czasochłonne — ta bariera
 | S-08 | unified-paper-ui      | cała aplikacja w jednym stylu paper (review, settings, auth); brak skoków cosmic ↔ paper między ekranami | S-07 | study-hub-ui plan, paper tokens | done |
 | S-09 | bilingual-ui          | cała aplikacja po polsku lub po angielsku; wybór języka na landingu (domyślnie z przeglądarki); po zalogowaniu bez zmiany | S-07, S-08 | shape-notes (ex-i18n non-goal), landing-copy.md | done |
 | S-10 | app-icon-favicon      | widzieć spójną ikonę 10xCards w zakładce przeglądarki (favicon) i przy dodawaniu aplikacji do ekranu głównego | S-08 | NFR użyteczność, paper theme | done |
+| S-11 | password-recovery     | odzyskać zapomniane hasło: podać e-mail, ustawić nowe hasło z linku i zalogować się | F-01, S-08, S-09 | FR-001, FR-002, Access Control | done |
+| S-12 | auth-turnstile        | zalogować się, założyć konto i poprosić o reset hasła dopiero po sprawdzeniu, że nie jest botem (Cloudflare Turnstile) | F-01, S-08, S-09, S-11 | FR-001, FR-002, Access Control | ready |
 
 ## Streams
 
@@ -61,6 +63,8 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 | G      | Spójność UI           | `S-08` ✓                | Zakończony — paper theme na review, settings, auth.                               |
 | H      | Dwujęzyczność UI      | `S-09` ✓                | Zakończony — PL/EN, locale cookie, locked after login.                            |
 | I      | Branding / ikona      | `S-10` ✓                | Zakończony — favicon, apple-touch-icon, `site.webmanifest` (archiwum 2026-06-08). |
+| J      | Konto / odzyskanie hasła | `S-11` ✓             | Zakończony — reset hasła z linku w mailu. |
+| K      | Konto / ochrona przed botami | `S-12`          | Publiczne formularze auth (logowanie, rejestracja, prośba o reset) za Cloudflare Turnstile. |
 
 ## Baseline
 
@@ -236,6 +240,35 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 > **Scope:** wygenerowanie ikony przez agenta; pliki w `public/` (`favicon.png`, `favicon.ico`, `apple-touch-icon.png`); `site.webmanifest` z `theme_color`; aktualizacja `<head>` w `Layout.astro` z cache-bust `?v=2`. **Non-goals:** pełny zestaw PWA (service worker, manifest 192/512); redesign logo w topbarze; animowane favicon.
 
+### S-11: Odzyskanie zapomnianego hasła
+
+- **Outcome:** użytkownik, który nie pamięta hasła, może z ekranu logowania poprosić o link resetu na swój e-mail, ustawić nowe hasło i zalogować się nim do istniejącego konta. Zestawy i fiszki zostają bez zmian.
+- **Change ID:** password-recovery
+- **PRD refs:** FR-001, FR-002, Access Control ("Registration and login via email and password")
+- **Prerequisites:** F-01, S-08, S-09
+- **Parallel with:** —
+- **Blockers:** —
+- **Unknowns:** —
+- **Risk:** Średni — bez tej ścieżki konto e-mail + hasło jest ślepym zaułkiem po utracie hasła. Ryzyko produktowe: komunikat nie może zdradzać, czy dany e-mail ma konto; copy PL/EN musi wejść w istniejące tłumaczenia, żeby nie wrócić do samych stringów angielskich.
+- **Status:** done
+
+> **Scope:** link „nie pamiętam hasła” na ekranie logowania, prośba o reset po e-mailu, strona ustawienia nowego hasła, powrót do logowania. Paper theme i oba języki interfejsu (PL/EN). **Non-goals:** zmiana hasła z poziomu zalogowanych ustawień; logowanie społecznościowe; magiczny link zamiast hasła; odzyskiwanie konta bez dostępu do skrzynki e-mail.
+
+### S-12: Ochrona auth przed botami (Turnstile)
+
+- **Outcome:** gość może zalogować się, założyć konto i poprosić o link resetu hasła dopiero po tym, jak Cloudflare Turnstile potwierdzi, że żądanie nie pochodzi od bota. Prawdziwy użytkownik przechodzi te same ekrany co dziś; bez ważnego tokenu serwer odrzuca formularz.
+- **Change ID:** auth-turnstile
+- **PRD refs:** FR-001, FR-002, Access Control ("Registration and login via email and password")
+- **Prerequisites:** F-01, S-08, S-09, S-11
+- **Parallel with:** —
+- **Blockers:** —
+- **Unknowns:**
+  - Klucze widgetu Turnstile (site key + secret) muszą trafić do sekretów Workera przed weryfikacją na produkcji — Owner: user. Block: no.
+- **Risk:** Samo logowanie zostawia otwarte rejestrację i prośbę o reset — boty zakładają konta i zalewają skrzynki mailami. Dlatego slice obejmuje trzy publiczne POST-y auth, a nie tylko ekran sign-in. Ryzyko produktowe: widget nie może zepsuć paper theme ani copy PL/EN; weryfikacja musi być po stronie serwera, sam widget w przeglądarce nic nie broni.
+- **Status:** ready
+
+> **Scope:** Cloudflare Turnstile na `/auth/signin`, `/auth/signup` i `/auth/forgot-password`, plus odrzucenie `POST /api/auth/signin`, `POST /api/auth/signup` i `POST /api/auth/forgot-password` bez ważnego tokenu. Paper theme i oba języki interfejsu (PL/EN). **Non-goals:** Turnstile na generowaniu AI, na trasach zalogowanego użytkownika i na stronie ustawienia nowego hasła (link z maila już dowodzi dostępu do skrzynki); osobny rate limit; hCaptcha / reCAPTCHA; ochrona przed botami poza auth.
+
 ## Backlog Handoff
 
 | Roadmap ID | Change ID             | Suggested issue title                                                    | Ready for `/10x-plan` | Notes                                                         |
@@ -252,6 +285,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | S-08       | unified-paper-ui        | Unified paper UI: review, settings, auth + full route audit                  | —                     | **done** — archived `context/archive/2026-05-30-unified-paper-ui/` |
 | S-09       | bilingual-ui            | Bilingual UI (PL/EN): landing selector, browser default, locked after login  | —                     | **done** — archived `context/archive/2026-05-30-bilingual-ui/` |
 | S-10       | app-icon-favicon        | App icon + favicon: agent-generated icon for browser tab and home screen       | —                     | **done** — archived `context/archive/2026-06-08-app-icon-favicon/` |
+| S-11       | password-recovery       | Password recovery: request reset email, set a new password, sign in            | —                     | **done** — archived `context/archive/2026-10-27-password-recovery/` |
+| S-12       | auth-turnstile          | Auth bot protection: Cloudflare Turnstile on sign-in, sign-up, and password-reset request | yes            | Run `/10x-plan auth-turnstile`. Brak osobnego FR w `prd.md` — slice dodany na życzenie; FR-001/FR-002 pokrywają rejestrację i logowanie. |
 
 ## Open Roadmap Questions
 
@@ -279,5 +314,6 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **S-03: użytkownik może ręcznie dodać nową fiszkę do zestawu, edytować pytanie lub odpowiedź istniejącej fiszki i usunąć fiszkę ze zbioru.** — Archived 2026-06-08 → `context/archive/2026-05-27-manual-flashcard-crud/`. Lesson: —.
 - **S-05: użytkownik może z listy zestawów na `/dashboard` zmienić nazwę zestawu oraz usunąć zestaw — pusty jednym kliknięciem, z fiszkami po potwierdzeniu.** — Archived 2026-06-08 → `context/archive/2026-05-28-set-dashboard-lifecycle/`. Lesson: —.
 - **S-06: użytkownik może z poziomu ustawień konta trwale usunąć konto po potwierdzeniu; system usuwa konto w Supabase Auth oraz wszystkie powiązane zestawy i fiszki.** — Archived 2026-06-08 → `context/archive/2026-05-28-account-deletion/`. Lesson: —.
+- **S-11: użytkownik, który nie pamięta hasła, może z ekranu logowania poprosić o link resetu na swój e-mail, ustawić nowe hasło i zalogować się nim do istniejącego konta. Zestawy i fiszki zostają bez zmian.** — Archived 2026-10-29 → `context/archive/2026-10-27-password-recovery/`. Lesson: —.
 
-**Next up:** brak otwartych slice'ów MVP w roadmapie. Kolejny krok jakościowy: `context/foundation/test-plan.md` (rollout testów).
+**Next up:** **S-12: auth-turnstile** — jedyny otwarty slice. Kolejny krok: `/10x-plan auth-turnstile`.
