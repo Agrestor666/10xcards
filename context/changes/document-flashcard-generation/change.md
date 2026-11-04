@@ -1,7 +1,7 @@
 ---
 change_id: document-flashcard-generation
 title: Document flashcard generation — read one file, edit the text, review about 20 cards
-status: implementing
+status: implemented
 created: 2026-11-03
 updated: 2026-11-04
 ---

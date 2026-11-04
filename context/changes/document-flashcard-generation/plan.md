@@ -338,11 +338,11 @@ No database migration. No new Worker secret. The read path uses the existing `OP
 
 #### Automated
 
-- [x] 3.1 New Playwright specs pass: `npx playwright test e2e/ai-read-document-api-contract.spec.ts e2e/ai-generate-document-ui.spec.ts`
-- [x] 3.2 Unit tests pass: `npm test`
-- [x] 3.3 Lint passes: `npm run lint`
+- [x] 3.1 New Playwright specs pass: `npx playwright test e2e/ai-read-document-api-contract.spec.ts e2e/ai-generate-document-ui.spec.ts` — 5cf7569
+- [x] 3.2 Unit tests pass: `npm test` — 5cf7569
+- [x] 3.3 Lint passes: `npm run lint` — 5cf7569
 
 #### Manual
 
-- [x] 3.4 One real scanned PDF read from the dashboard UI, with `OPENROUTER_API_KEY` set, produces editable text and then cards
-- [x] 3.5 A short pass over **From text**, **From topic**, and **From photo** still generates drafts
+- [x] 3.4 One real scanned PDF read from the dashboard UI, with `OPENROUTER_API_KEY` set, produces editable text and then cards — 5cf7569
+- [x] 3.5 A short pass over **From text**, **From topic**, and **From photo** still generates drafts — 5cf7569
