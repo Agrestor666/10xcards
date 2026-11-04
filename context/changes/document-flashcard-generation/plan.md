@@ -324,25 +324,25 @@ No database migration. No new Worker secret. The read path uses the existing `OP
 
 #### Automated
 
-- [x] 2.1 Unit tests still pass: `npm test`
-- [x] 2.2 Lint passes: `npm run lint`
+- [x] 2.1 Unit tests still pass: `npm test` — b2e1076
+- [x] 2.2 Lint passes: `npm run lint` — b2e1076
 
 #### Manual
 
-- [x] 2.3 On `/dashboard`, a signed-in user can read one file, edit the text, generate cards, and save them to an existing set and to a new set without a reload
-- [x] 2.4 **Generate** stays disabled above 20_000 characters and enables after the user shortens the text
-- [x] 2.5 Switching among text, topic, photo, and document does not drop existing drafts
-- [x] 2.6 The new strings appear in Polish and in English
+- [x] 2.3 On `/dashboard`, a signed-in user can read one file, edit the text, generate cards, and save them to an existing set and to a new set without a reload — b2e1076
+- [x] 2.4 **Generate** stays disabled above 20_000 characters and enables after the user shortens the text — b2e1076
+- [x] 2.5 Switching among text, topic, photo, and document does not drop existing drafts — b2e1076
+- [x] 2.6 The new strings appear in Polish and in English — b2e1076
 
 ### Phase 3: API gates and dashboard E2E
 
 #### Automated
 
-- [ ] 3.1 New Playwright specs pass: `npx playwright test e2e/ai-read-document-api-contract.spec.ts e2e/ai-generate-document-ui.spec.ts`
-- [ ] 3.2 Unit tests pass: `npm test`
-- [ ] 3.3 Lint passes: `npm run lint`
+- [x] 3.1 New Playwright specs pass: `npx playwright test e2e/ai-read-document-api-contract.spec.ts e2e/ai-generate-document-ui.spec.ts`
+- [x] 3.2 Unit tests pass: `npm test`
+- [x] 3.3 Lint passes: `npm run lint`
 
 #### Manual
 
-- [ ] 3.4 One real scanned PDF read from the dashboard UI, with `OPENROUTER_API_KEY` set, produces editable text and then cards
-- [ ] 3.5 A short pass over **From text**, **From topic**, and **From photo** still generates drafts
+- [x] 3.4 One real scanned PDF read from the dashboard UI, with `OPENROUTER_API_KEY` set, produces editable text and then cards
+- [x] 3.5 A short pass over **From text**, **From topic**, and **From photo** still generates drafts
