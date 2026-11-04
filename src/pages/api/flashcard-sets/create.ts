@@ -22,11 +22,43 @@ function dashboardErrorRedirect(context: Parameters<APIRoute>[0], errorKey: Flas
   return context.redirect(`/dashboard?error=${encodeURIComponent(errorKey)}`);
 }
 
+function isJsonContentType(request: Request): boolean {
+  const contentType = request.headers.get("Content-Type") ?? "";
+  return contentType.includes("application/json");
+}
+
+async function readCreateSetName(
+  request: Request,
+): Promise<{ ok: true; rawName: FormDataEntryValue | null } | { ok: false }> {
+  if (isJsonContentType(request)) {
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return { ok: false };
+    }
+
+    if (typeof body === "object" && body !== null && "name" in body) {
+      const name = body.name;
+      return { ok: true, rawName: typeof name === "string" ? name : null };
+    }
+
+    return { ok: true, rawName: null };
+  }
+
+  const form = await request.formData();
+  return { ok: true, rawName: form.get("name") };
+}
+
 export const POST: APIRoute = async (context) => {
   const locale = getLocaleFromContext(context);
   const asJson = wantsJsonResponse(context.request);
-  const form = await context.request.formData();
-  const validation = validateFlashcardSetName(form.get("name"));
+  const nameRead = await readCreateSetName(context.request);
+  if (!nameRead.ok) {
+    return jsonResponse({ ok: false, message: t(locale, "api.error.invalid_body") }, 400);
+  }
+
+  const validation = validateFlashcardSetName(nameRead.rawName);
 
   if (!validation.ok) {
     const errorKey = validation.key;
@@ -57,10 +89,14 @@ export const POST: APIRoute = async (context) => {
     return context.redirect("/auth/signin");
   }
 
-  const { error } = await supabase.from("flashcard_sets").insert({
-    user_id: user.id,
-    name: validation.name,
-  });
+  const { data, error } = await supabase
+    .from("flashcard_sets")
+    .insert({
+      user_id: user.id,
+      name: validation.name,
+    })
+    .select("id, name, created_at, updated_at")
+    .single();
 
   if (error) {
     if (import.meta.env.DEV) {
@@ -75,7 +111,7 @@ export const POST: APIRoute = async (context) => {
   }
 
   if (asJson) {
-    return jsonResponse({ ok: true }, 201);
+    return jsonResponse({ ok: true, set: data }, 201);
   }
 
   return context.redirect("/dashboard");

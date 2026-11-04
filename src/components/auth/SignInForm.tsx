@@ -4,6 +4,7 @@ import { FormField } from "@/components/auth/FormField";
 import { PasswordToggle } from "@/components/auth/PasswordToggle";
 import { SubmitButton } from "@/components/auth/SubmitButton";
 import { ServerError } from "@/components/auth/ServerError";
+import { TurnstileWidget } from "@/components/auth/TurnstileWidget";
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { useLocale } from "@/components/i18n/useLocale";
 import type { AppLocale } from "@/lib/locale";
@@ -11,6 +12,7 @@ import type { AppLocale } from "@/lib/locale";
 interface Props {
   locale: AppLocale;
   serverError?: string | null;
+  turnstileSiteKey?: string;
 }
 
 function formValue(formData: FormData, key: string): string {
@@ -18,15 +20,16 @@ function formValue(formData: FormData, key: string): string {
   return typeof value === "string" ? value : "";
 }
 
-function SignInFormInner({ serverError }: Pick<Props, "serverError">) {
-  const { t } = useLocale();
+function SignInFormInner({ serverError, turnstileSiteKey }: Omit<Props, "locale">) {
+  const { locale, t } = useLocale();
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string; captcha?: string }>({});
 
   function validate(form: HTMLFormElement) {
     const fd = new FormData(form);
     const email = formValue(fd, "email").trim();
     const password = formValue(fd, "password");
+    const captchaToken = formValue(fd, "cf-turnstile-response").trim();
 
     const next: typeof errors = {};
     if (!email) {
@@ -36,6 +39,9 @@ function SignInFormInner({ serverError }: Pick<Props, "serverError">) {
     }
     if (!password) {
       next.password = t("auth.validation.password_required");
+    }
+    if (!captchaToken) {
+      next.captcha = t("auth.validation.captcha_required");
     }
     return next;
   }
@@ -91,6 +97,17 @@ function SignInFormInner({ serverError }: Pick<Props, "serverError">) {
         }
       />
 
+      <TurnstileWidget
+        siteKey={turnstileSiteKey}
+        locale={locale}
+        error={errors.captcha}
+        onTokenChange={(next) => {
+          if (next.trim()) {
+            setErrors((prev) => (prev.captcha ? { ...prev, captcha: undefined } : prev));
+          }
+        }}
+      />
+
       <ServerError message={serverError} theme="paper" />
 
       <SubmitButton pendingText={t("auth.button.sign_in_pending")} icon={<LogIn className="size-4" />}>
@@ -100,10 +117,10 @@ function SignInFormInner({ serverError }: Pick<Props, "serverError">) {
   );
 }
 
-export default function SignInForm({ locale, serverError }: Props) {
+export default function SignInForm({ locale, serverError, turnstileSiteKey }: Props) {
   return (
     <LocaleProvider locale={locale}>
-      <SignInFormInner serverError={serverError} />
+      <SignInFormInner serverError={serverError} turnstileSiteKey={turnstileSiteKey} />
     </LocaleProvider>
   );
 }

@@ -1,4 +1,6 @@
-/** Cross-island sync on dashboard: generator save → set list card counts. */
+/** Cross-island sync on dashboard: set create/rename/delete and generator save → tiles and hero. */
+
+import type { DashboardSetRow } from "@/types";
 
 export const DASHBOARD_SET_CARDS_ADDED = "dashboard-set-cards-added";
 
@@ -22,6 +24,27 @@ export interface DashboardSetDeletedDetail {
 
 export function dispatchDashboardSetDeleted(detail: DashboardSetDeletedDetail): void {
   window.dispatchEvent(new CustomEvent(DASHBOARD_SET_DELETED, { detail }));
+}
+
+export const DASHBOARD_SET_CREATED = "dashboard-set-created";
+
+export interface DashboardSetCreatedDetail {
+  set: DashboardSetRow;
+}
+
+export function dispatchDashboardSetCreated(detail: DashboardSetCreatedDetail): void {
+  window.dispatchEvent(new CustomEvent(DASHBOARD_SET_CREATED, { detail }));
+}
+
+export const DASHBOARD_SET_UPDATED = "dashboard-set-updated";
+
+export interface DashboardSetUpdatedDetail {
+  id: string;
+  name: string;
+}
+
+export function dispatchDashboardSetUpdated(detail: DashboardSetUpdatedDetail): void {
+  window.dispatchEvent(new CustomEvent(DASHBOARD_SET_UPDATED, { detail }));
 }
 
 export const DASHBOARD_SET_REVIEW_GRADED = "dashboard-set-review-graded";

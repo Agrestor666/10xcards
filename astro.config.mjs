@@ -20,6 +20,8 @@ export default defineConfig({
       SUPABASE_KEY: envField.string({ context: "server", access: "secret", optional: true }),
       SUPABASE_SERVICE_ROLE_KEY: envField.string({ context: "server", access: "secret", optional: true }),
       OPENROUTER_API_KEY: envField.string({ context: "server", access: "secret", optional: true }),
+      TURNSTILE_SITE_KEY: envField.string({ context: "server", access: "secret", optional: true }),
+      TURNSTILE_SECRET_KEY: envField.string({ context: "server", access: "secret", optional: true }),
     },
   },
 });

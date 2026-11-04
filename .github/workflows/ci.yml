@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   ci:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -29,7 +29,7 @@ jobs:
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
 
   security-integration:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -52,6 +52,8 @@ jobs:
             echo "SUPABASE_KEY=$ANON_KEY"
             echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY"
             echo "OPENROUTER_API_KEY=local-e2e-placeholder"
+            echo "TURNSTILE_SITE_KEY=1x00000000000000000000AA"
+            echo "TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA"
             echo "E2E_USER_EMAIL=e2e@example.test"
             echo "E2E_USER_PASSWORD=LocalE2E-Only-2026!"
             echo "E2E_USER_B_EMAIL=e2e-b@example.test"

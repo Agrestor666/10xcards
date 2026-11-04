@@ -1,4 +1,5 @@
 ---
+import { TURNSTILE_SITE_KEY } from "astro:env/server";
 import Layout from "@/layouts/Layout.astro";
 import PaperShell from "@/components/layout/PaperShell.astro";
 import SignUpForm from "@/components/auth/SignUpForm";
@@ -14,7 +15,7 @@ const serverError = resolveAuthErrorMessage(locale, errorParam);
   <PaperShell class="flex min-h-screen items-center justify-center py-12">
     <div class="border-border bg-card w-full max-w-sm rounded-2xl border p-8 shadow-sm">
       <h1 class="font-display mb-6 text-center text-2xl tracking-tight">{t(locale, "auth.signup.heading")}</h1>
-      <SignUpForm locale={locale} serverError={serverError} client:load />
+      <SignUpForm locale={locale} serverError={serverError} turnstileSiteKey={TURNSTILE_SITE_KEY} client:load />
       <p class="text-muted-foreground mt-4 text-center text-sm">
         {t(locale, "auth.signup.footer")}{" "}
         <a href="/auth/signin" class="text-primary font-medium hover:underline">

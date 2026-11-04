@@ -42,14 +42,15 @@ export default defineConfig({
     { name: "setup-user-b", testMatch: /auth-user-b\.setup\.ts/ },
     {
       name: "guest",
-      testMatch: /(?:guest-protected-route-redirect|health)\.spec\.ts/,
+      testMatch: /(?:guest-protected-route-redirect|health|password-recovery|auth-turnstile)\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
       },
     },
     {
       name: "chromium",
-      testIgnore: /(?:guest-protected-route-redirect|health|rls-cross-user-isolation)\.spec\.ts/,
+      testIgnore:
+        /(?:guest-protected-route-redirect|health|rls-cross-user-isolation|password-recovery|auth-turnstile)\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
         storageState: "playwright/.auth/user.json",

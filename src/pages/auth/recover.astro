@@ -1,0 +1,39 @@
+---
+import { RECOVERY_COOKIE, RECOVERY_COOKIE_MAX_AGE_SECONDS, RESET_PASSWORD_PATH } from "@/lib/password-recovery";
+
+const tokenHash = Astro.url.searchParams.get("token_hash");
+const otpType = Astro.url.searchParams.get("type");
+const invalidLink = `${RESET_PASSWORD_PATH}?error=link_invalid`;
+
+if (!tokenHash || otpType !== "recovery") {
+  return Astro.redirect(invalidLink);
+}
+
+if (Astro.locals.user) {
+  return Astro.redirect("/dashboard");
+}
+
+const supabase = Astro.locals.supabase;
+if (!supabase) {
+  return Astro.redirect(invalidLink);
+}
+
+const { error } = await supabase.auth.verifyOtp({
+  type: "recovery",
+  token_hash: tokenHash,
+});
+
+if (error) {
+  return Astro.redirect(invalidLink);
+}
+
+Astro.cookies.set(RECOVERY_COOKIE, "1", {
+  httpOnly: true,
+  sameSite: "lax",
+  path: "/",
+  maxAge: RECOVERY_COOKIE_MAX_AGE_SECONDS,
+  secure: import.meta.env.PROD,
+});
+
+return Astro.redirect(RESET_PASSWORD_PATH);
+---

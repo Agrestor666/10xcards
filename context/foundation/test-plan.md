@@ -109,7 +109,7 @@ Patterns land as rollout phases complete. Placeholders name the failure mode, no
 |------|---------|--------|
 | SRS scheduling | Lib-layer grade + `isFlashcardDue` flow tests — `gradeCard()` → `isFlashcardDue()` proves schedule update and due-queue semantics without HTTP/DB; see `src/lib/srs/is-due.test.ts`, `fsrs-mapper.test.ts`, `grade-card.test.ts`, `grade-due-flow.test.ts` | active |
 | Auth + ownership | TBD — see §3 Phase 2: unauthenticated denial + cross-user CRUD block | pending Phase 2 |
-| AI generation | Vitest fixture matrix (`openrouter-generate.test.ts`) + parsing/validation unit tests; handler privacy spy (`ai-generate-handler.test.ts`); Playwright API input/auth (`e2e/ai-generate-api-contract.spec.ts`) + UI error branch (`e2e/ai-generate-error-ui.spec.ts`) — Risks #3, #4, #5 | active |
+| AI generation | Vitest fixture matrix including topic mode (`openrouter-generate.test.ts`, `ai-generate-handler.test.ts`) + parsing/validation unit tests; Playwright API input/auth for text and topic (`e2e/ai-generate-api-contract.spec.ts`), UI error branch (`e2e/ai-generate-error-ui.spec.ts`), and topic UI with inline new-set save (`e2e/ai-generate-topic-ui.spec.ts`) — Risks #3, #4, #5 | active |
 | i18n | TBD — see §3 Phase 4: locale toggle and frozen post-login locale on critical flows | pending Phase 4 |
 | CI gate | `npm test` in GitHub Actions `ci` job — lint → test → build blocks merge and deploy | active |
 
