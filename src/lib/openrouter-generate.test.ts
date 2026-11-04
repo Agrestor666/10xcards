@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 
 import {
+  DOCUMENT_READ_TIMEOUT_MS,
   MAX_CARD_FIELD_CHARS,
   OPENROUTER_REQUEST_TIMEOUT_MS,
   OPENROUTER_WEB_SEARCH_MAX_RESULTS,
@@ -21,10 +22,12 @@ vi.mock("astro:env/server", () => ({
 }));
 
 import {
+  generateFlashcardsFromDocument,
   generateFlashcardsFromText,
   generateFlashcardsFromTopic,
   generateFlashcardsFromTranscript,
   transcribeImage,
+  transcribePdf,
 } from "@/lib/openrouter-generate";
 
 const SOURCE_TEXT = "Mitochondria are the powerhouse of the cell.";
@@ -397,6 +400,92 @@ describe("transcribeImage and generateFlashcardsFromTranscript (S-14, Risk #4)",
 
     expect(parsedBody.messages[0].content).toMatch(/8 to 12/);
     expect(parsedBody.messages[1].content).toBe(SOURCE_TEXT);
+  });
+});
+
+describe("transcribePdf and generateFlashcardsFromDocument (S-15, Risk #4)", () => {
+  const PDF_BYTES = Uint8Array.from([0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x34]);
+
+  beforeEach(() => {
+    mockApiKey.value = "test-key";
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+  });
+
+  it("asks for about 20 cards from edited document text and validates drafts", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(openRouterSuccessResponse(JSON.stringify({ cards: EXPECTED_CARDS })));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await generateFlashcardsFromDocument(SOURCE_TEXT);
+
+    expect(result).toEqual({ ok: true, cards: EXPECTED_CARDS });
+    const rawInit = fetchMock.mock.calls[0]?.[1] as RequestInit | undefined;
+    const parsedBody = z
+      .object({
+        response_format: z.object({ type: z.literal("json_object") }),
+        messages: z.tuple([
+          z.object({ role: z.literal("system"), content: z.string() }),
+          z.object({ role: z.literal("user"), content: z.string() }),
+        ]),
+      })
+      .parse(JSON.parse(rawInit?.body as string) as unknown);
+
+    expect(parsedBody.messages[0].content).toMatch(/about 20/);
+    expect(parsedBody.messages[0].content).toMatch(/URLs/);
+    expect(parsedBody.messages[1].content).toBe(SOURCE_TEXT);
+  });
+
+  it("sends the PDF as document.pdf with a 60s timeout and no response_format", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(openRouterSuccessResponse("Page one\nPage two"));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await transcribePdf(PDF_BYTES);
+
+    expect(result).toEqual({ ok: true, text: "Page one\nPage two" });
+    const rawInit = fetchMock.mock.calls[0]?.[1] as RequestInit | undefined;
+    expect(typeof rawInit?.body).toBe("string");
+    const parsedBody = JSON.parse(rawInit?.body as string) as Record<string, unknown>;
+    expect(parsedBody).not.toHaveProperty("response_format");
+
+    const fileSchema = z.object({
+      messages: z.tuple([
+        z.object({
+          role: z.literal("user"),
+          content: z.tuple([
+            z.object({ type: z.literal("text"), text: z.string().min(1) }),
+            z.object({
+              type: z.literal("file"),
+              file: z.object({
+                filename: z.literal("document.pdf"),
+                file_data: z.string(),
+              }),
+            }),
+          ]),
+        }),
+      ]),
+    });
+    const fileBody = fileSchema.parse(parsedBody);
+    expect(fileBody.messages[0].content[1].file.file_data).toBe(
+      `data:application/pdf;base64,${Buffer.from(PDF_BYTES).toString("base64")}`,
+    );
+    expect(fileBody.messages[0].content[0].text).toMatch(/line breaks/i);
+    expect(fileBody.messages[0].content[0].text).toMatch(/empty message/i);
+
+    vi.useFakeTimers();
+    stubFetchUntilAborted();
+    let settled = false;
+    const resultPromise = transcribePdf(PDF_BYTES).then((timeoutResult) => {
+      settled = true;
+      return timeoutResult;
+    });
+    await vi.advanceTimersByTimeAsync(OPENROUTER_REQUEST_TIMEOUT_MS);
+    expect(settled).toBe(false);
+    await vi.advanceTimersByTimeAsync(DOCUMENT_READ_TIMEOUT_MS - OPENROUTER_REQUEST_TIMEOUT_MS);
+
+    await expect(resultPromise).resolves.toEqual({ ok: false, errorKey: "generator.error.timeout" });
   });
 });
 

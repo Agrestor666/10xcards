@@ -10,6 +10,21 @@ export const MAX_PHOTO_COUNT = 3;
 /** Max decoded image size per photo in bytes (client + server). */
 export const MAX_PHOTO_BYTES = 1_500_000;
 
+/** Max raw document upload size in bytes (client + server). */
+export const MAX_DOCUMENT_BYTES = 10_485_760;
+
+/** Max PDF pages or PPTX slides in one document. */
+export const MAX_DOCUMENT_PAGES = 20;
+
+/** Max characters returned by the document read route. Generation still uses MAX_SOURCE_TEXT_CHARS. */
+export const MAX_DOCUMENT_EXTRACT_CHARS = 100_000;
+
+/** A PDF page whose trimmed text is shorter than this is treated as sparse. */
+export const PDF_PAGE_TEXT_MIN_CHARS = 40;
+
+/** OpenRouter timeout for one scanned-PDF transcript. Other calls keep OPENROUTER_REQUEST_TIMEOUT_MS. */
+export const DOCUMENT_READ_TIMEOUT_MS = 60_000;
+
 /** Max longest-edge dimension (px) when resizing a photo on the client. */
 export const MAX_PHOTO_EDGE_PX = 1600;
 

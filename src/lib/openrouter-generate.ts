@@ -2,6 +2,7 @@ import { z } from "zod";
 import { OPENROUTER_API_KEY } from "astro:env/server";
 import { extractJsonPayload, parseCardsFromLlmPayload } from "@/lib/ai-response-parse";
 import {
+  DOCUMENT_READ_TIMEOUT_MS,
   OPENROUTER_DEFAULT_BASE_URL,
   OPENROUTER_DEFAULT_MODEL,
   OPENROUTER_REQUEST_TIMEOUT_MS,
@@ -42,6 +43,18 @@ Respond with ONLY valid JSON in this exact shape (no markdown, no commentary):
 const TRANSCRIBE_IMAGE_PROMPT =
   "Transcribe every visible word exactly, including handwriting. Keep the original language and line breaks. Do not summarize and do not invent text. If nothing is readable, return an empty message and no explanation.";
 
+const TRANSCRIBE_PDF_PROMPT =
+  "Transcribe this PDF verbatim. Keep the original language and line breaks, including handwriting. Do not summarize and do not invent text. If nothing is readable, return an empty message and no explanation.";
+
+const DOCUMENT_SYSTEM_PROMPT = `You are a flashcard generator. Given source study text read from a document, produce about 20 concise question-and-answer pairs that help the learner review the material.
+
+Write the questions and answers in the same language as the text. Do NOT include markdown links, URLs, or source citations in the questions or answers.
+
+Respond with ONLY valid JSON in this exact shape (no markdown, no commentary):
+{"cards":[{"question":"...","answer":"..."}]}`;
+
+const PDF_TRANSCRIPT_FILENAME = "document.pdf";
+
 const TOPIC_SYSTEM_PROMPT = `You are a flashcard generator. Given a study topic and web search results, produce 8 to 12 concise, factually accurate question-and-answer pairs that cover the most important concepts, definitions, and facts about the topic.
 
 Write the questions and answers in the same language as the user's topic. Do NOT include markdown links, URLs, or source citations in the questions or answers.
@@ -56,6 +69,7 @@ type OpenRouterCompletionContentResult = { ok: true; content: string } | { ok: f
 
 async function requestOpenRouterCompletionContent(
   requestBody: Record<string, unknown>,
+  timeoutMs = OPENROUTER_REQUEST_TIMEOUT_MS,
 ): Promise<OpenRouterCompletionContentResult> {
   if (!OPENROUTER_API_KEY) {
     return { ok: false, errorKey: "generator.error.generate" };
@@ -64,7 +78,7 @@ async function requestOpenRouterCompletionContent(
   const controller = new AbortController();
   const timeoutId = setTimeout(() => {
     controller.abort();
-  }, OPENROUTER_REQUEST_TIMEOUT_MS);
+  }, timeoutMs);
 
   try {
     const response = await fetch(`${OPENROUTER_DEFAULT_BASE_URL}/chat/completions`, {
@@ -177,6 +191,49 @@ export async function generateFlashcardsFromTranscript(text: string): Promise<Ge
       { role: "user", content: text },
     ],
   });
+}
+
+export async function generateFlashcardsFromDocument(text: string): Promise<GenerateFlashcardsResult> {
+  return requestOpenRouterCards({
+    model: OPENROUTER_DEFAULT_MODEL,
+    response_format: { type: "json_object" },
+    messages: [
+      { role: "system", content: DOCUMENT_SYSTEM_PROMPT },
+      { role: "user", content: text },
+    ],
+  });
+}
+
+export type TranscribePdfResult = { ok: true; text: string } | { ok: false; errorKey: string };
+
+export async function transcribePdf(bytes: Uint8Array): Promise<TranscribePdfResult> {
+  const completion = await requestOpenRouterCompletionContent(
+    {
+      model: OPENROUTER_DEFAULT_MODEL,
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "text", text: TRANSCRIBE_PDF_PROMPT },
+            {
+              type: "file",
+              file: {
+                filename: PDF_TRANSCRIPT_FILENAME,
+                file_data: `data:application/pdf;base64,${Buffer.from(bytes).toString("base64")}`,
+              },
+            },
+          ],
+        },
+      ],
+    },
+    DOCUMENT_READ_TIMEOUT_MS,
+  );
+
+  if (!completion.ok) {
+    return completion;
+  }
+
+  return { ok: true, text: completion.content };
 }
 
 export async function generateFlashcardsFromTopic(topic: string): Promise<GenerateFlashcardsResult> {

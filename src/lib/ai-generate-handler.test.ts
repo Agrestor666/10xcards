@@ -341,3 +341,122 @@ describe("handleAiGenerateRequest transcript mode (S-14, Risk #3)", () => {
     expect(generateFlashcardsFromTopic).not.toHaveBeenCalled();
   });
 });
+
+/** S-15 document mode must dispatch to generateFlashcardsFromDocument and preserve Risk #3 privacy */
+describe("handleAiGenerateRequest document mode (S-15, Risk #3)", () => {
+  function documentGenerators() {
+    const generateFlashcardsFromText = vi.fn();
+    const generateFlashcardsFromTopic = vi.fn();
+    const generateFlashcardsFromTranscript = vi.fn();
+    const generateFlashcardsFromDocument = vi.fn().mockResolvedValue({
+      ok: true,
+      cards: [{ question: "Q?", answer: "A." }],
+    } satisfies GenerateFlashcardsResult);
+
+    return {
+      generateFlashcardsFromText,
+      generateFlashcardsFromTopic,
+      generateFlashcardsFromTranscript,
+      generateFlashcardsFromDocument,
+    };
+  }
+
+  it("calls generateFlashcardsFromDocument for { mode: 'document', text } and leaves paste, topic, and transcript alone", async () => {
+    const supabase = createSupabaseMock();
+    const generators = documentGenerators();
+
+    const result = await handleAiGenerateRequest({
+      locale: "en",
+      supabase,
+      body: { mode: "document", text: `  ${SENTINEL}  ` },
+      ...generators,
+    });
+
+    expect(result.status).toBe(200);
+    expect(result.body).toEqual({ ok: true, cards: [{ question: "Q?", answer: "A." }] });
+    expect(JSON.stringify(result.body)).not.toContain(SENTINEL);
+    expect(generators.generateFlashcardsFromDocument).toHaveBeenCalledWith(SENTINEL);
+    expect(generators.generateFlashcardsFromText).not.toHaveBeenCalled();
+    expect(generators.generateFlashcardsFromTopic).not.toHaveBeenCalled();
+    expect(generators.generateFlashcardsFromTranscript).not.toHaveBeenCalled();
+    expect(supabase.fromCalls).toHaveLength(0);
+  });
+
+  it("still classifies plain text as paste when the document generator is wired", async () => {
+    const supabase = createSupabaseMock();
+    const generators = documentGenerators();
+    generators.generateFlashcardsFromText.mockResolvedValue({
+      ok: true,
+      cards: [{ question: "Q?", answer: "A." }],
+    } satisfies GenerateFlashcardsResult);
+
+    const result = await handleAiGenerateRequest({
+      locale: "en",
+      supabase,
+      body: { text: SENTINEL },
+      ...generators,
+    });
+
+    expect(result.status).toBe(200);
+    expect(generators.generateFlashcardsFromText).toHaveBeenCalledWith(SENTINEL);
+    expect(generators.generateFlashcardsFromDocument).not.toHaveBeenCalled();
+  });
+
+  it("returns 400 generator.error.paste_text for empty document text", async () => {
+    const supabase = createSupabaseMock();
+    const generators = documentGenerators();
+
+    const result = await handleAiGenerateRequest({
+      locale: "en",
+      supabase,
+      body: { mode: "document", text: "   " },
+      ...generators,
+    });
+
+    expect(result.status).toBe(400);
+    expect(result.body).toEqual({ ok: false, message: t("en", "generator.error.paste_text") });
+    expect(generators.generateFlashcardsFromDocument).not.toHaveBeenCalled();
+    expect(supabase.fromCalls).toHaveLength(0);
+  });
+
+  it("returns 400 generator.error.text_max above 20_000 characters without echoing the input", async () => {
+    const supabase = createSupabaseMock();
+    const generators = documentGenerators();
+    const overMax = `${SENTINEL}${"x".repeat(MAX_SOURCE_TEXT_CHARS + 1)}`;
+
+    const result = await handleAiGenerateRequest({
+      locale: "en",
+      supabase,
+      body: { mode: "document", text: overMax },
+      ...generators,
+    });
+
+    expect(result.status).toBe(400);
+    expect(result.body).toEqual({
+      ok: false,
+      message: t("en", "generator.error.text_max", { max: MAX_SOURCE_TEXT_CHARS }),
+    });
+    expect(JSON.stringify(result.body)).not.toContain(SENTINEL);
+    expect(generators.generateFlashcardsFromDocument).not.toHaveBeenCalled();
+    expect(supabase.fromCalls).toHaveLength(0);
+  });
+
+  it("returns 400 api.error.invalid_body when a document body also includes topic", async () => {
+    const supabase = createSupabaseMock();
+    const generators = documentGenerators();
+
+    const result = await handleAiGenerateRequest({
+      locale: "en",
+      supabase,
+      body: { mode: "document", text: "notes", topic: SENTINEL },
+      ...generators,
+    });
+
+    expect(result.status).toBe(400);
+    expect(result.body).toEqual({ ok: false, message: t("en", "api.error.invalid_body") });
+    expect(JSON.stringify(result.body)).not.toContain(SENTINEL);
+    expect(generators.generateFlashcardsFromDocument).not.toHaveBeenCalled();
+    expect(generators.generateFlashcardsFromText).not.toHaveBeenCalled();
+    expect(supabase.fromCalls).toHaveLength(0);
+  });
+});

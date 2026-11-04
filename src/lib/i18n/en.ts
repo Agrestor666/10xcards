@@ -228,6 +228,13 @@ export const en = {
   "generator.error.photo_too_large": "This photo is still too large after resizing. Try a smaller image.",
   "generator.error.photo_unreadable": "Could not read this image. Use a JPEG, PNG, WebP, or GIF photo.",
   "generator.error.no_readable_text": "No readable text was found in the photos. Try a clearer image.",
+  "generator.error.document_too_large": "This file is too large. The maximum size is {max} MB.",
+  "generator.error.document_too_many_pages": "This document has too many pages or slides. The maximum is {max}.",
+  "generator.error.document_too_long": "This document's text is too long to return. The maximum is {max} characters.",
+  "generator.error.document_unsupported":
+    "This file is not a supported document, or it is damaged. Use a PDF, DOC, DOCX, TXT, or PPTX.",
+  "generator.error.document_password": "This PDF is password-protected. Remove the password and try again.",
+  "generator.error.document_no_text": "No readable text was found in this document.",
   "generator.error.generate": "Could not generate flashcards. Please try again.",
   "generator.error.timeout": "Generation timed out. Try a shorter passage.",
   "generator.error.no_cards": "No flashcards were generated. Please try again.",

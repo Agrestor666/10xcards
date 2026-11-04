@@ -4,6 +4,7 @@ import { jsonResponse } from "@/lib/api-json";
 import { t } from "@/lib/i18n";
 import { getLocaleFromContext } from "@/lib/locale";
 import {
+  generateFlashcardsFromDocument,
   generateFlashcardsFromText,
   generateFlashcardsFromTopic,
   generateFlashcardsFromTranscript,
@@ -28,6 +29,7 @@ export const POST: APIRoute = async (context) => {
     generateFlashcardsFromText,
     generateFlashcardsFromTopic,
     generateFlashcardsFromTranscript,
+    generateFlashcardsFromDocument,
   });
 
   return jsonResponse(result.body, result.status);

@@ -231,6 +231,13 @@ export const pl: Record<keyof typeof en, string> = {
   "generator.error.photo_too_large": "To zdjęcie jest nadal za duże po zmniejszeniu. Spróbuj mniejszego obrazu.",
   "generator.error.photo_unreadable": "Nie udało się odczytać tego obrazu. Użyj zdjęcia JPEG, PNG, WebP lub GIF.",
   "generator.error.no_readable_text": "Nie udało się odczytać tekstu ze zdjęć. Spróbuj wyraźniejszego zdjęcia.",
+  "generator.error.document_too_large": "Ten plik jest za duży. Maksymalny rozmiar to {max} MB.",
+  "generator.error.document_too_many_pages": "Ten dokument ma za dużo stron lub slajdów. Maksimum to {max}.",
+  "generator.error.document_too_long": "Tekst tego dokumentu jest za długi, aby go zwrócić. Maksimum to {max} znaków.",
+  "generator.error.document_unsupported":
+    "Ten plik nie jest obsługiwanym dokumentem albo jest uszkodzony. Użyj pliku PDF, DOC, DOCX, TXT lub PPTX.",
+  "generator.error.document_password": "Ten plik PDF jest chroniony hasłem. Usuń hasło i spróbuj ponownie.",
+  "generator.error.document_no_text": "Nie znaleziono czytelnego tekstu w tym dokumencie.",
   "generator.error.generate": "Nie udało się wygenerować fiszek. Spróbuj ponownie.",
   "generator.error.timeout": "Generowanie przekroczyło limit czasu. Spróbuj z krótszym tekstem.",
   "generator.error.no_cards": "Nie wygenerowano fiszek. Spróbuj ponownie.",
