@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { strToU8, zipSync } from "fflate";
+import { strToU8, unzipSync, zipSync } from "fflate";
 import { PDFDocument, StandardFonts } from "pdf-lib";
 import { describe, expect, it } from "vitest";
 
@@ -94,6 +94,56 @@ function pptxWithSlideCount(count: number): Uint8Array {
   return pptxWithReversedFilenames(Array.from({ length: count }, (_, index) => `Slide ${index + 1} study notes`));
 }
 
+const OVER_UNCOMPRESSED_BUDGET = 40_000_000;
+
+function withExtraZipEntry(zip: Uint8Array, name: string, contents: Uint8Array): Uint8Array {
+  const files = unzipSync(zip);
+  files[name] = contents;
+  return zipSync(files);
+}
+
+function patchUncompressedSize(zip: Uint8Array, entryName: string, size: number): Uint8Array {
+  const bytes = Uint8Array.from(zip);
+  const name = new TextEncoder().encode(entryName);
+  const sizeBytes = new Uint8Array(4);
+  new DataView(sizeBytes.buffer).setUint32(0, size, true);
+  let patched = 0;
+
+  for (let index = 0; index <= bytes.length - name.length; index += 1) {
+    if (!name.every((byte, offset) => bytes[index + offset] === byte)) {
+      continue;
+    }
+
+    if (
+      index >= 30 &&
+      bytes[index - 30] === 0x50 &&
+      bytes[index - 29] === 0x4b &&
+      bytes[index - 28] === 0x03 &&
+      bytes[index - 27] === 0x04
+    ) {
+      bytes.set(sizeBytes, index - 8);
+      patched += 1;
+    }
+
+    if (
+      index >= 46 &&
+      bytes[index - 46] === 0x50 &&
+      bytes[index - 45] === 0x4b &&
+      bytes[index - 44] === 0x01 &&
+      bytes[index - 43] === 0x02
+    ) {
+      bytes.set(sizeBytes, index - 22);
+      patched += 1;
+    }
+  }
+
+  if (patched < 2) {
+    throw new Error(`could not patch ${entryName}`);
+  }
+
+  return bytes;
+}
+
 function escapeXml(value: string): string {
   return value
     .replace(/&/g, "&amp;")
@@ -176,6 +226,42 @@ describe("readDocumentText", () => {
     if (result.ok && "text" in result) {
       expect(result.text).toContain("This is a test for parsing the Word file in node.");
     }
+  });
+
+  it("rejects a DOCX whose declared uncompressed size exceeds the budget", async () => {
+    const bytes = patchUncompressedSize(
+      docxWithParagraphs(["Alpha paragraph"]),
+      "word/document.xml",
+      OVER_UNCOMPRESSED_BUDGET,
+    );
+    const result = await readDocumentText(bytes, "docx");
+
+    expect(result).toEqual({ ok: false, errorKey: "generator.error.document_unsupported" });
+  });
+
+  it("reads PPTX text while skipping a media entry that declares an over-budget size", async () => {
+    const bytes = patchUncompressedSize(
+      withExtraZipEntry(
+        pptxWithReversedFilenames(["ALPHA & one", "BETA slide notes"]),
+        "ppt/media/image1.png",
+        strToU8("not-a-real-image"),
+      ),
+      "ppt/media/image1.png",
+      OVER_UNCOMPRESSED_BUDGET,
+    );
+    const result = await readDocumentText(bytes, "pptx");
+
+    expect(result).toEqual({ ok: true, text: "ALPHA & one\n\nBETA slide notes" });
+
+    const oversizedSlide = patchUncompressedSize(
+      pptxWithReversedFilenames(["ALPHA & one"]),
+      "ppt/slides/slide1.xml",
+      OVER_UNCOMPRESSED_BUDGET,
+    );
+    await expect(readDocumentText(oversizedSlide, "pptx")).resolves.toEqual({
+      ok: false,
+      errorKey: "generator.error.document_unsupported",
+    });
   });
 
   it("reads PPTX slide text in relationship order and rejects more than 20 slides", async () => {

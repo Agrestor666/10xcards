@@ -3,7 +3,7 @@ project: "10xCards"
 version: 1
 status: active
 created: 2026-05-25
-updated: 2026-10-29
+updated: 2026-11-03
 prd_version: 1
 prd_v2_slice: S-05
 shape_notes_slice: S-07
@@ -48,6 +48,7 @@ Ręczne tworzenie fiszek edukacyjnych jest skrajnie czasochłonne — ta bariera
 | S-12 | auth-turnstile        | zalogować się, założyć konto i poprosić o reset hasła dopiero po sprawdzeniu, że nie jest botem (Cloudflare Turnstile) | F-01, S-08, S-09, S-11 | FR-001, FR-002, Access Control | done |
 | S-13 | topic-flashcard-generation | podać temat, dostać fiszki oparte na wyszukanych informacjach, przejrzeć je i zapisać do zestawu | F-01, S-01, S-02, S-09 | FR-004, FR-005 (rozszerzenie: temat zamiast wklejonego tekstu) | done |
 | S-14 | photo-flashcard-generation | zrobić zdjęcie aparatem albo wgrać zdjęcie z tekstem, przejrzeć fiszki z odczytanego tekstu i zapisać je do zestawu | F-01, S-01, S-02, S-09 | FR-004, FR-005 (rozszerzenie: zdjęcie z tekstem albo aparat zamiast wklejonego tekstu) | done |
+| S-15 | document-flashcard-generation | wgrać plik PDF, DOC lub podobny dokument, przejrzeć fiszki z odczytanego tekstu i zapisać je do zestawu | F-01, S-01, S-02, S-09 | FR-004, FR-005 (rozszerzenie: dokument zamiast wklejonego tekstu) | ready |
 
 ## Streams
 
@@ -69,6 +70,7 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 | K      | Konto / ochrona przed botami | `S-12` ✓        | Zakończony — Turnstile na logowaniu, rejestracji i prośbie o reset. |
 | L      | Generowanie z tematu | `S-13`          | Nowy wejściowy przepływ obok wklejania tekstu: temat → wyszukanie → propozycja fiszek → zapis. Równolegle z S-14. |
 | M      | Generowanie ze zdjęcia | `S-14`        | Zdjęcie z tekstem albo aparat → odczyt tekstu → propozycja fiszek → zapis. Równolegle z S-13. |
+| N      | Generowanie z dokumentu | `S-15`       | Plik PDF, DOC lub podobny → odczyt tekstu → propozycja fiszek → zapis. Osobna ścieżka obok S-02, S-13 i S-14. |
 
 ## Baseline
 
@@ -286,7 +288,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Risk:** Fiszki nie pochodzą z materiału użytkownika, więc błąd wyszukania albo zła odpowiedź modelu trafia prosto do zestawu, jeśli pominąć przegląd. Dlatego slice korzysta z istniejącej bramki akceptacji ze S-02 i nie zapisuje kart bez decyzji użytkownika. Wklejanie własnego tekstu zostaje osobną ścieżką.
 - **Status:** done
 
-> **Scope:** zalogowany użytkownik podaje temat po polsku lub angielsku; system wyszukuje informacje, generuje propozycje fiszek i pokazuje je do przeglądu (akceptuj / edytuj / odrzuć) przed zapisem do nowego albo istniejącego zestawu. Paper theme i oba języki interfejsu (PL/EN). Język treści fiszek wynika z tematu, nie z języka interfejsu. **Non-goals:** zastąpienie generowania z wklejonego tekstu (S-02 zostaje); import plików; publiczne lub współdzielone zestawy; fiszki bez przeglądu użytkownika; Turnstile na tym przepływie.
+> **Scope:** zalogowany użytkownik podaje temat po polsku lub angielsku; system wyszukuje informacje, generuje propozycje fiszek i pokazuje je do przeglądu (akceptuj / edytuj / odrzuć) przed zapisem do nowego albo istniejącego zestawu. Paper theme i oba języki interfejsu (PL/EN). Język treści fiszek wynika z tematu, nie z języka interfejsu. **Non-goals:** zastąpienie generowania z wklejonego tekstu (S-02 zostaje); import dokumentów (→ S-15); publiczne lub współdzielone zestawy; fiszki bez przeglądu użytkownika; Turnstile na tym przepływie.
 
 ### S-14: Generowanie fiszek ze zdjęcia
 
@@ -301,7 +303,22 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Risk:** Zły odczyt tekstu ze zdjęcia daje fiszki oparte na złym materiale, jeśli pominąć przegląd. Dlatego slice korzysta z istniejącej bramki akceptacji ze S-02 i nie zapisuje kart bez decyzji użytkownika. Zdjęcie służy tylko do odczytu tekstu i nie zostaje zapisane — tak jak tekst źródłowy w NFR prywatności. Wklejanie tekstu (S-02) i temat (S-13) zostają osobnymi ścieżkami.
 - **Status:** done
 
-> **Scope:** zalogowany użytkownik wgrywa zdjęcie z widocznym tekstem albo robi je aparatem urządzenia; system odczytuje tekst, generuje propozycje fiszek i pokazuje je do przeglądu (akceptuj / edytuj / odrzuć) przed zapisem do nowego albo istniejącego zestawu. Paper theme i oba języki interfejsu (PL/EN). Język treści fiszek wynika z tekstu na zdjęciu, nie z języka interfejsu. **Non-goals:** zastąpienie generowania z wklejonego tekstu (S-02) i z tematu (S-13); import plików PDF, DOCX, TXT, PPTX (nadal w Parked); przechowywanie zdjęcia po odczycie; publiczne lub współdzielone zestawy; fiszki bez przeglądu użytkownika; natywna aplikacja aparatu poza przeglądarką.
+> **Scope:** zalogowany użytkownik wgrywa zdjęcie z widocznym tekstem albo robi je aparatem urządzenia; system odczytuje tekst, generuje propozycje fiszek i pokazuje je do przeglądu (akceptuj / edytuj / odrzuć) przed zapisem do nowego albo istniejącego zestawu. Paper theme i oba języki interfejsu (PL/EN). Język treści fiszek wynika z tekstu na zdjęciu, nie z języka interfejsu. **Non-goals:** zastąpienie generowania z wklejonego tekstu (S-02) i z tematu (S-13); import dokumentów PDF, DOC i podobnych (→ S-15); przechowywanie zdjęcia po odczycie; publiczne lub współdzielone zestawy; fiszki bez przeglądu użytkownika; natywna aplikacja aparatu poza przeglądarką.
+
+### S-15: Generowanie fiszek z dokumentu
+
+- **Outcome:** użytkownik może wgrać plik PDF, DOC albo podobny dokument; system odczytuje z niego tekst i proponuje pary pytanie–odpowiedź; użytkownik akceptuje, edytuje albo odrzuca pojedyncze karty i zapisuje przyjęte do wybranego zestawu.
+- **Change ID:** document-flashcard-generation
+- **PRD refs:** FR-004, FR-005, US-01 — slice dodany na życzenie; FR-004 opisuje wklejony tekst, ten slice dokłada czwarte wejście: dokument (PDF, DOC i pokrewne), z tą samą bramką przeglądu przed zapisem (FR-005). Wcześniej w Parked jako non-goal PRD.
+- **Prerequisites:** F-01, S-01, S-02, S-09
+- **Parallel with:** —
+- **Blockers:** —
+- **Unknowns:**
+  - Czy skan PDF (same obrazy stron, bez warstwy tekstu) ma być odczytywany tak jak zdjęcie w S-14, czy slice obejmuje tylko pliki z warstwą tekstu? — Owner: user. Block: no.
+- **Risk:** Zły odczyt tekstu z pliku daje fiszki oparte na złym materiale, jeśli pominąć przegląd. Dlatego slice korzysta z istniejącej bramki akceptacji ze S-02 i nie zapisuje kart bez decyzji użytkownika. Plik służy tylko do odczytu tekstu i nie zostaje zapisany — tak jak tekst źródłowy w NFR prywatności. Wklejanie tekstu (S-02), temat (S-13) i zdjęcie (S-14) zostają osobnymi ścieżkami.
+- **Status:** ready
+
+> **Scope:** zalogowany użytkownik wgrywa dokument: PDF, DOC, DOCX, TXT albo PPTX; system wyciąga tekst, generuje propozycje fiszek i pokazuje je do przeglądu (akceptuj / edytuj / odrzuć) przed zapisem do nowego albo istniejącego zestawu. Paper theme i oba języki interfejsu (PL/EN). Język treści fiszek wynika z tekstu w pliku, nie z języka interfejsu. **Non-goals:** zastąpienie generowania z wklejonego tekstu (S-02), z tematu (S-13) i ze zdjęcia (S-14); przechowywanie pliku po odczycie; arkusze (XLSX), obrazy, audio, wideo i archiwa; publiczne lub współdzielone zestawy; fiszki bez przeglądu użytkownika.
 
 ## Backlog Handoff
 
@@ -322,7 +339,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | S-11       | password-recovery       | Password recovery: request reset email, set a new password, sign in            | —                     | **done** — archived `context/archive/2026-10-27-password-recovery/` |
 | S-12       | auth-turnstile          | Auth bot protection: Cloudflare Turnstile on sign-in, sign-up, and password-reset request | —              | **done** — archived `context/archive/2026-10-29-auth-turnstile/` |
 | S-13       | topic-flashcard-generation | Topic generation: user names a subject, AI retrieves information, user reviews and saves cards | yes         | Run `/10x-plan topic-flashcard-generation`. Brak osobnego FR w `prd.md` — slice dodany na życzenie; FR-005 zostaje bramką przed zapisem. |
-| S-14       | photo-flashcard-generation | Photo generation: user uploads a photo of text or takes one with the camera, reviews cards from the read text, and saves them | yes | Run `/10x-plan photo-flashcard-generation`. Brak osobnego FR w `prd.md` — slice dodany na życzenie; FR-005 zostaje bramką przed zapisem. Import PDF/DOCX/TXT/PPTX zostaje w Parked. |
+| S-14       | photo-flashcard-generation | Photo generation: user uploads a photo of text or takes one with the camera, reviews cards from the read text, and saves them | — | **done** — archived `context/archive/2026-10-29-photo-flashcard-generation/`. Import dokumentów jest osobno, w S-15. |
+| S-15       | document-flashcard-generation | Document generation: user uploads a PDF, DOC, or similar file, reviews cards from the extracted text, and saves them | yes | Run `/10x-plan document-flashcard-generation`. Brak osobnego FR w `prd.md` — slice dodany na życzenie; wcześniej Parked (PRD §Non-Goals). FR-005 zostaje bramką przed zapisem. |
 
 ## Open Roadmap Questions
 
@@ -330,7 +348,6 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Parked
 
-- **Import plików (PDF, DOCX, TXT, PPTX)** — Why parked: PRD §Non-Goals; parsowanie zewnętrznych dokumentów dodaje dużą powierzchnię niewymaganą do walidacji wartości rdzenia. Zdjęcie z tekstem i aparat są osobno, w S-14 — to nie jest import tych formatów.
 - **Funkcje społecznościowe i udostępnianie zestawów** — Why parked: PRD §Non-Goals; zestawy są prywatne w zakresie MVP.
 - **Integracje z zewnętrznymi platformami (Quizlet, LMS, Notion, API)** — Why parked: PRD §Non-Goals.
 - **Natywne aplikacje mobilne (iOS / Android)** — Why parked: PRD §Non-Goals; web-only w MVP z responsywnym layoutem.
@@ -355,4 +372,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **S-13: podać temat, dostać fiszki oparte na wyszukanych informacjach, przejrzeć je i zapisać do zestawu** — Archived 2026-10-29 → `context/archive/2026-10-29-topic-flashcard-generation/`. Lesson: —.
 - **S-14: użytkownik może zrobić zdjęcie aparatem albo wgrać istniejące zdjęcie z tekstem; system odczytuje tekst z obrazu i proponuje pary pytanie–odpowiedź; użytkownik akceptuje, edytuje albo odrzuca pojedyncze karty i zapisuje przyjęte do wybranego zestawu.** — Archived 2026-10-29 → `context/archive/2026-10-29-photo-flashcard-generation/`. Lesson: —.
 
-**Next up:** open slice. **S-14: photo-flashcard-generation** — `/10x-plan photo-flashcard-generation`.
+**Next up:** open slice. **S-15: document-flashcard-generation** — `/10x-plan document-flashcard-generation`.

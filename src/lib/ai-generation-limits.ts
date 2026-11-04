@@ -13,6 +13,9 @@ export const MAX_PHOTO_BYTES = 1_500_000;
 /** Max raw document upload size in bytes (client + server). */
 export const MAX_DOCUMENT_BYTES = 10_485_760;
 
+/** Max total uncompressed size of Office zip entries that are actually inflated. */
+export const MAX_DOCUMENT_UNCOMPRESSED_BYTES = 33_554_432;
+
 /** Max PDF pages or PPTX slides in one document. */
 export const MAX_DOCUMENT_PAGES = 20;
 

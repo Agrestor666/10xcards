@@ -1,8 +1,12 @@
 import { unzipSync, strFromU8 } from "fflate";
 import mammoth from "mammoth";
-import { extractText } from "unpdf";
+import { extractText, getDocumentProxy } from "unpdf";
 import WordExtractor from "word-extractor";
-import { MAX_DOCUMENT_PAGES, PDF_PAGE_TEXT_MIN_CHARS } from "@/lib/ai-generation-limits";
+import {
+  MAX_DOCUMENT_PAGES,
+  MAX_DOCUMENT_UNCOMPRESSED_BYTES,
+  PDF_PAGE_TEXT_MIN_CHARS,
+} from "@/lib/ai-generation-limits";
 
 const PDF_MAGIC = [0x25, 0x50, 0x44, 0x46] as const;
 const OLE_MAGIC = [0xd0, 0xcf, 0x11, 0xe0] as const;
@@ -104,20 +108,37 @@ function isPasswordProtectedPdfError(error: unknown): boolean {
   return error.cause instanceof Error && error.cause.name === "PasswordException";
 }
 
+interface OpenPdfDocument {
+  numPages: number;
+  destroy(): Promise<void> | void;
+}
+
 async function readPdf(bytes: Uint8Array): Promise<ReadDocumentTextResult> {
+  const opened = await openPdf(Uint8Array.from(bytes));
+  if (!opened.ok) {
+    return opened;
+  }
+
+  let totalPages: number;
+  try {
+    totalPages = opened.document.numPages;
+  } finally {
+    await opened.document.destroy();
+  }
+
+  if (totalPages > MAX_DOCUMENT_PAGES) {
+    return { ok: false, errorKey: "generator.error.document_too_many_pages" };
+  }
+
+  if (totalPages < 1) {
+    return { ok: false, errorKey: "generator.error.document_unsupported" };
+  }
+
   try {
     const extracted = await extractText(bytes, { mergePages: false });
-    if (extracted.totalPages > MAX_DOCUMENT_PAGES) {
-      return { ok: false, errorKey: "generator.error.document_too_many_pages" };
-    }
-
-    if (extracted.totalPages < 1) {
-      return { ok: false, errorKey: "generator.error.document_unsupported" };
-    }
-
     const pages = extracted.text.map((page) => page.trim());
     if (pages.some((page) => page.length < PDF_PAGE_TEXT_MIN_CHARS)) {
-      return { ok: true, needsPdfTranscript: true, totalPages: extracted.totalPages };
+      return { ok: true, needsPdfTranscript: true, totalPages };
     }
 
     const text = pages.join("\n\n").trim();
@@ -135,6 +156,49 @@ async function readPdf(bytes: Uint8Array): Promise<ReadDocumentTextResult> {
   }
 }
 
+async function openPdf(
+  bytes: Uint8Array,
+): Promise<{ ok: true; document: OpenPdfDocument } | { ok: false; errorKey: DocumentReadErrorKey }> {
+  try {
+    return { ok: true, document: asOpenPdfDocument(await getDocumentProxy(bytes)) };
+  } catch (error) {
+    if (isPasswordProtectedPdfError(error)) {
+      return { ok: false, errorKey: "generator.error.document_password" };
+    }
+
+    return { ok: false, errorKey: "generator.error.document_unsupported" };
+  }
+}
+
+function asOpenPdfDocument(value: unknown): OpenPdfDocument {
+  if (typeof value !== "object" || value === null || !("numPages" in value) || typeof value.numPages !== "number") {
+    throw new Error("PDF document could not be opened");
+  }
+
+  const loadingTask = unknownGet(value, "loadingTask");
+  if (typeof loadingTask !== "object" || loadingTask === null) {
+    throw new Error("PDF document could not be opened");
+  }
+
+  const destroy = unknownGet(loadingTask, "destroy");
+  if (typeof destroy !== "function") {
+    throw new Error("PDF document could not be opened");
+  }
+
+  const numPages = value.numPages;
+  return {
+    numPages,
+    destroy: () => {
+      const result: unknown = Reflect.apply(destroy, loadingTask, []);
+      return result instanceof Promise ? result : undefined;
+    },
+  };
+}
+
+function unknownGet(target: object, key: string): unknown {
+  return Reflect.get(target, key) as unknown;
+}
+
 function readTxt(bytes: Uint8Array): ReadDocumentTextResult {
   try {
     const text = new TextDecoder("utf-8", { fatal: true }).decode(bytes).replace(/^\uFEFF/, "");
@@ -149,6 +213,10 @@ function readTxt(bytes: Uint8Array): ReadDocumentTextResult {
 }
 
 async function readDocx(bytes: Uint8Array): Promise<ReadDocumentTextResult> {
+  if (!zipDeclaredSizeWithinBudget(bytes)) {
+    return { ok: false, errorKey: "generator.error.document_unsupported" };
+  }
+
   try {
     const result = await mammoth.extractRawText({ buffer: Buffer.from(bytes) });
     const text = result.value.trim();
@@ -178,12 +246,12 @@ async function readDoc(bytes: Uint8Array): Promise<ReadDocumentTextResult> {
 }
 
 function readPptx(bytes: Uint8Array): ReadDocumentTextResult {
-  let files: Record<string, Uint8Array>;
-  try {
-    files = unzipSync(bytes);
-  } catch {
-    return { ok: false, errorKey: "generator.error.document_unsupported" };
+  const unzipped = unzipSelected(bytes, isPptxTextEntry);
+  if (!unzipped.ok) {
+    return unzipped;
   }
+
+  const files = unzipped.files;
 
   const slidePaths = resolveSlidePaths(files);
   if (slidePaths === "corrupt") {
@@ -209,6 +277,88 @@ function readPptx(bytes: Uint8Array): ReadDocumentTextResult {
   }
 
   return { ok: true, text };
+}
+
+function zipDeclaredSizeWithinBudget(bytes: Uint8Array): boolean {
+  let total = 0;
+
+  try {
+    unzipSync(bytes, {
+      filter(file) {
+        if (!fitsUncompressedBudget(total, file.originalSize)) {
+          throw new ZipBudgetExceeded();
+        }
+        total += file.originalSize;
+        return false;
+      },
+    });
+  } catch {
+    return false;
+  }
+
+  return true;
+}
+
+function unzipSelected(
+  bytes: Uint8Array,
+  include: (name: string) => boolean,
+): { ok: true; files: Record<string, Uint8Array> } | { ok: false; errorKey: "generator.error.document_unsupported" } {
+  let total = 0;
+
+  try {
+    const files = unzipSync(bytes, {
+      filter(file) {
+        if (!include(file.name)) {
+          return false;
+        }
+
+        if (!fitsUncompressedBudget(total, file.originalSize)) {
+          throw new ZipBudgetExceeded();
+        }
+
+        total += file.originalSize;
+        return true;
+      },
+    });
+
+    let actual = 0;
+    for (const data of Object.values(files)) {
+      actual += data.byteLength;
+      if (actual > MAX_DOCUMENT_UNCOMPRESSED_BYTES) {
+        return { ok: false, errorKey: "generator.error.document_unsupported" };
+      }
+    }
+
+    return { ok: true, files };
+  } catch {
+    return { ok: false, errorKey: "generator.error.document_unsupported" };
+  }
+}
+
+class ZipBudgetExceeded extends Error {
+  constructor() {
+    super("zip uncompressed budget");
+    this.name = "ZipBudgetExceeded";
+  }
+}
+
+function fitsUncompressedBudget(total: number, originalSize: number): boolean {
+  return (
+    Number.isSafeInteger(originalSize) &&
+    originalSize >= 0 &&
+    originalSize <= MAX_DOCUMENT_UNCOMPRESSED_BYTES &&
+    total <= MAX_DOCUMENT_UNCOMPRESSED_BYTES - originalSize
+  );
+}
+
+function isPptxTextEntry(name: string): boolean {
+  const path = name.replace(/\\/g, "/").replace(/^\/+/, "");
+  const lower = path.toLowerCase();
+  if (lower === "ppt/presentation.xml" || lower === "ppt/_rels/presentation.xml.rels") {
+    return true;
+  }
+
+  return /^ppt\/slides\/slide\d+\.xml$/i.test(path);
 }
 
 function resolveSlidePaths(files: Record<string, Uint8Array>): string[] | "corrupt" {
