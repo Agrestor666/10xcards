@@ -5,6 +5,7 @@ import { useLocale } from "@/components/i18n/useLocale";
 import {
   MAX_CARD_FIELD_CHARS,
   MAX_CARDS_PER_REQUEST,
+  MAX_DOCUMENT_BYTES,
   MAX_PHOTO_COUNT,
   MAX_SOURCE_TEXT_CHARS,
   MAX_TOPIC_CHARS,
@@ -58,7 +59,7 @@ interface CreatedFlashcardSet {
   updated_at: string;
 }
 
-type GeneratorMode = "text" | "topic" | "photo";
+type GeneratorMode = "text" | "topic" | "photo" | "document";
 
 interface GeneratorPhoto {
   id: string;
@@ -69,6 +70,7 @@ const GENERATOR_MODES = [
   { id: "text", labelKey: "generator.mode.text" },
   { id: "topic", labelKey: "generator.mode.topic" },
   { id: "photo", labelKey: "generator.mode.photo" },
+  { id: "document", labelKey: "generator.mode.document" },
 ] as const satisfies readonly { id: GeneratorMode; labelKey: MessageKey }[];
 
 type SaveStatus = "idle" | "saving" | "success" | "error";
@@ -84,7 +86,12 @@ type TranscribeResponse =
 type GenerateRequestBody =
   | { mode: "text"; text: string }
   | { mode: "topic"; topic: string }
-  | { mode: "transcript"; text: string };
+  | { mode: "transcript"; text: string }
+  | { mode: "document"; text: string };
+
+type ReadDocumentResponse = { ok: true; text: string } | { ok: false; errorKey?: string; message?: string };
+
+const MAX_DOCUMENT_MEGABYTES = MAX_DOCUMENT_BYTES / (1024 * 1024);
 
 type BulkCreateResponse = { ok: true; insertedCount: number } | { ok: false; message: string };
 
@@ -128,6 +135,8 @@ function FlashcardGeneratorInner({
   const [text, setText] = useState("");
   const [topic, setTopic] = useState("");
   const [transcript, setTranscript] = useState("");
+  const [documentText, setDocumentText] = useState("");
+  const [documentFile, setDocumentFile] = useState<File | null>(null);
   const [photos, setPhotos] = useState<GeneratorPhoto[]>([]);
   const [skippedPhotos, setSkippedPhotos] = useState<number[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -147,6 +156,7 @@ function FlashcardGeneratorInner({
   const readingRef = useRef(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+  const documentInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     availableSetsRef.current = availableSets;
@@ -191,14 +201,21 @@ function FlashcardGeneratorInner({
   const textTrimmed = text.trim();
   const topicTrimmed = topic.trim();
   const transcriptTrimmed = transcript.trim();
+  const documentTextTrimmed = documentText.trim();
+  const documentWithinGate = documentTextTrimmed.length > 0 && documentTextTrimmed.length <= MAX_SOURCE_TEXT_CHARS;
   const sourceReady =
     mode === "text"
       ? textTrimmed.length > 0
       : mode === "topic"
         ? topicTrimmed.length > 0
-        : transcriptTrimmed.length > 0;
+        : mode === "photo"
+          ? transcriptTrimmed.length > 0
+          : documentWithinGate;
   const canGenerate = !isGenerating && !isReading && !isPreparingPhotos && saveStatus !== "saving" && sourceReady;
   const canRead = photos.length > 0 && !isReading && !isPreparingPhotos && !isGenerating && saveStatus !== "saving";
+  const canChooseDocument = !isReading && !isGenerating && saveStatus !== "saving";
+  const canReadDocument =
+    documentFile !== null && !isReading && !isPreparingPhotos && !isGenerating && saveStatus !== "saving";
   const canAddPhoto = photos.length < MAX_PHOTO_COUNT && !isReading && !isPreparingPhotos;
   const canSave =
     !isGenerating &&
@@ -280,6 +297,81 @@ function FlashcardGeneratorInner({
     } finally {
       preparingPhotosRef.current = false;
       setIsPreparingPhotos(false);
+    }
+  }
+
+  function onDocumentInputChange(event: ChangeEvent<HTMLInputElement>) {
+    const selected = event.currentTarget.files?.[0] ?? null;
+    event.currentTarget.value = "";
+    if (!selected || readingRef.current) {
+      return;
+    }
+
+    if (selected.size > MAX_DOCUMENT_BYTES) {
+      setErrorMessage(t("generator.error.document_too_large", { max: MAX_DOCUMENT_MEGABYTES }));
+      setSuccessMessage(null);
+      return;
+    }
+
+    setDocumentFile(selected);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+  }
+
+  async function onReadDocument() {
+    const file = documentFile;
+    if (!file || readingRef.current || preparingPhotosRef.current) {
+      return;
+    }
+
+    if (file.size > MAX_DOCUMENT_BYTES) {
+      setErrorMessage(t("generator.error.document_too_large", { max: MAX_DOCUMENT_MEGABYTES }));
+      return;
+    }
+
+    readingRef.current = true;
+    setIsReading(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    try {
+      const body = new FormData();
+      body.append("file", file);
+      const res = await fetch("/api/ai/read-document", {
+        method: "POST",
+        credentials: "include",
+        body,
+      });
+
+      const payload = await parseJson<ReadDocumentResponse>(res);
+      if (!payload || !("ok" in payload)) {
+        setErrorMessage(t("generator.error.generate"));
+        return;
+      }
+
+      if (!payload.ok) {
+        if (payload.message) {
+          setErrorMessage(payload.message);
+        } else if (payload.errorKey) {
+          setErrorMessage(t(payload.errorKey as MessageKey));
+        } else {
+          setErrorMessage(t("generator.error.generate"));
+        }
+        return;
+      }
+
+      if (typeof payload.text !== "string") {
+        setErrorMessage(t("generator.error.generate"));
+        return;
+      }
+
+      setDocumentText(payload.text);
+      setDocumentFile(null);
+    } catch {
+      setErrorMessage(t("generator.error.generate"));
+    } finally {
+      readingRef.current = false;
+      setIsReading(false);
     }
   }
 
@@ -370,6 +462,20 @@ function FlashcardGeneratorInner({
         return;
       }
       await requestDrafts({ mode: "topic", topic: trimmed });
+      return;
+    }
+
+    if (mode === "document") {
+      const trimmed = documentText.trim();
+      if (!trimmed) {
+        setErrorMessage(t("generator.error.paste_text"));
+        return;
+      }
+      if (trimmed.length > MAX_SOURCE_TEXT_CHARS) {
+        setErrorMessage(t("generator.error.text_max", { max: MAX_SOURCE_TEXT_CHARS }));
+        return;
+      }
+      await requestDrafts({ mode: "document", text: trimmed });
       return;
     }
 
@@ -546,9 +652,11 @@ function FlashcardGeneratorInner({
         setText("");
       } else if (mode === "topic") {
         setTopic("");
-      } else {
+      } else if (mode === "photo") {
         setTranscript("");
         setSkippedPhotos([]);
+      } else {
+        setDocumentText("");
       }
       setCardsDraft([]);
     } catch {
@@ -778,6 +886,77 @@ function FlashcardGeneratorInner({
                 placeholder={t("generator.photo.placeholder")}
                 className={cn(paperFieldClass, "resize-y")}
               />
+            </div>
+          </div>
+        )}
+
+        {mode === "document" && (
+          <div className="grid min-w-0 gap-3">
+            <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+              <button
+                type="button"
+                onClick={() => {
+                  documentInputRef.current?.click();
+                }}
+                disabled={!canChooseDocument}
+                className={cn(outlinedActionClass(canChooseDocument), "w-full sm:w-auto")}
+              >
+                {t("generator.document.choose_file")}
+              </button>
+              <input
+                ref={documentInputRef}
+                type="file"
+                accept=".pdf,.doc,.docx,.txt,.pptx"
+                className="sr-only"
+                aria-label={t("generator.document.choose_file")}
+                onChange={onDocumentInputChange}
+              />
+              {documentFile && <p className="text-muted-foreground min-w-0 truncate text-sm">{documentFile.name}</p>}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                void onReadDocument();
+              }}
+              disabled={!canReadDocument}
+              className={cn(outlinedActionClass(canReadDocument), "w-full sm:w-auto")}
+            >
+              {isReading ? t("generator.document.reading") : t("generator.document.read")}
+            </button>
+
+            <div className="grid gap-2">
+              <div className="flex items-center justify-between gap-3">
+                <label htmlFor="generator-document-text" className="text-sm font-medium">
+                  {t("generator.document.text")}
+                </label>
+                <span
+                  className={cn(
+                    "text-muted-foreground font-mono text-xs",
+                    documentTextTrimmed.length > MAX_SOURCE_TEXT_CHARS && "text-destructive",
+                  )}
+                >
+                  {documentTextTrimmed.length}/{MAX_SOURCE_TEXT_CHARS}
+                </span>
+              </div>
+              <textarea
+                id="generator-document-text"
+                value={documentText}
+                onChange={(event) => {
+                  setDocumentText(event.target.value);
+                }}
+                rows={6}
+                placeholder={t("generator.document.placeholder")}
+                className={cn(paperFieldClass, "resize-y")}
+              />
+              {documentTextTrimmed.length > MAX_SOURCE_TEXT_CHARS && (
+                <p className="text-destructive text-xs" role="status">
+                  {t("generator.document.over_limit", {
+                    count: documentTextTrimmed.length,
+                    max: MAX_SOURCE_TEXT_CHARS,
+                  })}
+                </p>
+              )}
             </div>
           </div>
         )}

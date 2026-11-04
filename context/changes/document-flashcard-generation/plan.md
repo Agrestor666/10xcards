@@ -312,27 +312,27 @@ No database migration. No new Worker secret. The read path uses the existing `OP
 
 #### Automated
 
-- [x] 1.1 Unit tests pass: `npm test`
-- [x] 1.2 Lint passes: `npm run lint`
+- [x] 1.1 Unit tests pass: `npm test` — 082a39a
+- [x] 1.2 Lint passes: `npm run lint` — 082a39a
 
 #### Manual
 
-- [x] 1.3 With `OPENROUTER_API_KEY` set, a text PDF returns text without needing a scan-quality read, a scanned PDF returns a transcript, and a DOCX returns its paragraphs
-- [x] 1.4 A PDF over 20 pages, a password-protected PDF, and an unsupported type return a localized error and do not echo the file
+- [x] 1.3 With `OPENROUTER_API_KEY` set, a text PDF returns text without needing a scan-quality read, a scanned PDF returns a transcript, and a DOCX returns its paragraphs — 082a39a
+- [x] 1.4 A PDF over 20 pages, a password-protected PDF, and an unsupported type return a localized error and do not echo the file — 082a39a
 
 ### Phase 2: Document mode in the generator
 
 #### Automated
 
-- [ ] 2.1 Unit tests still pass: `npm test`
-- [ ] 2.2 Lint passes: `npm run lint`
+- [x] 2.1 Unit tests still pass: `npm test`
+- [x] 2.2 Lint passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.3 On `/dashboard`, a signed-in user can read one file, edit the text, generate cards, and save them to an existing set and to a new set without a reload
-- [ ] 2.4 **Generate** stays disabled above 20_000 characters and enables after the user shortens the text
-- [ ] 2.5 Switching among text, topic, photo, and document does not drop existing drafts
-- [ ] 2.6 The new strings appear in Polish and in English
+- [x] 2.3 On `/dashboard`, a signed-in user can read one file, edit the text, generate cards, and save them to an existing set and to a new set without a reload
+- [x] 2.4 **Generate** stays disabled above 20_000 characters and enables after the user shortens the text
+- [x] 2.5 Switching among text, topic, photo, and document does not drop existing drafts
+- [x] 2.6 The new strings appear in Polish and in English
 
 ### Phase 3: API gates and dashboard E2E
 
